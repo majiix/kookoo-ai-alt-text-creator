@@ -173,7 +173,7 @@ class Aialtg_Generator {
 				$err_msg = wp_remote_retrieve_response_message( $response );
 			}
 			/* translators: 1: HTTP response status code, 2: error message */
-			return new WP_Error( 'api_http_error', sprintf( __( 'API returned HTTP %d: %s', 'kookoo-ai-alt-text-creator' ), $response_code, $err_msg ) );
+			return new WP_Error( 'api_http_error', sprintf( __( 'API returned HTTP %1$d: %2$s', 'kookoo-ai-alt-text-creator' ), $response_code, $err_msg ) );
 		}
 
 		$body = wp_remote_retrieve_body( $response );
