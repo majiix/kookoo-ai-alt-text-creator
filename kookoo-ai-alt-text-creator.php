@@ -397,6 +397,7 @@ class Aialtg_Image_Descriptor {
 
 			$response_code = wp_remote_retrieve_response_code( $response );
 			if ( 200 !== $response_code ) {
+				/* translators: %d: HTTP status code */
 				wp_send_json_error( array( 'message' => sprintf( __( 'API returned HTTP %d', 'kookoo-ai-alt-text-creator' ), $response_code ) ) );
 			}
 
