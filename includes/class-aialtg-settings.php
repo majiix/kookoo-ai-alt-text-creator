@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! class_exists( 'Aialtg_Settings' ) ) {
 /**
  * Handles plugin settings and admin menu.
  */
@@ -178,6 +179,9 @@ class Aialtg_Settings {
 	 * Sanitizes setting inputs.
 	 */
 	public function sanitize_settings( $input ) {
+		if ( ! is_array( $input ) ) {
+			$input = array();
+		}
 		$new_input = array();
 
 		// API Settings.
@@ -252,6 +256,9 @@ class Aialtg_Settings {
 		} else {
 			// Maintain old values if cron file was removed so settings aren't lost on save
 			$old_options = get_option( self::$option_name );
+			if ( ! is_array( $old_options ) ) {
+				$old_options = array();
+			}
 			if ( isset( $old_options['cron_enabled'] ) ) $new_input['cron_enabled'] = $old_options['cron_enabled'];
 			if ( isset( $old_options['cron_batch_size'] ) ) $new_input['cron_batch_size'] = $old_options['cron_batch_size'];
 			if ( isset( $old_options['cron_interval'] ) ) $new_input['cron_interval'] = $old_options['cron_interval'];
@@ -270,6 +277,9 @@ class Aialtg_Settings {
 	 */
 	public static function get_allowed_mimes() {
 		$options = get_option( self::$option_name );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
 		$input   = isset( $options['allowed_formats'] ) ? $options['allowed_formats'] : 'jpg,jpeg,png,webp';
 
 		// If user cleared the field, fallback to all images? Or strictly nothing?
@@ -637,4 +647,5 @@ class Aialtg_Settings {
 		</div>
 		<?php
 	}
+}
 }

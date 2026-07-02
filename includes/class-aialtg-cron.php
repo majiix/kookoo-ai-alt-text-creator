@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! class_exists( 'Aialtg_Cron' ) ) {
 /**
  * Handles Cron Logic.
  */
@@ -59,6 +60,9 @@ class Aialtg_Cron {
 	 */
 	public function add_custom_cron_schedule( $schedules ) {
 		$options = get_option( $this->option_name );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
 		$minutes = isset( $options['cron_interval'] ) ? (int) $options['cron_interval'] : 5;
 		if ( $minutes < 1 ) {
 			$minutes = 1;
@@ -77,6 +81,9 @@ class Aialtg_Cron {
 	 */
 	public function process_cron_batch() {
 		$options = get_option( $this->option_name );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
 		// Double check if enabled.
 		if ( empty( $options['cron_enabled'] ) ) {
 			return;
@@ -114,6 +121,10 @@ class Aialtg_Cron {
 		if ( ! empty( $images ) ) {
 			$generator = new Aialtg_Generator();
 			foreach ( $images as $image_id ) {
+				// Extend execution time limit for this request if function is available.
+				if ( function_exists( 'set_time_limit' ) ) {
+					@set_time_limit( 60 );
+				}
 				$result = $generator->process_image( $image_id, 'cron' );
 
 				// Handle failures.
@@ -151,6 +162,9 @@ class Aialtg_Cron {
 		}
 
 		$options = get_option( $this->option_name );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
 		if ( isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
 			if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
 				// Reschedule immediately.
@@ -158,4 +172,5 @@ class Aialtg_Cron {
 			}
 		}
 	}
+}
 }

@@ -10,7 +10,7 @@ Requires at least: 6.0
 
 Tested up to: 7.0
 
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 
 License: GPLv2 or later
 
@@ -210,6 +210,15 @@ Use the "Retry Failed Images" button to move them back to the pending queue.
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
 == Changelog ==
+
+= 1.7.1 =
+* Hardened plugin codebase against PHP warnings, notices, and type deprecations under PHP 8.0+.
+* Wrapped classes in class_exists checks to prevent redeclaration crashes.
+* Added try-catch blocks to AJAX handlers to prevent HTTP 500 fatal errors.
+* Implemented Base64-encoding fallback for local development servers to avoid connection/download failures for local image URLs.
+* Added robust JSON parsing and error handling when extracting Alt Texts/Titles.
+* Added set_time_limit(60) in the background cron worker to prevent timeout crashes on slow requests.
+* Optimized database deletion operations to use bulk SQL statements rather than queries in loops.
 
 = 1.7.0 =
 

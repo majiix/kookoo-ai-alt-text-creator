@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! class_exists( 'Aialtg_Generator' ) ) {
 class Aialtg_Generator {
 
 	private $option_name = 'aialtg_settings';
@@ -21,6 +22,9 @@ class Aialtg_Generator {
 	 */
 	public function process_image( $post_id, $source = 'manual' ) {
 		$options = get_option( $this->option_name );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
 		$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
@@ -68,6 +72,23 @@ class Aialtg_Generator {
 			}
 		}
 
+		// Check if URL is local/private, and if so, load it as Base64 to prevent API fetch issues.
+		$file_path = get_attached_file( $post_id );
+		if ( $file_path && file_exists( $file_path ) && is_readable( $file_path ) ) {
+			$file_size = filesize( $file_path );
+			// 5 MB limit for Base64 encoding.
+			if ( $file_size > 0 && $file_size <= 5 * 1024 * 1024 ) {
+				if ( $this->is_local_url( $image_url ) ) {
+					$file_data = file_get_contents( $file_path );
+					if ( $file_data ) {
+						$mime_type = get_post_mime_type( $post_id );
+						$base64_data = base64_encode( $file_data );
+						$image_url = 'data:' . $mime_type . ';base64,' . $base64_data;
+					}
+				}
+			}
+		}
+
 		// Prepare Prompts.
 		$default_alt_prompt = 'Generate a concise, descriptive alt text for this image. Do not use phrases like "Image of".';
 		$alt_prompt         = isset( $options['prompt'] ) && ! empty( $options['prompt'] ) ? $options['prompt'] : $default_alt_prompt;
@@ -100,9 +121,9 @@ class Aialtg_Generator {
 		$search_tags  = array( '{post_title}', '{post_content}' );
 
 		// Apply replacements to all prompt fields.
-		$global_context = str_replace( $search_tags, $replacements, $global_context );
-		$alt_prompt     = str_replace( $search_tags, $replacements, $alt_prompt );
-		$title_prompt   = str_replace( $search_tags, $replacements, $title_prompt );
+		$global_context = str_replace( $search_tags, $replacements, (string) $global_context );
+		$alt_prompt     = str_replace( $search_tags, $replacements, (string) $alt_prompt );
+		$title_prompt   = str_replace( $search_tags, $replacements, (string) $title_prompt );
 
 		// Build System Instruction.
 		$system_instructions = "Analyze the image and generate text based on the following instructions.\n";
@@ -131,7 +152,7 @@ class Aialtg_Generator {
 					'Authorization' => 'Bearer ' . $api_key,
 					'Content-Type'  => 'application/json',
 					'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
-					'X-Title'       => get_bloginfo( 'name' ),
+					'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
 				),
 				'body'    => wp_json_encode(
 					array(
@@ -193,18 +214,24 @@ class Aialtg_Generator {
 
 		// Parse Content.
 		$content_str = trim( $data['choices'][0]['message']['content'] );
-		$content_str = str_replace( array( '```json', '```' ), '', $content_str );
-		$result_json = json_decode( $content_str, true );
+		$result_json = $this->robust_json_decode( $content_str );
 
 		$alt_text = '';
 		$title    = '';
 
-		if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $result_json ) ) {
-			// Fallback.
-			if ( $enable_alt ) {
-				$alt_text = wp_strip_all_tags( $content_str );
-			} elseif ( $enable_title ) {
-				$title = wp_strip_all_tags( $content_str );
+		if ( false === $result_json ) {
+			// It's not valid JSON. Check if it's likely a JSON attempt.
+			$is_likely_json = ( strpos( $content_str, '{' ) === 0 || strpos( $content_str, '"alt_text"' ) !== false || strpos( $content_str, '"title"' ) !== false );
+			
+			if ( ! $is_likely_json ) {
+				// Fallback to raw string if it doesn't look like JSON.
+				if ( $enable_alt ) {
+					$alt_text = wp_strip_all_tags( $content_str );
+				} elseif ( $enable_title ) {
+					$title = wp_strip_all_tags( $content_str );
+				}
+			} else {
+				return new WP_Error( 'json_parse_failed', __( 'API response was JSON but could not be parsed', 'kookoo-ai-alt-text-creator' ) );
 			}
 		} else {
 			if ( $enable_alt ) {
@@ -244,4 +271,81 @@ class Aialtg_Generator {
 			'title'    => $title,
 		);
 	}
+
+	/**
+	 * Checks if a URL is local/private.
+	 *
+	 * @param string $url The URL to check.
+	 * @return bool True if local, false otherwise.
+	 */
+	private function is_local_url( $url ) {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( ! $host ) {
+			return true;
+		}
+
+		// Common local hosts.
+		if ( in_array( $host, array( 'localhost', '127.0.0.1', '[::1]' ), true ) ) {
+			return true;
+		}
+
+		// Ends with local TLDs.
+		if ( preg_match( '/\.(local|test|dev|invalid|example)$/i', $host ) ) {
+			return true;
+		}
+
+		// Private IP ranges check.
+		if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+			$is_private = ! filter_var(
+				$host,
+				FILTER_VALIDATE_IP,
+				FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+			);
+			if ( $is_private ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Extracts and parses JSON content from the API response robustly.
+	 *
+	 * @param string $content Raw content from API.
+	 * @return array|false Parsed array or false on failure.
+	 */
+	private function robust_json_decode( $content ) {
+		$content = trim( $content );
+		
+		// Remove markdown code block wrappers.
+		if ( preg_match( '/^```(?:json)?\s*([\s\S]*?)\s*```$/i', $content, $matches ) ) {
+			$content = trim( $matches[1] );
+		}
+		
+		// Try parsing directly.
+		$decoded = json_decode( $content, true );
+		if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
+			return $decoded;
+		}
+		
+		// If direct parsing failed, try extracting first '{' to last '}' via regex.
+		if ( preg_match( '/(\{[\s\S]*\})/i', $content, $matches ) ) {
+			$potential_json = trim( $matches[1] );
+			$decoded = json_decode( $potential_json, true );
+			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
+				return $decoded;
+			}
+			
+			// Try to clean up common JSON issues: trailing commas before closing braces/brackets.
+			$cleaned_json = preg_replace( '/,\s*([\}\]])/', '$1', $potential_json );
+			$decoded = json_decode( $cleaned_json, true );
+			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
+				return $decoded;
+			}
+		}
+		
+		return false;
+	}
+}
 }
