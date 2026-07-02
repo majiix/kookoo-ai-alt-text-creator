@@ -310,85 +310,85 @@ class Aialtg_Settings {
 	}
 
 	/**
-	 * Renders Cron section info with STATS (Cached) and Reset Button.
+	 * Get image stats for the dashboard.
+	 *
+	 * @return array Stats data.
 	 */
-	public function render_cron_section_info() {
-		// Use transients to cache the query results (1 hour).
+	private function get_image_stats() {
 		$stats = get_transient( 'aialtg_stats' );
-
-		if ( false === $stats ) {
-			// We must use allowed mime types for accurate stats.
-			$allowed_mimes = self::get_allowed_mimes();
-
-			// 1. Total Images (matching allowed types).
-			$args_total   = array(
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'post_mime_type' => $allowed_mimes,
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => false,
-			);
-			$query_total  = new WP_Query( $args_total );
-			$total_images = $query_total->found_posts;
-
-			// 2. Processed Successfully (value = '1').
-			$args_processed   = array(
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'post_mime_type' => $allowed_mimes,
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => false,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				'meta_query'     => array(
-					array(
-						'key'   => '_aialtg_processed',
-						'value' => '1',
-					),
-				),
-			);
-			$query_processed  = new WP_Query( $args_processed );
-			$processed_images = $query_processed->found_posts;
-
-			// 3. Failed (value = 'failed').
-			$args_failed    = array(
-				'post_type'      => 'attachment',
-				'post_status'    => 'inherit',
-				'post_mime_type' => $allowed_mimes,
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => false,
-				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				'meta_query'     => array(
-					array(
-						'key'   => '_aialtg_processed',
-						'value' => 'failed',
-					),
-				),
-			);
-			$query_failed   = new WP_Query( $args_failed );
-			$failed_images  = $query_failed->found_posts;
-
-			$stats = array(
-				'total'     => $total_images,
-				'processed' => $processed_images,
-				'failed'    => $failed_images,
-			);
-
-			set_transient( 'aialtg_stats', $stats, HOUR_IN_SECONDS );
-		} else {
-			$total_images     = $stats['total'];
-			$processed_images = $stats['processed'];
-			$failed_images    = isset( $stats['failed'] ) ? $stats['failed'] : 0;
+		if ( false !== $stats ) {
+			return $stats;
 		}
 
-		// Pending calculation: Total - (Processed + Failed).
+		$allowed_mimes = self::get_allowed_mimes();
+
+		// Total Images.
+		$query_total = new WP_Query( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'post_mime_type' => $allowed_mimes,
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => false,
+		) );
+		$total = $query_total->found_posts;
+
+		// Processed Successfully.
+		$query_processed = new WP_Query( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'post_mime_type' => $allowed_mimes,
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => false,
+			'meta_query'     => array(
+				array(
+					'key'   => '_aialtg_processed',
+					'value' => '1',
+				),
+			),
+		) );
+		$processed = $query_processed->found_posts;
+
+		// Failed.
+		$query_failed = new WP_Query( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'post_mime_type' => $allowed_mimes,
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => false,
+			'meta_query'     => array(
+				array(
+					'key'   => '_aialtg_processed',
+					'value' => 'failed',
+				),
+			),
+		) );
+		$failed = $query_failed->found_posts;
+
+		$stats = array(
+			'total'     => $total,
+			'processed' => $processed,
+			'failed'    => $failed,
+		);
+
+		set_transient( 'aialtg_stats', $stats, HOUR_IN_SECONDS );
+		return $stats;
+	}
+
+	/**
+	 * Renders Stats Card and Controls.
+	 */
+	public function render_stats_card() {
+		$stats            = $this->get_image_stats();
+		$total_images     = $stats['total'];
+		$processed_images = $stats['processed'];
+		$failed_images    = isset( $stats['failed'] ) ? $stats['failed'] : 0;
+
 		$pending    = max( 0, $total_images - $processed_images - $failed_images );
-		// Percentage is based on completed attempts (success or fail).
 		$completed  = $processed_images + $failed_images;
 		$percentage = $total_images > 0 ? round( ( $completed / $total_images ) * 100 ) : 0;
-
 		?>
 		<div class="aialtg-card aialtg-stats-card">
 			<div class="aialtg-card-header">
@@ -419,6 +419,18 @@ class Aialtg_Settings {
 					<div class="aialtg-progress-fill" style="width: <?php echo esc_attr( $percentage ); ?>%;"></div>
 				</div>
 				<span class="aialtg-progress-text"><?php echo esc_html( $percentage ); ?>% <?php esc_html_e( 'Complete', 'kookoo-ai-alt-text-creator' ); ?></span>
+			</div>
+
+			<div class="aialtg-milestone-wrap" style="display: none;">
+				<div class="aialtg-milestone-badge">
+					<span class="dashicons dashicons-awards"></span>
+					<strong><?php esc_html_e( 'All Images Optimized!', 'kookoo-ai-alt-text-creator' ); ?></strong>
+				</div>
+				<p class="aialtg-milestone-desc"><?php esc_html_e( 'Your library SEO is in tip-top shape. You\'re crushing it!', 'kookoo-ai-alt-text-creator' ); ?></p>
+				<button type="button" class="button button-link aialtg-celebrate-btn">
+					<span class="dashicons dashicons-star-filled"></span>
+					<?php esc_html_e( 'Celebrate again', 'kookoo-ai-alt-text-creator' ); ?>
+				</button>
 			</div>
 
 			<div class="aialtg-controls-wrapper">
@@ -454,12 +466,19 @@ class Aialtg_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders Cron section info.
+	 */
+	public function render_cron_section_info() {
+		echo '<p class="aialtg-section-desc">' . esc_html__( 'Configure the background scheduler to process images automatically.', 'kookoo-ai-alt-text-creator' ) . '</p>';
+	}
+
 	public function render_section_info() {
-		echo '<p class="aialtg-section-desc">' . esc_html__( 'Enter your OpenRouter API credentials to connect your site to advanced AI models.', 'kookoo-ai-alt-text-creator' ) . '</p>';
+		echo '<p class="aialtg-section-desc">' . esc_html__( 'Enter your OpenRouter API credentials to connect your site to advanced models.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 	}
 
 	public function render_options_section_info() {
-		echo '<p class="aialtg-section-desc">' . esc_html__( 'Configure how the AI generates text for your images.', 'kookoo-ai-alt-text-creator' ) . '</p>';
+		echo '<p class="aialtg-section-desc">' . esc_html__( 'Configure how details are generated for your images.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 	}
 
 	public function render_api_key_field() {
@@ -467,8 +486,11 @@ class Aialtg_Settings {
 		$options = ( is_array( $options ) ) ? $options : array();
 		$value   = isset( $options['api_key'] ) ? $options['api_key'] : '';
 		?>
-		<div class="aialtg-input-wrap">
-			<input type="password" name="<?php echo esc_attr( self::$option_name . '[api_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" class="regular-text" placeholder="sk-or-..." />
+		<div class="aialtg-input-wrap aialtg-password-wrap">
+			<input type="password" name="<?php echo esc_attr( self::$option_name . '[api_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-api-key" class="regular-text" placeholder="sk-or-..." />
+			<button type="button" class="aialtg-toggle-password" aria-label="<?php esc_attr_e( 'Toggle API Key Visibility', 'kookoo-ai-alt-text-creator' ); ?>">
+				<span class="dashicons dashicons-visibility"></span>
+			</button>
 		</div>
 		<?php
 	}
@@ -632,17 +654,37 @@ class Aialtg_Settings {
 				<p class="aialtg-subtitle"><?php esc_html_e( 'Automate your Image SEO with AI', 'kookoo-ai-alt-text-creator' ); ?></p>
 			</div>
 
-			<div class="aialtg-content-wrap">
-				<form action="options.php" method="post" class="aialtg-main-form">
-					<?php
-					settings_fields( 'aialtg_plugin_options' );
-					do_settings_sections( 'kookoo-ai-alt-text-creator' );
+			<div class="aialtg-dashboard-layout">
+				<div class="aialtg-main-content">
+					<form action="options.php" method="post" class="aialtg-main-form">
+						<?php
+						settings_fields( 'aialtg_plugin_options' );
+						do_settings_sections( 'kookoo-ai-alt-text-creator' );
 
-					echo '<div class="aialtg-submit-wrap">';
-					submit_button( __( 'Save Settings', 'kookoo-ai-alt-text-creator' ), 'primary large' );
-					echo '</div>';
-					?>
-				</form>
+						echo '<div class="aialtg-submit-wrap">';
+						submit_button( __( 'Save Settings', 'kookoo-ai-alt-text-creator' ), 'primary large' );
+						echo '</div>';
+						?>
+					</form>
+				</div>
+				<div class="aialtg-sidebar">
+					<?php $this->render_stats_card(); ?>
+
+					<div class="aialtg-card aialtg-help-card">
+						<div class="aialtg-card-header">
+							<h3><?php esc_html_e( 'Quick Help & Resources', 'kookoo-ai-alt-text-creator' ); ?></h3>
+						</div>
+						<div class="aialtg-help-content">
+							<p><strong><?php esc_html_e( 'How it works:', 'kookoo-ai-alt-text-creator' ); ?></strong></p>
+							<ol>
+								<li><?php esc_html_e( 'Enter your OpenRouter API Key and select a model (e.g. Gemini 2.5 Flash).', 'kookoo-ai-alt-text-creator' ); ?></li>
+								<li><?php esc_html_e( 'Configure your Alt Text & Title prompt guidelines.', 'kookoo-ai-alt-text-creator' ); ?></li>
+								<li><?php esc_html_e( 'Background processing will automatically analyze pending images.', 'kookoo-ai-alt-text-creator' ); ?></li>
+							</ol>
+							<p class="description"><?php esc_html_e( 'Need support or want to read documentation? Visit the official plugin directory page.', 'kookoo-ai-alt-text-creator' ); ?></p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<?php

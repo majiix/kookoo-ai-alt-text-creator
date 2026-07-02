@@ -15,3 +15,11 @@ Step 2:
 1. Increment version to 1.7.1 in main plugin header and asset enqueues.
 2. Increment stable tag to 1.7.1 in readme.txt and document changes in its changelog section.
 Commit message: bump(version): increment plugin version to 1.7.1
+
+Step 3:
+1. Redesign the plugin settings dashboard with a modern two-column layout.
+2. Style fields, textareas, and switches with custom SaaS indigo/violet gradients, bouncy spring animations, and glow-ring focus highlights.
+3. Move statistics calculations to a dedicated helper and place the stats card in the sidebar.
+4. Add password visibility toggle to the OpenRouter API Key input.
+5. Create a dependency-free custom canvas confetti generator and completion badge to celebrate 100% processing completion.
+Commit message: feat(ui): redesign settings dashboard to modern SaaS theme and add confetti milestone celebration
