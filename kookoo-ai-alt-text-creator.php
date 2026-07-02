@@ -371,11 +371,12 @@ class Aialtg_Image_Descriptor {
 				// Delete postmeta for all these IDs at once using SQL query.
 				$ids_placeholder = implode( ',', array_fill( 0, $count, '%d' ) );
 
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$wpdb->query( $wpdb->prepare(
 					"DELETE FROM {$wpdb->postmeta} WHERE post_id IN ($ids_placeholder) AND meta_key IN ('_aialtg_processed', '_aialtg_error_log')",
 					$ids
 				) );
+				// phpcs:enable
 
 				// Clean object cache for these posts.
 				foreach ( $ids as $id ) {

@@ -341,6 +341,7 @@ class Aialtg_Settings {
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			'no_found_rows'  => false,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_query'     => array(
 				array(
 					'key'   => '_aialtg_processed',
@@ -358,6 +359,7 @@ class Aialtg_Settings {
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			'no_found_rows'  => false,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_query'     => array(
 				array(
 					'key'   => '_aialtg_processed',

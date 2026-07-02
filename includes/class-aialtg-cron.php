@@ -123,6 +123,7 @@ class Aialtg_Cron {
 			foreach ( $images as $image_id ) {
 				// Extend execution time limit for this request if function is available.
 				if ( function_exists( 'set_time_limit' ) ) {
+					// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 					@set_time_limit( 60 );
 				}
 				$result = $generator->process_image( $image_id, 'cron' );
