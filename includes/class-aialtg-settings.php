@@ -343,7 +343,7 @@ class Aialtg_Settings {
 
 		if ( is_array( $allowed_mimes ) ) {
 			$placeholders = implode( ',', array_fill( 0, count( $allowed_mimes ), '%s' ) );
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			$mime_where = $wpdb->prepare( "p.post_mime_type IN ($placeholders)", $allowed_mimes );
 		} else {
 			$mime_where = $wpdb->prepare( 'p.post_mime_type LIKE %s', $allowed_mimes . '/%' );
@@ -472,7 +472,6 @@ class Aialtg_Settings {
 		$data    = isset( $options['license_data'] ) ? $options['license_data'] : array();
 
 		$is_valid = 'valid' === $status;
-		$input_attr = $is_valid ? ' readonly="readonly" style="background:#f0f0f1;color:#666;"' : '';
 		?>
 		<h2><?php esc_html_e( 'License Key', 'kookoo-ai-alt-text-creator' ); ?></h2>
 		<p class="aialtg-section-desc"><?php esc_html_e( 'Activate or manage your Pro license key to unlock premium features.', 'kookoo-ai-alt-text-creator' ); ?></p>
@@ -480,7 +479,7 @@ class Aialtg_Settings {
 			<div class="aialtg-license-field-container" data-status="<?php echo esc_attr( $status ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_license_nonce' ) ); ?>">
 				<div class="aialtg-license-input-group">
 					<div class="aialtg-input-wrap aialtg-password-wrap aialtg-license-input-inner" style="flex: 1; margin: 0; position: relative;">
-						<input type="password" name="<?php echo esc_attr( self::$option_name . '[license_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-license-key" class="regular-text" placeholder="e.g. 8f4e2..." style="width: 100%;" <?php echo $input_attr; ?> />
+						<input type="password" name="<?php echo esc_attr( self::$option_name . '[license_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-license-key" class="regular-text" placeholder="e.g. 8f4e2..." style="width: 100%;"<?php if ( $is_valid ) : ?> readonly="readonly" style="background:#f0f0f1;color:#666;"<?php endif; ?> />
 						<button type="button" class="aialtg-toggle-password aialtg-toggle-license-visibility" aria-label="<?php esc_attr_e( 'Toggle License Key Visibility', 'kookoo-ai-alt-text-creator' ); ?>">
 							<span class="dashicons dashicons-visibility"></span>
 						</button>
@@ -662,10 +661,9 @@ class Aialtg_Settings {
 		$options = ( is_array( $options ) ) ? $options : array();
 		$license_status = isset( $options['license_status'] ) ? $options['license_status'] : '';
 		$is_licensed = 'valid' === $license_status;
-		$disabled_attr = $is_licensed ? '' : ' disabled="disabled"';
 		?>
 		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?><?php echo $disabled_attr; ?> />
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?><?php if ( ! $is_licensed ) : ?> disabled="disabled"<?php endif; ?> />
 			<span class="aialtg-toggle-slider"></span>
 			<span class="aialtg-toggle-label">
 				<?php esc_html_e( 'Save generation metadata (timestamp/source)', 'kookoo-ai-alt-text-creator' ); ?>

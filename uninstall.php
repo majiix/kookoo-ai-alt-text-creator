@@ -44,6 +44,6 @@ $aialtg_meta_keys = array(
 // Delete metadata in a single query.
 // Note: We deliberately do NOT delete '_wp_attachment_image_alt' as that is native WP data
 // and the user likely wants to keep the generated alt text even if they delete the plugin.
-$placeholders = implode( ',', array_fill( 0, count( $aialtg_meta_keys ), '%s' ) );
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN ($placeholders)", $aialtg_meta_keys ) );
+$aialtg_placeholders = implode( ',', array_fill( 0, count( $aialtg_meta_keys ), '%s' ) );
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN ($aialtg_placeholders)", $aialtg_meta_keys ) );

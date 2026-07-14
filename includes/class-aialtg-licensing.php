@@ -258,6 +258,7 @@ class Aialtg_Licensing {
 
 		// Only check if we are on our settings page to prevent checking on every admin page load.
 		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$page           = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
 		if ( 'kookoo-ai-alt-text-creator' !== $page ) {
 			return;
