@@ -25,7 +25,7 @@ All key style values are defined as CSS custom properties under `:root` in [admi
 | **Primary Hover** | `--aialtg-primary-hover` | `#4f46e5` | Hover state for primary buttons and interactive elements |
 | **Primary Light** | `--aialtg-primary-light` | `#e0e7ff` | Light background for button hovers, subtle highlights |
 | **Secondary** | `--aialtg-secondary` | `#818cf8` | Secondary brand color, gradient mixes |
-| **Accent** | `--aialtg-accent` | `#a855f7` | Dynamic accents (e.g. side-borders, confetti, decorations) |
+| **Accent** | `--aialtg-accent` | `#a855f7` | Dynamic accents (e.g. side-borders, brand highlights, decorations) |
 | **Background** | `--aialtg-bg` | `#f8fafc` | Main wrapper background |
 | **Card Background** | `--aialtg-card-bg` | `rgba(255, 255, 255, 0.9)` | Glassmorphic base for form tables and sidebar cards |
 | **Text** | `--aialtg-text` | `#1e293b` | Primary body text (Slate 800) |
@@ -70,13 +70,19 @@ The main dashboard is constructed as a two-column responsive grid:
 |                                        | |                  |
 |  +----------------------------------+  | |  +------------+  |
 |  |           .form-table            |  | |  | .aialtg-   |  |
-|  |           (Main Card)            |  | |  |  stats-card|  |
-|  +----------------------------------+  | |  +------------+  |
-|                                        | |                  |
-|  +----------------------------------+  | |  +------------+  |
-|  |           .form-table            |  | |  | .aialtg-   |  |
 |  |           (Main Card)            |  | |  |  license-  |  |
 |  +----------------------------------+  | |  |  card      |  |
+|                                        | |  +------------+  |
+|  +----------------------------------+  | |                  |
+|  |           .form-table            |  | |  +------------+  |
+|  |           (Main Card)            |  | |  | .aialtg-   |  |
+|  +----------------------------------+  | |  |  upgrade-  |  |
+|                                        | |  |  card      |  |
+|                                        | |  +------------+  |
+|                                        | |                  |
+|                                        | |  +------------+  |
+|                                        | |  | .aialtg-   |  |
+|                                        | |  |  stats-card|  |
 |                                        | |  +------------+  |
 +----------------------------------------+ +------------------+
 ```
@@ -108,7 +114,6 @@ The main dashboard is constructed as a two-column responsive grid:
 ### C. Statistics Grid & Progress
 - **Stats Block (`.aialtg-stats-grid`)**: A structured grid showing high-level image metadata processing.
 - **Progress Bar (`.aialtg-progress-bar`)**: Contains `.aialtg-progress-fill` displaying batch tasks completion percentages, styled with a linear-gradient.
-- **Milestone Celebration (`.aialtg-milestone-wrap`)**: An alert box that bounces in when processing hits 100%. Paired with `#aialtg-confetti-canvas` for fireworks animations.
 
 ### D. Licensing Controls
 - **Licensing Card (`.aialtg-license-card`)**: Holds fields for entering the license key.
@@ -124,23 +129,8 @@ The main dashboard is constructed as a two-column responsive grid:
 
 CSS classes leverage micro-animations for high-fidelity interactive feedback:
 
-1. **`aialtgBounceIn`**: Bounces in the milestone notification:
-   ```css
-   @keyframes aialtgBounceIn {
-       0% { opacity: 0; transform: scale(0.8); }
-       70% { transform: scale(1.05); }
-       100% { opacity: 1; transform: scale(1); }
-   }
-   ```
-2. **`aialtgRotateStar`**: Infinitely rotates and scales the celebrate dashboard star:
-   ```css
-   @keyframes aialtgRotateStar {
-       0%, 100% { transform: rotate(0deg) scale(1); }
-       50% { transform: rotate(15deg) scale(1.15); }
-   }
-   ```
-3. **`aialtgFadeIn`**: Reveals AJAX statuses (`.aialtg-status-area`) by moving them slightly down and fading in.
-4. **`aialtg-skeleton-animation`**: Translates a gradient shimmer overlay across skeleton loaders.
+1. **`aialtgFadeIn`**: Reveals AJAX statuses (`.aialtg-status-area`) by moving them slightly down and fading in.
+2. **`aialtg-skeleton-animation`**: Translates a gradient shimmer overlay across skeleton loaders.
 
 ---
 

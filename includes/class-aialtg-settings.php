@@ -677,11 +677,19 @@ class Aialtg_Settings {
 	public function render_save_gen_meta_field() {
 		$options = get_option( self::$option_name );
 		$options = ( is_array( $options ) ) ? $options : array();
+		$license_status = isset( $options['license_status'] ) ? $options['license_status'] : '';
+		$is_licensed = 'valid' === $license_status;
+		$disabled_attr = $is_licensed ? '' : ' disabled="disabled"';
 		?>
 		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?> />
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?><?php echo $disabled_attr; ?> />
 			<span class="aialtg-toggle-slider"></span>
-			<span class="aialtg-toggle-label"><?php esc_html_e( 'Save generation metadata (timestamp/source)', 'kookoo-ai-alt-text-creator' ); ?></span>
+			<span class="aialtg-toggle-label">
+				<?php esc_html_e( 'Save generation metadata (timestamp/source)', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_licensed ) : ?>
+					<span class="aialtg-badge aialtg-badge-error" style="margin-left: 6px; font-size: 10px; padding: 2px 6px; vertical-align: middle; display: inline-block; line-height: 1.2; font-weight: 600; text-transform: uppercase;"><?php esc_html_e( 'Pro Only', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
+			</span>
 		</label>
 		<?php
 	}
@@ -725,6 +733,40 @@ class Aialtg_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders upgrade card to purchase Pro version.
+	 */
+	public function render_upgrade_card() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+		$status  = isset( $options['license_status'] ) ? $options['license_status'] : 'inactive';
+
+		// Hide if license is valid.
+		if ( 'valid' === $status ) {
+			return;
+		}
+		?>
+		<div class="aialtg-card aialtg-upgrade-card" style="border-left: 4px solid #a855f7;">
+			<div class="aialtg-card-header">
+				<h3 style="color: #a855f7; display: flex; align-items: center; gap: 8px; margin: 0;">
+					<span class="dashicons dashicons-star-filled" style="color: #a855f7; font-size: 18px; width: 18px; height: 18px;"></span>
+					<?php esc_html_e( 'Upgrade to Pro', 'kookoo-ai-alt-text-creator' ); ?>
+				</h3>
+			</div>
+			<div class="aialtg-card-body" style="padding: 15px;">
+				<p style="margin-top: 0; line-height: 1.5; font-size: 13px;">
+					<?php esc_html_e( 'Unlock advanced SEO features, including automatic metadata saving (timestamp/source), premium priority support, and future visual enhancements.', 'kookoo-ai-alt-text-creator' ); ?>
+				</p>
+				<p style="margin-bottom: 0; margin-top: 15px;">
+					<a href="https://violo.ir/?p=14" target="_blank" class="button button-primary" style="background: #a855f7; border-color: #9333ea; width: 100%; text-align: center; font-weight: 600; text-shadow: none; box-shadow: none;">
+						<?php esc_html_e( 'Get Pro License Key', 'kookoo-ai-alt-text-creator' ); ?>
+					</a>
+				</p>
+			</div>
+		</div>
+		<?php
+	}
+
 	public function render_settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -751,6 +793,7 @@ class Aialtg_Settings {
 				</div>
 				<div class="aialtg-sidebar">
 					<?php $this->render_license_card(); ?>
+					<?php $this->render_upgrade_card(); ?>
 					<?php $this->render_stats_card(); ?>
 
 					<div class="aialtg-card aialtg-help-card">

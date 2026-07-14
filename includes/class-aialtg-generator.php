@@ -256,8 +256,9 @@ class Aialtg_Generator {
 		// Mark as processed by the plugin.
 		update_post_meta( $post_id, '_aialtg_processed', '1' );
 
-		// Save Generation Meta if enabled.
-		if ( ! empty( $options['save_gen_meta'] ) ) {
+		// Save Generation Meta if enabled and license is valid.
+		$license_status = isset( $options['license_status'] ) ? $options['license_status'] : '';
+		if ( ! empty( $options['save_gen_meta'] ) && 'valid' === $license_status ) {
 			// Use gmdate() instead of date() to avoid timezone issues.
 			update_post_meta( $post_id, '_aialtg_gen_date', gmdate( 'Y-m-d H:i:s' ) );
 			update_post_meta( $post_id, '_aialtg_gen_source', sanitize_text_field( $source ) );
