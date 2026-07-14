@@ -53,7 +53,7 @@ class Aialtg_Settings {
 		// --- API Section ---
 		add_settings_section(
 			'aialtg_api_section',
-			__( 'API Configuration', 'kookoo-ai-alt-text-creator' ),
+			__( 'General', 'kookoo-ai-alt-text-creator' ),
 			array( $this, 'render_section_info' ),
 			'kookoo-ai-alt-text-creator'
 		);
@@ -488,61 +488,58 @@ class Aialtg_Settings {
 		$is_valid = 'valid' === $status;
 		$input_attr = $is_valid ? ' readonly="readonly" style="background:#f0f0f1;color:#666;"' : '';
 		?>
-		<div class="aialtg-card aialtg-license-card">
-			<div class="aialtg-card-header">
-				<h3><?php esc_html_e( 'License Key', 'kookoo-ai-alt-text-creator' ); ?></h3>
-			</div>
-			<div class="aialtg-card-body" style="padding: 15px;">
-				<div class="aialtg-license-field-container" data-status="<?php echo esc_attr( $status ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_license_nonce' ) ); ?>">
-					<div class="aialtg-license-input-group">
-						<div class="aialtg-input-wrap aialtg-password-wrap aialtg-license-input-inner" style="flex: 1; margin: 0; position: relative;">
-							<input type="password" name="<?php echo esc_attr( self::$option_name . '[license_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-license-key" class="regular-text" placeholder="e.g. 8f4e2..." style="width: 100%;" <?php echo $input_attr; ?> />
-							<button type="button" class="aialtg-toggle-password aialtg-toggle-license-visibility" aria-label="<?php esc_attr_e( 'Toggle License Key Visibility', 'kookoo-ai-alt-text-creator' ); ?>">
-								<span class="dashicons dashicons-visibility"></span>
-							</button>
-						</div>
-						
-						<?php if ( $is_valid ) : ?>
-							<button type="button" id="aialtg-deactivate-license-btn" class="button button-secondary">
-								<?php esc_html_e( 'Deactivate', 'kookoo-ai-alt-text-creator' ); ?>
-							</button>
-						<?php else : ?>
-							<button type="button" id="aialtg-activate-license-btn" class="button button-primary">
-								<?php esc_html_e( 'Activate', 'kookoo-ai-alt-text-creator' ); ?>
-							</button>
-						<?php endif; ?>
-					</div>
-
-					<div class="aialtg-license-status-wrap" style="margin-top: 10px;">
-						<?php if ( 'valid' === $status ) : ?>
-							<span class="aialtg-badge aialtg-badge-success">
-								<span class="dashicons dashicons-yes"></span> 
-								<?php 
-								if ( ! empty( $data['expiry'] ) ) {
-									/* translators: %s: Expiry date */
-									printf( esc_html__( 'Active (Expires: %s)', 'kookoo-ai-alt-text-creator' ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $data['expiry'] ) ) ) );
-								} else {
-									esc_html_e( 'Active (Lifetime)', 'kookoo-ai-alt-text-creator' );
-								}
-								?>
-							</span>
-						<?php elseif ( 'expired' === $status ) : ?>
-							<span class="aialtg-badge aialtg-badge-error">
-								<span class="dashicons dashicons-warning"></span> <?php esc_html_e( 'Expired', 'kookoo-ai-alt-text-creator' ); ?>
-							</span>
-						<?php elseif ( 'invalid' === $status ) : ?>
-							<span class="aialtg-badge aialtg-badge-error">
-								<span class="dashicons dashicons-no"></span> <?php esc_html_e( 'Invalid', 'kookoo-ai-alt-text-creator' ); ?>
-							</span>
-						<?php else : ?>
-							<span class="aialtg-badge aialtg-badge-neutral">
-								<span class="dashicons dashicons-admin-network"></span> <?php esc_html_e( 'Inactive', 'kookoo-ai-alt-text-creator' ); ?>
-							</span>
-						<?php endif; ?>
+		<h2><?php esc_html_e( 'License Key', 'kookoo-ai-alt-text-creator' ); ?></h2>
+		<p class="aialtg-section-desc"><?php esc_html_e( 'Activate or manage your Pro license key to unlock premium features.', 'kookoo-ai-alt-text-creator' ); ?></p>
+		<div class="form-table aialtg-license-table">
+			<div class="aialtg-license-field-container" data-status="<?php echo esc_attr( $status ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_license_nonce' ) ); ?>">
+				<div class="aialtg-license-input-group">
+					<div class="aialtg-input-wrap aialtg-password-wrap aialtg-license-input-inner" style="flex: 1; margin: 0; position: relative;">
+						<input type="password" name="<?php echo esc_attr( self::$option_name . '[license_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-license-key" class="regular-text" placeholder="e.g. 8f4e2..." style="width: 100%;" <?php echo $input_attr; ?> />
+						<button type="button" class="aialtg-toggle-password aialtg-toggle-license-visibility" aria-label="<?php esc_attr_e( 'Toggle License Key Visibility', 'kookoo-ai-alt-text-creator' ); ?>">
+							<span class="dashicons dashicons-visibility"></span>
+						</button>
 					</div>
 					
-					<div class="aialtg-license-message" style="margin-top: 5px; font-weight: 500; display: none;"></div>
+					<?php if ( $is_valid ) : ?>
+						<button type="button" id="aialtg-deactivate-license-btn" class="button button-secondary">
+							<?php esc_html_e( 'Deactivate', 'kookoo-ai-alt-text-creator' ); ?>
+						</button>
+					<?php else : ?>
+						<button type="button" id="aialtg-activate-license-btn" class="button button-primary">
+							<?php esc_html_e( 'Activate', 'kookoo-ai-alt-text-creator' ); ?>
+						</button>
+					<?php endif; ?>
 				</div>
+
+				<div class="aialtg-license-status-wrap" style="margin-top: 10px;">
+					<?php if ( 'valid' === $status ) : ?>
+						<span class="aialtg-badge aialtg-badge-success">
+							<span class="dashicons dashicons-yes"></span> 
+							<?php 
+							if ( ! empty( $data['expiry'] ) ) {
+								/* translators: %s: Expiry date */
+								printf( esc_html__( 'Active (Expires: %s)', 'kookoo-ai-alt-text-creator' ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $data['expiry'] ) ) ) );
+							} else {
+								esc_html_e( 'Active (Lifetime)', 'kookoo-ai-alt-text-creator' );
+							}
+							?>
+						</span>
+					<?php elseif ( 'expired' === $status ) : ?>
+						<span class="aialtg-badge aialtg-badge-error">
+							<span class="dashicons dashicons-warning"></span> <?php esc_html_e( 'Expired', 'kookoo-ai-alt-text-creator' ); ?>
+						</span>
+					<?php elseif ( 'invalid' === $status ) : ?>
+						<span class="aialtg-badge aialtg-badge-error">
+							<span class="dashicons dashicons-no"></span> <?php esc_html_e( 'Invalid', 'kookoo-ai-alt-text-creator' ); ?>
+						</span>
+					<?php else : ?>
+						<span class="aialtg-badge aialtg-badge-neutral">
+							<span class="dashicons dashicons-admin-network"></span> <?php esc_html_e( 'Inactive', 'kookoo-ai-alt-text-creator' ); ?>
+						</span>
+					<?php endif; ?>
+				</div>
+				
+				<div class="aialtg-license-message" style="margin-top: 5px; font-weight: 500; display: none;"></div>
 			</div>
 		</div>
 		<?php
@@ -598,7 +595,7 @@ class Aialtg_Settings {
 				</div>
 				<!-- Hidden real input that holds the actual submitted value -->
 				<input type="hidden" name="<?php echo esc_attr( self::$option_name . '[model]' ); ?>" id="aialtg-model-real-input" value="<?php echo esc_attr( $value ); ?>" />
-				<p class="description"><?php esc_html_e( 'Select the language model to use. Models with 📷 support image analysis.', 'kookoo-ai-alt-text-creator' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Select the language model to use.', 'kookoo-ai-alt-text-creator' ); ?></p>
 			</div>
 		</div>
 		<?php
@@ -767,6 +764,26 @@ class Aialtg_Settings {
 		<?php
 	}
 
+	private function render_section_by_id( $section_id ) {
+		global $wp_settings_sections, $wp_settings_fields;
+		$page = 'kookoo-ai-alt-text-creator';
+		if ( ! isset( $wp_settings_sections[ $page ][ $section_id ] ) ) {
+			return;
+		}
+		$section = $wp_settings_sections[ $page ][ $section_id ];
+		if ( $section['title'] ) {
+			echo '<h2>' . esc_html( $section['title'] ) . "</h2>\n";
+		}
+		if ( $section['callback'] ) {
+			call_user_func( $section['callback'], $section );
+		}
+		if ( isset( $wp_settings_fields[ $page ][ $section_id ] ) ) {
+			echo '<table class="form-table" role="presentation">';
+			do_settings_fields( $page, $section_id );
+			echo '</table>';
+		}
+	}
+
 	public function render_settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -783,7 +800,67 @@ class Aialtg_Settings {
 					<form action="options.php" method="post" class="aialtg-main-form">
 						<?php
 						settings_fields( 'aialtg_plugin_options' );
-						do_settings_sections( 'kookoo-ai-alt-text-creator' );
+
+						echo '<div class="aialtg-tabs-nav">';
+						echo '<button type="button" class="aialtg-tab-btn active" data-tab="api">';
+						echo '<span class="dashicons dashicons-admin-network"></span> ';
+						echo esc_html__( 'General', 'kookoo-ai-alt-text-creator' );
+						echo '</button>';
+						echo '<button type="button" class="aialtg-tab-btn" data-tab="options">';
+						echo '<span class="dashicons dashicons-admin-generic"></span> ';
+						echo esc_html__( 'Generation Options', 'kookoo-ai-alt-text-creator' );
+						echo '</button>';
+						if ( class_exists( 'Aialtg_Cron' ) ) {
+							echo '<button type="button" class="aialtg-tab-btn" data-tab="cron">';
+							echo '<span class="dashicons dashicons-backup"></span> ';
+							echo esc_html__( 'Bulk Generation', 'kookoo-ai-alt-text-creator' );
+							echo '</button>';
+						}
+						echo '<button type="button" class="aialtg-tab-btn" data-tab="license">';
+						echo '<span class="dashicons dashicons-lock"></span> ';
+						echo esc_html__( 'License', 'kookoo-ai-alt-text-creator' );
+						echo '</button>';
+						echo '<button type="button" class="aialtg-tab-btn" data-tab="help">';
+						echo '<span class="dashicons dashicons-editor-help"></span> ';
+						echo esc_html__( 'Help', 'kookoo-ai-alt-text-creator' );
+						echo '</button>';
+						echo '</div>';
+
+						echo '<div id="aialtg-tab-api" class="aialtg-tab-panel active">';
+						$this->render_section_by_id( 'aialtg_api_section' );
+						echo '</div>';
+
+						echo '<div id="aialtg-tab-options" class="aialtg-tab-panel">';
+						$this->render_section_by_id( 'aialtg_options_section' );
+						echo '</div>';
+
+						if ( class_exists( 'Aialtg_Cron' ) ) {
+							echo '<div id="aialtg-tab-cron" class="aialtg-tab-panel">';
+							$this->render_section_by_id( 'aialtg_cron_section' );
+							echo '</div>';
+						}
+
+						echo '<div id="aialtg-tab-license" class="aialtg-tab-panel">';
+						$this->render_license_card();
+						echo '</div>';
+
+						echo '<div id="aialtg-tab-help" class="aialtg-tab-panel">';
+						?>
+						<h2><?php esc_html_e( 'Quick Help & Resources', 'kookoo-ai-alt-text-creator' ); ?></h2>
+						<p class="aialtg-section-desc"><?php esc_html_e( 'Learn how the plugin works and find support resources.', 'kookoo-ai-alt-text-creator' ); ?></p>
+						<div class="form-table aialtg-help-table">
+							<div class="aialtg-help-content">
+								<p><strong><?php esc_html_e( 'How it works:', 'kookoo-ai-alt-text-creator' ); ?></strong></p>
+								<ol>
+									<li><?php esc_html_e( 'Enter your OpenRouter API Key and select a model (e.g. Gemini 2.5 Flash).', 'kookoo-ai-alt-text-creator' ); ?></li>
+									<li><?php esc_html_e( 'Configure your Alt Text & Title prompt guidelines.', 'kookoo-ai-alt-text-creator' ); ?></li>
+									<li><?php esc_html_e( 'Background processing will automatically analyze pending images.', 'kookoo-ai-alt-text-creator' ); ?></li>
+								</ol>
+								<p class="description"><?php esc_html_e( 'Need support or want to read documentation? Visit the official plugin directory page.', 'kookoo-ai-alt-text-creator' ); ?></p>
+							</div>
+						</div>
+						<?php
+						echo '</div>';
 
 						echo '<div class="aialtg-submit-wrap">';
 						submit_button( __( 'Save Settings', 'kookoo-ai-alt-text-creator' ), 'primary large' );
@@ -792,24 +869,8 @@ class Aialtg_Settings {
 					</form>
 				</div>
 				<div class="aialtg-sidebar">
-					<?php $this->render_license_card(); ?>
 					<?php $this->render_upgrade_card(); ?>
 					<?php $this->render_stats_card(); ?>
-
-					<div class="aialtg-card aialtg-help-card">
-						<div class="aialtg-card-header">
-							<h3><?php esc_html_e( 'Quick Help & Resources', 'kookoo-ai-alt-text-creator' ); ?></h3>
-						</div>
-						<div class="aialtg-help-content">
-							<p><strong><?php esc_html_e( 'How it works:', 'kookoo-ai-alt-text-creator' ); ?></strong></p>
-							<ol>
-								<li><?php esc_html_e( 'Enter your OpenRouter API Key and select a model (e.g. Gemini 2.5 Flash).', 'kookoo-ai-alt-text-creator' ); ?></li>
-								<li><?php esc_html_e( 'Configure your Alt Text & Title prompt guidelines.', 'kookoo-ai-alt-text-creator' ); ?></li>
-								<li><?php esc_html_e( 'Background processing will automatically analyze pending images.', 'kookoo-ai-alt-text-creator' ); ?></li>
-							</ol>
-							<p class="description"><?php esc_html_e( 'Need support or want to read documentation? Visit the official plugin directory page.', 'kookoo-ai-alt-text-creator' ); ?></p>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>

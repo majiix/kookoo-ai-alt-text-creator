@@ -226,26 +226,13 @@ jQuery(document).ready(function($) {
 							provider = provider.charAt(0).toUpperCase() + provider.slice(1);
 						}
 
-						// Check for vision/image support
-						var supportsImage = false;
-						if (model.architecture && model.architecture.input_modalities) {
-							if (model.architecture.input_modalities.indexOf('image') !== -1) {
-								supportsImage = true;
-							}
-						}
-
-						if (supportsImage) {
-							name += ' 📷';
-						}
-
 						if (!grouped[provider]) {
 							grouped[provider] = [];
 						}
 
 						grouped[provider].push({
 							id: id,
-							name: name,
-							supportsImage: supportsImage
+							name: name
 						});
 
 						if (id === currentValue) {
@@ -353,6 +340,17 @@ jQuery(document).ready(function($) {
 		this.style.height = (this.scrollHeight + 4) + 'px';
 	});
 
+	// Prevent form submit on Enter in License Key field, trigger activation instead
+	$(document).on('keydown', '#aialtg-license-key', function(e) {
+		if (e.which === 13) {
+			e.preventDefault();
+			var activateBtn = $('#aialtg-activate-license-btn');
+			if (activateBtn.length > 0 && !activateBtn.prop('disabled')) {
+				activateBtn.trigger('click');
+			}
+		}
+	});
+
 	// License Activation via AJAX
 	$(document).on('click', '#aialtg-activate-license-btn', function(e) {
 		e.preventDefault();
@@ -435,5 +433,32 @@ jQuery(document).ready(function($) {
 			}
 		});
 	});
+
+	// Tab switcher
+	$('.aialtg-tab-btn').on('click', function(e) {
+		e.preventDefault();
+		var btn = $(this);
+		var tabId = btn.data('tab');
+
+		$('.aialtg-tab-btn').removeClass('active');
+		btn.addClass('active');
+
+		$('.aialtg-tab-panel').removeClass('active');
+		$('#aialtg-tab-' + tabId).addClass('active');
+
+		if (tabId === 'help' || tabId === 'license') {
+			$('.aialtg-submit-wrap').hide();
+		} else {
+			$('.aialtg-submit-wrap').show();
+		}
+		
+		localStorage.setItem('aialtg_active_tab', tabId);
+	});
+
+	// Restore active tab on load
+	var activeTab = localStorage.getItem('aialtg_active_tab');
+	if (activeTab && $('.aialtg-tab-btn[data-tab="' + activeTab + '"]').length > 0) {
+		$('.aialtg-tab-btn[data-tab="' + activeTab + '"]').trigger('click');
+	}
 
 });
