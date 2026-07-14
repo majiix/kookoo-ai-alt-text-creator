@@ -329,6 +329,50 @@
 	background: linear-gradient(180deg, var(--aialtg-primary), var(--aialtg-accent));
 }
 
+/* Upgrade Card Customizations */
+.aialtg-upgrade-card {
+	border-left: 4px solid var(--aialtg-accent) !important;
+}
+
+.aialtg-upgrade-card .aialtg-card-header h3 {
+	color: var(--aialtg-accent) !important;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.aialtg-upgrade-card .aialtg-card-header h3 .dashicons {
+	color: var(--aialtg-accent) !important;
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.aialtg-upgrade-card .aialtg-card-body p {
+	line-height: 1.5;
+	font-size: 13px;
+	margin: 0;
+}
+
+.aialtg-upgrade-card .aialtg-card-body .aialtg-btn-wrap {
+	margin-top: 15px;
+}
+
+.aialtg-upgrade-card .button-primary {
+	background: var(--aialtg-accent) !important;
+	border-color: var(--aialtg-accent) !important;
+	width: 100%;
+	text-align: center;
+	font-weight: 600;
+	text-shadow: none;
+	box-shadow: none;
+}
+
+.aialtg-upgrade-card .button-primary:hover {
+	background: var(--aialtg-primary-hover) !important;
+	border-color: var(--aialtg-primary-hover) !important;
+}
+
 .aialtg-card-header h3 {
 	margin: 0 0 18px 0;
 	font-size: 16px;
