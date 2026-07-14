@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     1.7.1
+ * Version:     1.8.0
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-licensing.php';
 
 // Conditionally include Cron class if file exists.
 $aialtg_cron_file = plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
@@ -38,6 +39,9 @@ class Aialtg_Image_Descriptor {
 	public function __construct() {
 		// Initialize Settings.
 		new Aialtg_Settings();
+
+		// Initialize Licensing.
+		new Aialtg_Licensing();
 
 		// Initialize Cron if available.
 		if ( class_exists( 'Aialtg_Cron' ) ) {
@@ -63,6 +67,9 @@ class Aialtg_Image_Descriptor {
 
 		// Assets.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
+
+		// Plugin action links.
+		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_plugin_action_links' ) );
 
 		// Activation & Deactivation.
 		register_activation_hook( __FILE__, array( $this, 'activation_logic' ) );
@@ -95,6 +102,18 @@ class Aialtg_Image_Descriptor {
 		$hook = class_exists( 'Aialtg_Cron' ) ? Aialtg_Cron::CRON_HOOK : 'aialtg_cron_process_images';
 		wp_clear_scheduled_hook( $hook );
 		delete_transient( 'aialtg_stats' );
+	}
+
+	/**
+	 * Adds settings link to plugin action links.
+	 *
+	 * @param array $links Existing action links.
+	 * @return array Modified action links.
+	 */
+	public function add_plugin_action_links( $links ) {
+		$settings_link = '<a href="' . esc_url( admin_url( 'options-general.php?page=kookoo-ai-alt-text-creator' ) ) . '">' . esc_html__( 'Settings', 'kookoo-ai-alt-text-creator' ) . '</a>';
+		array_unshift( $links, $settings_link );
+		return $links;
 	}
 
 	// --- Existing UI Logic ---
@@ -463,8 +482,8 @@ class Aialtg_Image_Descriptor {
 			return;
 		}
 
-		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.7.1' );
-		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.7.1', true );
+		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.0' );
+		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.0', true );
 
 		wp_localize_script( 'aialtg-admin-js', 'aialtg_vars', array(
 			'processing'    => __( 'Processing...', 'kookoo-ai-alt-text-creator' ),

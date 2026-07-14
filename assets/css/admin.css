@@ -733,3 +733,132 @@
 
 .aialtg-message.success { color: var(--aialtg-success); }
 .aialtg-message.error { color: var(--aialtg-error); }
+
+/* --- License Key Styles --- */
+.aialtg-license-input-group {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.aialtg-license-input-inner {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+
+.aialtg-license-input-inner input {
+	padding-right: 42px !important;
+}
+
+.aialtg-license-status-wrap {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.aialtg-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	line-height: 1;
+}
+
+.aialtg-badge .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	line-height: 14px;
+}
+
+.aialtg-badge-success {
+	background: #ecfdf5;
+	color: #065f46;
+	border: 1px solid #a7f3d0;
+}
+
+.aialtg-badge-error {
+	background: #fef2f2;
+	color: #991b1b;
+	border: 1px solid #fca5a5;
+}
+
+.aialtg-badge-neutral {
+	background: #f3f4f6;
+	color: #374151;
+	border: 1px solid #e5e7eb;
+}
+
+.aialtg-license-message {
+	font-size: 12px;
+	font-weight: 600;
+	margin-top: 6px;
+}
+
+.aialtg-license-message.processing {
+	color: var(--aialtg-text-muted);
+}
+
+.aialtg-license-message.success {
+	color: var(--aialtg-success);
+}
+
+.aialtg-license-message.error {
+	color: var(--aialtg-error);
+}
+
+/* --- License Card Buttons --- */
+#aialtg-activate-license-btn {
+	background: linear-gradient(135deg, var(--aialtg-primary), var(--aialtg-secondary)) !important;
+	border: none !important;
+	font-weight: 700 !important;
+	font-size: 13px !important;
+	padding: 8px 20px !important;
+	min-height: 42px !important;
+	border-radius: 8px !important;
+	color: #fff !important;
+	box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3), 0 2px 4px -1px rgba(99, 102, 241, 0.2) !important;
+	transition: all 0.2s var(--aialtg-ease) !important;
+	cursor: pointer;
+	line-height: 26px !important;
+}
+
+#aialtg-activate-license-btn:hover:not(:disabled) {
+	background: linear-gradient(135deg, var(--aialtg-primary-hover), var(--aialtg-primary)) !important;
+	transform: translateY(-1px);
+	box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4), 0 4px 6px -2px rgba(99, 102, 241, 0.3) !important;
+}
+
+#aialtg-activate-license-btn:active:not(:disabled) {
+	transform: translateY(1px);
+}
+
+#aialtg-deactivate-license-btn {
+	background: #f3f4f6 !important;
+	border: 1px solid #d1d5db !important;
+	font-weight: 700 !important;
+	font-size: 13px !important;
+	padding: 8px 20px !important;
+	min-height: 42px !important;
+	border-radius: 8px !important;
+	color: #374151 !important;
+	transition: all 0.2s var(--aialtg-ease) !important;
+	cursor: pointer;
+	line-height: 24px !important;
+}
+
+#aialtg-deactivate-license-btn:hover:not(:disabled) {
+	background: #e5e7eb !important;
+	color: #1f2937 !important;
+	transform: translateY(-1px);
+}
+
+#aialtg-deactivate-license-btn:active:not(:disabled) {
+	transform: translateY(1px);
+}

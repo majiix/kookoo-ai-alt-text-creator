@@ -10,7 +10,7 @@ Requires at least: 6.0
 
 Tested up to: 7.0
 
-Stable tag: 1.7.1
+Stable tag: 1.8.0
 
 License: GPLv2 or later
 
@@ -210,6 +210,12 @@ Use the "Retry Failed Images" button to move them back to the pending queue.
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
 == Changelog ==
+
+= 1.8.0 =
+* Added Easy Digital Downloads (EDD) Software Licensing.
+* Added a dedicated licensing card in the settings sidebar with AJAX activation/deactivation support.
+* Integrated the Violo.ir store API and verified its licensing constants.
+* Bumped plugin version to 1.8.0.
 
 = 1.7.1 =
 * Hardened plugin codebase against PHP warnings, notices, and type deprecations under PHP 8.0+.

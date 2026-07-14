@@ -328,11 +328,11 @@ jQuery(document).ready(function($) {
 		});
 	}
 
-	// API Key Password Visibility Toggle
+	// API Key / License Key Password Visibility Toggle
 	$('.aialtg-toggle-password').on('click', function(e) {
 		e.preventDefault();
 		var btn = $(this);
-		var input = $('#aialtg-api-key');
+		var input = btn.siblings('input');
 		var icon = btn.find('.dashicons');
 		
 		if (input.attr('type') === 'password') {
@@ -459,6 +459,89 @@ jQuery(document).ready(function($) {
 	$('.aialtg-celebrate-btn').on('click', function(e) {
 		e.preventDefault();
 		triggerConfetti();
+	});
+
+	// License Activation via AJAX
+	$(document).on('click', '#aialtg-activate-license-btn', function(e) {
+		e.preventDefault();
+		var btn = $(this);
+		var container = btn.closest('.aialtg-license-field-container');
+		var input = container.find('#aialtg-license-key');
+		var msgBox = container.find('.aialtg-license-message');
+		var key = input.val().trim();
+		var nonce = container.data('nonce');
+
+		if (!key) {
+			msgBox.removeClass('success').addClass('error').text('Please enter a license key.').show();
+			return;
+		}
+
+		btn.prop('disabled', true);
+		input.prop('disabled', true);
+		msgBox.removeClass('success error').addClass('processing').text(aialtg_vars.processing).show();
+
+		$.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'aialtg_activate_license',
+				license_key: key,
+				nonce: nonce
+			},
+			success: function(response) {
+				if (response.success) {
+					msgBox.removeClass('processing error').addClass('success').text(response.data.message);
+					setTimeout(function() {
+						location.reload();
+					}, 1500);
+				} else {
+					btn.prop('disabled', false);
+					input.prop('disabled', false);
+					msgBox.removeClass('processing success').addClass('error').text(response.data.message);
+				}
+			},
+			error: function() {
+				btn.prop('disabled', false);
+				input.prop('disabled', false);
+				msgBox.removeClass('processing success').addClass('error').text(aialtg_vars.network_error);
+			}
+		});
+	});
+
+	// License Deactivation via AJAX
+	$(document).on('click', '#aialtg-deactivate-license-btn', function(e) {
+		e.preventDefault();
+		var btn = $(this);
+		var container = btn.closest('.aialtg-license-field-container');
+		var msgBox = container.find('.aialtg-license-message');
+		var nonce = container.data('nonce');
+
+		btn.prop('disabled', true);
+		msgBox.removeClass('success error').addClass('processing').text(aialtg_vars.processing).show();
+
+		$.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'aialtg_deactivate_license',
+				nonce: nonce
+			},
+			success: function(response) {
+				if (response.success) {
+					msgBox.removeClass('processing error').addClass('success').text(response.data.message);
+					setTimeout(function() {
+						location.reload();
+					}, 1500);
+				} else {
+					btn.prop('disabled', false);
+					msgBox.removeClass('processing success').addClass('error').text(response.data.message);
+				}
+			},
+			error: function() {
+				btn.prop('disabled', false);
+				msgBox.removeClass('processing success').addClass('error').text(aialtg_vars.network_error);
+			}
+		});
 	});
 
 });
