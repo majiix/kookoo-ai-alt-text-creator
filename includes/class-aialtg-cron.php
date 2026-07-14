@@ -47,9 +47,6 @@ class Aialtg_Cron {
 
 		// Register Worker.
 		add_action( self::CRON_HOOK, array( $this, 'process_cron_batch' ) );
-
-		// Watchdog for Cron Health.
-		add_action( 'admin_init', array( $this, 'check_cron_health' ) );
 	}
 
 	/**
@@ -94,11 +91,8 @@ class Aialtg_Cron {
 			$batch_size = 1;
 		}
 
-		// Use the allowed types for the query if available.
-		$allowed_mimes = 'image'; // default
-		if ( class_exists( 'Aialtg_Settings' ) && method_exists( 'Aialtg_Settings', 'get_allowed_mimes' ) ) {
-			$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
-		}
+		// Use the allowed types for the query.
+		$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
 
 		// Query images that have NOT been processed by the plugin.
 		$args = array(
@@ -149,28 +143,6 @@ class Aialtg_Cron {
 			}
 			// Clear stats cache so it updates on next page load.
 			delete_transient( 'aialtg_stats' );
-		}
-	}
-
-	/**
-	 * Watchdog: Checks if cron is enabled but missing from schedule.
-	 * Runs on admin pages to ensure reliability.
-	 */
-	public function check_cron_health() {
-		// Only check if we are in the admin context to save frontend resources.
-		if ( ! is_admin() ) {
-			return;
-		}
-
-		$options = get_option( $this->option_name );
-		if ( ! is_array( $options ) ) {
-			$options = array();
-		}
-		if ( isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
-			if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
-				// Reschedule immediately.
-				wp_schedule_event( time() + 10, self::INTERVAL_NAME, self::CRON_HOOK );
-			}
 		}
 	}
 }

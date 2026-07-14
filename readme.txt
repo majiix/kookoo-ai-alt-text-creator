@@ -10,7 +10,7 @@ Requires at least: 6.0
 
 Tested up to: 7.0
 
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 
 License: GPLv2 or later
 
@@ -210,6 +210,15 @@ Use the "Retry Failed Images" button to move them back to the pending queue.
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
 == Changelog ==
+
+= 1.8.1 =
+* Consolidated duplicated AJAX event handlers in settings screen.
+* Removed redundant cron health watchdog hook and method.
+* Removed redundant defensive settings sanitization fallback logic.
+* Cleaned up redundant class/method existence verification checks.
+* Removed redundant attachment URL fallback check.
+* Optimized database uninstall metadata deletion query using SQL IN operator.
+* Fixed local/private URL detection to correctly process localhost and private IP addresses and fallback to Base64.
 
 = 1.8.0 =
 * Added Easy Digital Downloads (EDD) Software Licensing.

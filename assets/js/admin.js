@@ -42,16 +42,19 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	// Handle Reset Cron Progress in Settings Page
-	$('.aialtg-reset-btn').on('click', function(e) {
+	// Handle Admin Actions (Reset, Retry, Fix JSON) in Settings Page
+	$('.aialtg-admin-action-btn').on('click', function(e) {
 		e.preventDefault();
 
-		if ( ! confirm( aialtg_vars.reset_confirm ) ) {
+		var btn = $(this);
+		var action = btn.data('action');
+		var nonce = btn.data('nonce');
+		var confirmReq = btn.data('confirm');
+
+		if (confirmReq && !confirm(aialtg_vars.reset_confirm)) {
 			return;
 		}
 
-		var btn = $(this);
-		var nonce = btn.data('nonce');
 		var wrapper = btn.closest('.aialtg-controls-wrapper');
 		var statusArea = wrapper.find('.aialtg-status-area');
 		var spinner = statusArea.find('.aialtg-status-spinner');
@@ -66,7 +69,7 @@ jQuery(document).ready(function($) {
 			url: ajaxurl,
 			type: 'POST',
 			data: {
-				action: 'aialtg_reset_progress',
+				action: action,
 				nonce: nonce
 			},
 			success: function(response) {
@@ -79,100 +82,6 @@ jQuery(document).ready(function($) {
 					setTimeout(function() {
 						location.reload();
 					}, 1500);
-				} else {
-					statusArea.removeClass('processing success').addClass('error');
-					msgBox.text(response.data.message);
-				}
-			},
-			error: function() {
-				spinner.removeClass('is-active');
-				wrapper.find('.aialtg-buttons-row button').prop('disabled', false);
-				statusArea.removeClass('processing success').addClass('error');
-				msgBox.text(aialtg_vars.network_error);
-			}
-		});
-	});
-
-	// Handle Scan & Fix JSON Errors in Settings Page
-	$('.aialtg-fix-json-btn').on('click', function(e) {
-		e.preventDefault();
-
-		var btn = $(this);
-		var nonce = btn.data('nonce');
-		var wrapper = btn.closest('.aialtg-controls-wrapper');
-		var statusArea = wrapper.find('.aialtg-status-area');
-		var spinner = statusArea.find('.aialtg-status-spinner');
-		var msgBox = statusArea.find('.aialtg-status-message');
-
-		wrapper.find('.aialtg-buttons-row button').prop('disabled', true);
-		statusArea.removeClass('success error').addClass('processing').show();
-		spinner.addClass('is-active');
-		msgBox.text(aialtg_vars.processing);
-
-		$.ajax({
-			url: ajaxurl,
-			type: 'POST',
-			data: {
-				action: 'aialtg_fix_json_errors',
-				nonce: nonce
-			},
-			success: function(response) {
-				spinner.removeClass('is-active');
-				wrapper.find('.aialtg-buttons-row button').prop('disabled', false);
-
-				if (response.success) {
-					statusArea.removeClass('processing error').addClass('success');
-					msgBox.text(response.data.message);
-					setTimeout(function() {
-						location.reload();
-					}, 2000);
-				} else {
-					statusArea.removeClass('processing success').addClass('error');
-					msgBox.text(response.data.message);
-				}
-			},
-			error: function() {
-				spinner.removeClass('is-active');
-				wrapper.find('.aialtg-buttons-row button').prop('disabled', false);
-				statusArea.removeClass('processing success').addClass('error');
-				msgBox.text(aialtg_vars.network_error);
-			}
-		});
-	});
-
-	// Handle Retry Failed Images
-	$('.aialtg-retry-failed-btn').on('click', function(e) {
-		e.preventDefault();
-
-		var btn = $(this);
-		var nonce = btn.data('nonce');
-		var wrapper = btn.closest('.aialtg-controls-wrapper');
-		var statusArea = wrapper.find('.aialtg-status-area');
-		var spinner = statusArea.find('.aialtg-status-spinner');
-		var msgBox = statusArea.find('.aialtg-status-message');
-
-		wrapper.find('.aialtg-buttons-row button').prop('disabled', true);
-		statusArea.removeClass('success error').addClass('processing').show();
-		spinner.addClass('is-active');
-		msgBox.text(aialtg_vars.processing);
-
-		$.ajax({
-			url: ajaxurl,
-			type: 'POST',
-			data: {
-				action: 'aialtg_retry_failed',
-				nonce: nonce
-			},
-			success: function(response) {
-				spinner.removeClass('is-active');
-				wrapper.find('.aialtg-buttons-row button').prop('disabled', false);
-
-				if (response.success) {
-					statusArea.removeClass('processing error').addClass('success');
-					msgBox.text(response.data.message);
-					setTimeout(function() {
-						location.reload();
-					}, 2000);
 				} else {
 					statusArea.removeClass('processing success').addClass('error');
 					msgBox.text(response.data.message);

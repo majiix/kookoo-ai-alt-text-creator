@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     1.8.0
+ * Version:     1.8.1
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -137,16 +137,14 @@ class Aialtg_Image_Descriptor {
 		}
 
 		// Check supported formats logic here.
-		// If settings exist, verify against allowed MIME types.
-		if ( class_exists( 'Aialtg_Settings' ) && method_exists( 'Aialtg_Settings', 'get_allowed_mimes' ) ) {
-			$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
-			$current_mime  = get_post_mime_type( $post_id );
+		// Verify against allowed MIME types.
+		$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
+		$current_mime  = get_post_mime_type( $post_id );
 
-			// If allowed_mimes is strict array and current isn't in it.
-			if ( is_array( $allowed_mimes ) && ! in_array( $current_mime, $allowed_mimes, true ) ) {
-				echo esc_html__( 'N/A', 'kookoo-ai-alt-text-creator' );
-				return;
-			}
+		// If allowed_mimes is strict array and current isn't in it.
+		if ( is_array( $allowed_mimes ) && ! in_array( $current_mime, $allowed_mimes, true ) ) {
+			echo esc_html__( 'N/A', 'kookoo-ai-alt-text-creator' );
+			return;
 		}
 
 		$has_alt = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
@@ -474,8 +472,8 @@ class Aialtg_Image_Descriptor {
 			return;
 		}
 
-		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.0' );
-		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.0', true );
+		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.1' );
+		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.1', true );
 
 		wp_localize_script( 'aialtg-admin-js', 'aialtg_vars', array(
 			'processing'    => __( 'Processing...', 'kookoo-ai-alt-text-creator' ),

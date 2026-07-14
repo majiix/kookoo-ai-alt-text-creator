@@ -139,40 +139,37 @@ class Aialtg_Settings {
 			'aialtg_options_section'
 		);
 
-		// --- Cron / Bulk Section (Conditional) ---
-		// Only check for class existence. The main plugin file loads the class if the file exists.
-		if ( class_exists( 'Aialtg_Cron' ) ) {
-			add_settings_section(
-				'aialtg_cron_section',
-				__( 'Bulk Generation (Cron)', 'kookoo-ai-alt-text-creator' ),
-				array( $this, 'render_cron_section_info' ),
-				'kookoo-ai-alt-text-creator'
-			);
+		// --- Cron / Bulk Section ---
+		add_settings_section(
+			'aialtg_cron_section',
+			__( 'Bulk Generation (Cron)', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_cron_section_info' ),
+			'kookoo-ai-alt-text-creator'
+		);
 
-			add_settings_field(
-				'cron_enabled',
-				__( 'Enable Background Processing', 'kookoo-ai-alt-text-creator' ),
-				array( $this, 'render_cron_enabled_field' ),
-				'kookoo-ai-alt-text-creator',
-				'aialtg_cron_section'
-			);
+		add_settings_field(
+			'cron_enabled',
+			__( 'Enable Background Processing', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_cron_enabled_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_cron_section'
+		);
 
-			add_settings_field(
-				'cron_batch_size',
-				__( 'Batch Size (Images per run)', 'kookoo-ai-alt-text-creator' ),
-				array( $this, 'render_cron_batch_field' ),
-				'kookoo-ai-alt-text-creator',
-				'aialtg_cron_section'
-			);
+		add_settings_field(
+			'cron_batch_size',
+			__( 'Batch Size (Images per run)', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_cron_batch_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_cron_section'
+		);
 
-			add_settings_field(
-				'cron_interval',
-				__( 'Interval (Minutes)', 'kookoo-ai-alt-text-creator' ),
-				array( $this, 'render_cron_interval_field' ),
-				'kookoo-ai-alt-text-creator',
-				'aialtg_cron_section'
-			);
-		}
+		add_settings_field(
+			'cron_interval',
+			__( 'Interval (Minutes)', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_cron_interval_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_cron_section'
+		);
 	}
 
 	/**
@@ -243,57 +240,46 @@ class Aialtg_Settings {
 			$new_input['title_prompt'] = wp_strip_all_tags( $input['title_prompt'] );
 		}
 
-		// Cron Settings (Only process if available).
-		if ( class_exists( 'Aialtg_Cron' ) ) {
-			$new_input['cron_enabled']    = isset( $input['cron_enabled'] ) ? '1' : '0';
-			$new_input['cron_batch_size'] = isset( $input['cron_batch_size'] ) ? absint( $input['cron_batch_size'] ) : 1;
-			$new_input['cron_interval']   = isset( $input['cron_interval'] ) ? absint( $input['cron_interval'] ) : 5;
+		// Cron Settings.
+		$new_input['cron_enabled']    = isset( $input['cron_enabled'] ) ? '1' : '0';
+		$new_input['cron_batch_size'] = isset( $input['cron_batch_size'] ) ? absint( $input['cron_batch_size'] ) : 1;
+		$new_input['cron_interval']   = isset( $input['cron_interval'] ) ? absint( $input['cron_interval'] ) : 5;
 
-			// --- Cron Logic Trigger ---
-			$old_options = get_option( self::$option_name );
-			$old_options = is_array( $old_options ) ? $old_options : array();
+		// --- Cron Logic Trigger ---
+		$old_options = get_option( self::$option_name );
+		$old_options = is_array( $old_options ) ? $old_options : array();
 
-			$old_enabled  = isset( $old_options['cron_enabled'] ) ? $old_options['cron_enabled'] : '0';
-			$old_interval = isset( $old_options['cron_interval'] ) ? $old_options['cron_interval'] : 5;
+		$old_enabled  = isset( $old_options['cron_enabled'] ) ? $old_options['cron_enabled'] : '0';
+		$old_interval = isset( $old_options['cron_interval'] ) ? $old_options['cron_interval'] : 5;
 
-			$needs_reschedule = false;
+		$needs_reschedule = false;
 
-			if ( $new_input['cron_enabled'] !== $old_enabled ) {
-				$needs_reschedule = true;
+		if ( $new_input['cron_enabled'] !== $old_enabled ) {
+			$needs_reschedule = true;
+		}
+		if ( '1' === $new_input['cron_enabled'] && $new_input['cron_interval'] !== $old_interval ) {
+			$needs_reschedule = true;
+		}
+
+		// Check if the event is actually currently scheduled.
+		// Access constants via class.
+		$cron_hook    = Aialtg_Cron::CRON_HOOK;
+		$is_scheduled = wp_next_scheduled( $cron_hook );
+
+		// Logic:
+		// 1. If we are disabling it, clear the schedule.
+		// 2. If we are enabling it, schedule it IF it's missing OR if we explicitly changed settings (reschedule).
+		if ( '0' === $new_input['cron_enabled'] ) {
+			if ( $is_scheduled ) {
+				wp_clear_scheduled_hook( $cron_hook );
 			}
-			if ( '1' === $new_input['cron_enabled'] && $new_input['cron_interval'] !== $old_interval ) {
-				$needs_reschedule = true;
+		} elseif ( '1' === $new_input['cron_enabled'] ) {
+			// If it's not scheduled in WP (even if enabled in settings), OR we need to reschedule due to changes.
+			if ( ! $is_scheduled || $needs_reschedule ) {
+				// Clear first to be safe (remove duplicates or old intervals).
+				wp_clear_scheduled_hook( $cron_hook );
+				wp_schedule_event( time() + 10, Aialtg_Cron::INTERVAL_NAME, $cron_hook );
 			}
-
-			// Check if the event is actually currently scheduled.
-			// Access constants via class.
-			$cron_hook    = Aialtg_Cron::CRON_HOOK;
-			$is_scheduled = wp_next_scheduled( $cron_hook );
-
-			// Logic:
-			// 1. If we are disabling it, clear the schedule.
-			// 2. If we are enabling it, schedule it IF it's missing OR if we explicitly changed settings (reschedule).
-			if ( '0' === $new_input['cron_enabled'] ) {
-				if ( $is_scheduled ) {
-					wp_clear_scheduled_hook( $cron_hook );
-				}
-			} elseif ( '1' === $new_input['cron_enabled'] ) {
-				// If it's not scheduled in WP (even if enabled in settings), OR we need to reschedule due to changes.
-				if ( ! $is_scheduled || $needs_reschedule ) {
-					// Clear first to be safe (remove duplicates or old intervals).
-					wp_clear_scheduled_hook( $cron_hook );
-					wp_schedule_event( time() + 10, Aialtg_Cron::INTERVAL_NAME, $cron_hook );
-				}
-			}
-		} else {
-			// Maintain old values if cron file was removed so settings aren't lost on save
-			$old_options = get_option( self::$option_name );
-			if ( ! is_array( $old_options ) ) {
-				$old_options = array();
-			}
-			if ( isset( $old_options['cron_enabled'] ) ) $new_input['cron_enabled'] = $old_options['cron_enabled'];
-			if ( isset( $old_options['cron_batch_size'] ) ) $new_input['cron_batch_size'] = $old_options['cron_batch_size'];
-			if ( isset( $old_options['cron_interval'] ) ) $new_input['cron_interval'] = $old_options['cron_interval'];
 		}
 
 		// Clear stats cache whenever settings are saved so counts update immediately.
@@ -447,17 +433,17 @@ class Aialtg_Settings {
 
 			<div class="aialtg-controls-wrapper">
 				<div class="aialtg-buttons-row">
-					<button type="button" class="button button-secondary aialtg-reset-btn" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_reset_nonce' ) ); ?>">
+					<button type="button" class="button button-secondary aialtg-admin-action-btn" data-action="aialtg_reset_progress" data-confirm="1" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_reset_nonce' ) ); ?>">
 						<span class="dashicons dashicons-update"></span>
 						<?php esc_html_e( 'Reset Progress', 'kookoo-ai-alt-text-creator' ); ?>
 					</button>
 
-					<button type="button" class="button button-secondary aialtg-retry-failed-btn" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_retry_failed_nonce' ) ); ?>">
+					<button type="button" class="button button-secondary aialtg-admin-action-btn" data-action="aialtg_retry_failed" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_retry_failed_nonce' ) ); ?>">
 						<span class="dashicons dashicons-redo"></span>
 						<?php esc_html_e( 'Retry Failed', 'kookoo-ai-alt-text-creator' ); ?>
 					</button>
 
-					<button type="button" class="button button-secondary aialtg-fix-json-btn" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_fix_json_nonce' ) ); ?>">
+					<button type="button" class="button button-secondary aialtg-admin-action-btn" data-action="aialtg_fix_json_errors" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_fix_json_nonce' ) ); ?>">
 						<span class="dashicons dashicons-hammer"></span>
 						<?php esc_html_e( 'Fix JSON Errors', 'kookoo-ai-alt-text-creator' ); ?>
 					</button>
@@ -810,12 +796,10 @@ class Aialtg_Settings {
 						echo '<span class="dashicons dashicons-admin-generic"></span> ';
 						echo esc_html__( 'Generation Options', 'kookoo-ai-alt-text-creator' );
 						echo '</button>';
-						if ( class_exists( 'Aialtg_Cron' ) ) {
-							echo '<button type="button" class="aialtg-tab-btn" data-tab="cron">';
-							echo '<span class="dashicons dashicons-backup"></span> ';
-							echo esc_html__( 'Bulk Generation', 'kookoo-ai-alt-text-creator' );
-							echo '</button>';
-						}
+						echo '<button type="button" class="aialtg-tab-btn" data-tab="cron">';
+						echo '<span class="dashicons dashicons-backup"></span> ';
+						echo esc_html__( 'Bulk Generation', 'kookoo-ai-alt-text-creator' );
+						echo '</button>';
 						echo '<button type="button" class="aialtg-tab-btn" data-tab="license">';
 						echo '<span class="dashicons dashicons-lock"></span> ';
 						echo esc_html__( 'License', 'kookoo-ai-alt-text-creator' );
@@ -834,11 +818,9 @@ class Aialtg_Settings {
 						$this->render_section_by_id( 'aialtg_options_section' );
 						echo '</div>';
 
-						if ( class_exists( 'Aialtg_Cron' ) ) {
-							echo '<div id="aialtg-tab-cron" class="aialtg-tab-panel">';
-							$this->render_section_by_id( 'aialtg_cron_section' );
-							echo '</div>';
-						}
+						echo '<div id="aialtg-tab-cron" class="aialtg-tab-panel">';
+						$this->render_section_by_id( 'aialtg_cron_section' );
+						echo '</div>';
 
 						echo '<div id="aialtg-tab-license" class="aialtg-tab-panel">';
 						$this->render_license_card();

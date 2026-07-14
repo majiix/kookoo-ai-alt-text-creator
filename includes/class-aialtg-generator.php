@@ -38,14 +38,6 @@ class Aialtg_Generator {
 		// Get Image URL.
 		$image_url = wp_get_attachment_url( $post_id );
 
-		// Fallback: Try getting it via image_src if direct url fails.
-		if ( ! $image_url ) {
-			$src = wp_get_attachment_image_src( $post_id, 'full' );
-			if ( $src && isset( $src[0] ) ) {
-				$image_url = $src[0];
-			}
-		}
-
 		if ( ! $image_url ) {
 			return new WP_Error( 'missing_url', __( 'Image URL not found', 'kookoo-ai-alt-text-creator' ) );
 		}
@@ -60,16 +52,13 @@ class Aialtg_Generator {
 		}
 
 		// Check Supported MIME Type.
-		// We use the helper in Settings class if available, else standard image check.
-		if ( class_exists( 'Aialtg_Settings' ) && method_exists( 'Aialtg_Settings', 'get_allowed_mimes' ) ) {
-			$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
-			$current_mime  = get_post_mime_type( $post_id );
+		$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
+		$current_mime  = get_post_mime_type( $post_id );
 
-			// If allowed_mimes is just 'image', it allows all. If it's an array, we check.
-			if ( is_array( $allowed_mimes ) && ! in_array( $current_mime, $allowed_mimes, true ) ) {
-				/* translators: %s: MIME type (e.g. image/jpeg) */
-				return new WP_Error( 'unsupported_format', sprintf( __( 'Format %s not supported in settings', 'kookoo-ai-alt-text-creator' ), $current_mime ) );
-			}
+		// If allowed_mimes is just 'image', it allows all. If it's an array, we check.
+		if ( is_array( $allowed_mimes ) && ! in_array( $current_mime, $allowed_mimes, true ) ) {
+			/* translators: %s: MIME type (e.g. image/jpeg) */
+			return new WP_Error( 'unsupported_format', sprintf( __( 'Format %s not supported in settings', 'kookoo-ai-alt-text-creator' ), $current_mime ) );
 		}
 
 		// Check if URL is local/private, and if so, load it as Base64 to prevent API fetch issues.
@@ -78,7 +67,9 @@ class Aialtg_Generator {
 			$file_size = filesize( $file_path );
 			// 5 MB limit for Base64 encoding.
 			if ( $file_size > 0 && $file_size <= 5 * 1024 * 1024 ) {
-				if ( ! wp_http_validate_url( $image_url ) ) {
+				$host = wp_parse_url( $image_url, PHP_URL_HOST );
+				$is_local = ( 'localhost' === $host || '127.0.0.1' === $host || preg_match( '/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/', (string) $host ) );
+				if ( $is_local || ! wp_http_validate_url( $image_url ) ) {
 					$file_data = file_get_contents( $file_path );
 					if ( $file_data ) {
 						$mime_type = get_post_mime_type( $post_id );
