@@ -352,54 +352,42 @@ class Aialtg_Settings {
 			return $stats;
 		}
 
+		global $wpdb;
 		$allowed_mimes = self::get_allowed_mimes();
 
-		// Total Images.
-		$query_total = new WP_Query( array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'post_mime_type' => $allowed_mimes,
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => false,
-		) );
-		$total = $query_total->found_posts;
+		if ( is_array( $allowed_mimes ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $allowed_mimes ), '%s' ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$mime_where = $wpdb->prepare( "p.post_mime_type IN ($placeholders)", $allowed_mimes );
+		} else {
+			$mime_where = $wpdb->prepare( 'p.post_mime_type LIKE %s', $allowed_mimes . '/%' );
+		}
 
-		// Processed Successfully.
-		$query_processed = new WP_Query( array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'post_mime_type' => $allowed_mimes,
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => false,
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_query'     => array(
-				array(
-					'key'   => '_aialtg_processed',
-					'value' => '1',
-				),
-			),
-		) );
-		$processed = $query_processed->found_posts;
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( "
+			SELECT pm.meta_value as status, COUNT(p.ID) as count
+			FROM {$wpdb->posts} p
+			LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_aialtg_processed'
+			WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND {$mime_where}
+			GROUP BY pm.meta_value
+		" );
+		// phpcs:enable
 
-		// Failed.
-		$query_failed = new WP_Query( array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'post_mime_type' => $allowed_mimes,
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => false,
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_query'     => array(
-				array(
-					'key'   => '_aialtg_processed',
-					'value' => 'failed',
-				),
-			),
-		) );
-		$failed = $query_failed->found_posts;
+		$total     = 0;
+		$processed = 0;
+		$failed    = 0;
+
+		if ( is_array( $results ) ) {
+			foreach ( $results as $row ) {
+				$row_count = (int) $row->count;
+				$total    += $row_count;
+				if ( '1' === $row->status ) {
+					$processed = $row_count;
+				} elseif ( 'failed' === $row->status ) {
+					$failed = $row_count;
+				}
+			}
+		}
 
 		$stats = array(
 			'total'     => $total,
@@ -455,17 +443,7 @@ class Aialtg_Settings {
 				<span class="aialtg-progress-text"><?php echo esc_html( $percentage ); ?>% <?php esc_html_e( 'Complete', 'kookoo-ai-alt-text-creator' ); ?></span>
 			</div>
 
-			<div class="aialtg-milestone-wrap" style="display: none;">
-				<div class="aialtg-milestone-badge">
-					<span class="dashicons dashicons-awards"></span>
-					<strong><?php esc_html_e( 'All Images Optimized!', 'kookoo-ai-alt-text-creator' ); ?></strong>
-				</div>
-				<p class="aialtg-milestone-desc"><?php esc_html_e( 'Your library SEO is in tip-top shape. You\'re crushing it!', 'kookoo-ai-alt-text-creator' ); ?></p>
-				<button type="button" class="button button-link aialtg-celebrate-btn">
-					<span class="dashicons dashicons-star-filled"></span>
-					<?php esc_html_e( 'Celebrate again', 'kookoo-ai-alt-text-creator' ); ?>
-				</button>
-			</div>
+
 
 			<div class="aialtg-controls-wrapper">
 				<div class="aialtg-buttons-row">

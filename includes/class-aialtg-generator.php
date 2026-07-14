@@ -78,7 +78,7 @@ class Aialtg_Generator {
 			$file_size = filesize( $file_path );
 			// 5 MB limit for Base64 encoding.
 			if ( $file_size > 0 && $file_size <= 5 * 1024 * 1024 ) {
-				if ( $this->is_local_url( $image_url ) ) {
+				if ( ! wp_http_validate_url( $image_url ) ) {
 					$file_data = file_get_contents( $file_path );
 					if ( $file_data ) {
 						$mime_type = get_post_mime_type( $post_id );
@@ -272,42 +272,7 @@ class Aialtg_Generator {
 		);
 	}
 
-	/**
-	 * Checks if a URL is local/private.
-	 *
-	 * @param string $url The URL to check.
-	 * @return bool True if local, false otherwise.
-	 */
-	private function is_local_url( $url ) {
-		$host = wp_parse_url( $url, PHP_URL_HOST );
-		if ( ! $host ) {
-			return true;
-		}
 
-		// Common local hosts.
-		if ( in_array( $host, array( 'localhost', '127.0.0.1', '[::1]' ), true ) ) {
-			return true;
-		}
-
-		// Ends with local TLDs.
-		if ( preg_match( '/\.(local|test|dev|invalid|example)$/i', $host ) ) {
-			return true;
-		}
-
-		// Private IP ranges check.
-		if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
-			$is_private = ! filter_var(
-				$host,
-				FILTER_VALIDATE_IP,
-				FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-			);
-			if ( $is_private ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
 
 	/**
 	 * Extracts and parses JSON content from the API response robustly.

@@ -21,11 +21,8 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-licensing.php';
 
-// Conditionally include Cron class if file exists.
-$aialtg_cron_file = plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
-if ( file_exists( $aialtg_cron_file ) ) {
-	require_once $aialtg_cron_file;
-}
+// Include Cron class.
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
 
 if ( ! class_exists( 'Aialtg_Image_Descriptor' ) ) {
 /**
@@ -43,10 +40,8 @@ class Aialtg_Image_Descriptor {
 		// Initialize Licensing.
 		new Aialtg_Licensing();
 
-		// Initialize Cron if available.
-		if ( class_exists( 'Aialtg_Cron' ) ) {
-			new Aialtg_Cron();
-		}
+		// Initialize Cron.
+		new Aialtg_Cron();
 
 		// Media library columns.
 		add_filter( 'manage_media_columns', array( $this, 'add_media_column' ) );
@@ -80,16 +75,14 @@ class Aialtg_Image_Descriptor {
 	 * Logic runs on plugin activation.
 	 */
 	public function activation_logic() {
-		// Only run schedule logic if Cron class exists.
-		if ( class_exists( 'Aialtg_Cron' ) ) {
-			$options = get_option( 'aialtg_settings' );
-			if ( ! is_array( $options ) ) {
-				$options = array();
-			}
-			if ( isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
-				if ( ! wp_next_scheduled( Aialtg_Cron::CRON_HOOK ) ) {
-					wp_schedule_event( time(), Aialtg_Cron::INTERVAL_NAME, Aialtg_Cron::CRON_HOOK );
-				}
+		// Run schedule logic.
+		$options = get_option( 'aialtg_settings' );
+		if ( ! is_array( $options ) ) {
+			$options = array();
+		}
+		if ( isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
+			if ( ! wp_next_scheduled( Aialtg_Cron::CRON_HOOK ) ) {
+				wp_schedule_event( time(), Aialtg_Cron::INTERVAL_NAME, Aialtg_Cron::CRON_HOOK );
 			}
 		}
 	}
@@ -98,8 +91,7 @@ class Aialtg_Image_Descriptor {
 	 * Deactivation cleanup.
 	 */
 	public function deactivation_cleanup() {
-		// We use the constant if available, otherwise fallback string to ensure cleanup.
-		$hook = class_exists( 'Aialtg_Cron' ) ? Aialtg_Cron::CRON_HOOK : 'aialtg_cron_process_images';
+		$hook = Aialtg_Cron::CRON_HOOK;
 		wp_clear_scheduled_hook( $hook );
 		delete_transient( 'aialtg_stats' );
 	}

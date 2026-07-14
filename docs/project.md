@@ -27,7 +27,7 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 * **Cron Bulk Generator**: Schedule batch processing of pending images.
 * **Smart JSON Parser**: Extracts structured JSON response and fixes common syntax issues automatically.
 * **OpenRouter Model Dropdown**: Dynamically queries and renders available OpenRouter models grouped by provider, highlighting vision-capable models.
-* **Settings & Dashboard**: Premium modern layout with CSS animations, interactive toggles, statistics dashboard, and milestone celebration confetti.
+* **Settings & Dashboard**: Premium modern layout with CSS animations, interactive toggles, and statistics dashboard.
 * **EDD Software Licensing**: [NEW] Premium key entry field, activation, deactivation, and verification status check using EDD Software Licensing API.
 
 ## Verification Commands
