@@ -18,6 +18,8 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 * [includes/class-aialtg-generator.php](class-aialtg-generator.php): Core logic for generating Alt Texts and Titles, performing remote requests to OpenRouter, converting local images to Base64, parsing JSON, and saving metadata.
 * [includes/class-aialtg-cron.php](class-aialtg-cron.php): Handles automated background queue processing via WP Cron.
 * [includes/class-aialtg-licensing.php](class-aialtg-licensing.php): [NEW] Handles EDD Software Licensing communication, license activation, deactivation, daily check cron status, and local caching.
+* [docs/design_system.md](design_system.md): [NEW] Detailed specification of the plugin's visual tokens, typography, layouts, components, and animations.
+
 
 ## Current Features
 * **AI Generation**: Descriptive Alt Text and Title generation with custom vision/image models.
