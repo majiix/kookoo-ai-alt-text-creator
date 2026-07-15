@@ -59,6 +59,14 @@ class Aialtg_Settings {
 		);
 
 		add_settings_field(
+			'api_gateway',
+			__( 'API Gateway', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_api_gateway_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_api_section'
+		);
+
+		add_settings_field(
 			'api_key',
 			__( 'OpenRouter API Key', 'kookoo-ai-alt-text-creator' ),
 			array( $this, 'render_api_key_field' ),
@@ -139,6 +147,46 @@ class Aialtg_Settings {
 			'aialtg_options_section'
 		);
 
+		add_settings_field(
+			'enable_caption',
+			__( 'Generate Caption', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_enable_caption_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_options_section'
+		);
+
+		add_settings_field(
+			'caption_prompt',
+			__( 'Caption Prompt', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_caption_prompt_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_options_section'
+		);
+
+		add_settings_field(
+			'enable_description',
+			__( 'Generate Description', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_enable_description_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_options_section'
+		);
+
+		add_settings_field(
+			'description_prompt',
+			__( 'Description Prompt', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_description_prompt_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_options_section'
+		);
+
+		add_settings_field(
+			'auto_generate_upload',
+			__( 'Auto-Generate on Upload', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_auto_generate_upload_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_options_section'
+		);
+
 		// --- Cron / Bulk Section ---
 		add_settings_section(
 			'aialtg_cron_section',
@@ -204,14 +252,27 @@ class Aialtg_Settings {
 		$new_input['enable_title']  = isset( $input['enable_title'] ) ? '1' : '0';
 
 		$is_compatible = class_exists( 'Aialtg_Pro_Addon' ) && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+		$old_options   = get_option( self::$option_name );
+		$old_options   = is_array( $old_options ) ? $old_options : array();
+
 		if ( $is_compatible ) {
-			$new_input['save_gen_meta'] = isset( $input['save_gen_meta'] ) ? '1' : '0';
-			$new_input['skip_existing_alt'] = isset( $input['skip_existing_alt'] ) ? '1' : '0';
+			$new_input['save_gen_meta']          = isset( $input['save_gen_meta'] ) ? '1' : '0';
+			$new_input['skip_existing_alt']      = isset( $input['skip_existing_alt'] ) ? '1' : '0';
+			$new_input['api_gateway']            = isset( $input['api_gateway'] ) && in_array( $input['api_gateway'], array( 'openrouter', 'openai', 'gemini' ), true ) ? $input['api_gateway'] : 'openrouter';
+			$new_input['auto_generate_upload']   = isset( $input['auto_generate_upload'] ) ? '1' : '0';
+			$new_input['enable_caption']         = isset( $input['enable_caption'] ) ? '1' : '0';
+			$new_input['enable_description']     = isset( $input['enable_description'] ) ? '1' : '0';
+			$new_input['caption_prompt']         = isset( $input['caption_prompt'] ) ? wp_strip_all_tags( $input['caption_prompt'] ) : '';
+			$new_input['description_prompt']     = isset( $input['description_prompt'] ) ? wp_strip_all_tags( $input['description_prompt'] ) : '';
 		} else {
-			$old_options = get_option( self::$option_name );
-			$old_options = is_array( $old_options ) ? $old_options : array();
-			$new_input['save_gen_meta'] = isset( $old_options['save_gen_meta'] ) ? $old_options['save_gen_meta'] : '0';
-			$new_input['skip_existing_alt'] = isset( $old_options['skip_existing_alt'] ) ? $old_options['skip_existing_alt'] : '0';
+			$new_input['save_gen_meta']          = isset( $old_options['save_gen_meta'] ) ? $old_options['save_gen_meta'] : '0';
+			$new_input['skip_existing_alt']      = isset( $old_options['skip_existing_alt'] ) ? $old_options['skip_existing_alt'] : '0';
+			$new_input['api_gateway']            = isset( $old_options['api_gateway'] ) ? $old_options['api_gateway'] : 'openrouter';
+			$new_input['auto_generate_upload']   = isset( $old_options['auto_generate_upload'] ) ? $old_options['auto_generate_upload'] : '0';
+			$new_input['enable_caption']         = isset( $old_options['enable_caption'] ) ? $old_options['enable_caption'] : '0';
+			$new_input['enable_description']     = isset( $old_options['enable_description'] ) ? $old_options['enable_description'] : '0';
+			$new_input['caption_prompt']         = isset( $old_options['caption_prompt'] ) ? $old_options['caption_prompt'] : '';
+			$new_input['description_prompt']     = isset( $old_options['description_prompt'] ) ? $old_options['description_prompt'] : '';
 		}
 
 		// Prompts & Formats.
@@ -475,9 +536,13 @@ class Aialtg_Settings {
 					<?php esc_html_e( 'Unlock advanced premium features to optimize your workflow:', 'kookoo-ai-alt-text-creator' ); ?>
 				</p>
 				<ul style="margin: 10px 0; padding-left: 20px; list-style-type: disc; font-size: 12px; color: var(--aialtg-text-muted); line-height: 1.6;">
-					<li><?php esc_html_e( 'Skip images with existing Alt Text during cron runs', 'kookoo-ai-alt-text-creator' ); ?></li>
-					<li><?php esc_html_e( 'Save generation timestamp & source metadata', 'kookoo-ai-alt-text-creator' ); ?></li>
-					<li><?php esc_html_e( 'WP-CLI command line processing support', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Auto-generate details instantly on upload', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Media Library bulk actions integration', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Generate Captions & Descriptions with Alt/Titles', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Direct OpenAI & Google Gemini API gateways', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Skip images with existing Alt Text on cron runs', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Save generation metadata (timestamp & source)', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'WP-CLI command-line processing support', 'kookoo-ai-alt-text-creator' ); ?></li>
 				</ul>
 				<div class="aialtg-btn-wrap" style="margin-top: 15px;">
 					<a href="https://violo.ir/?p=14" target="_blank" class="button button-primary" style="display: block; text-align: center; text-decoration: none; box-shadow: none;">
@@ -504,6 +569,24 @@ class Aialtg_Settings {
 
 	public function render_options_section_info() {
 		echo '<p class="aialtg-section-desc">' . esc_html__( 'Configure how details are generated for your images.', 'kookoo-ai-alt-text-creator' ) . '</p>';
+	}
+
+	public function render_api_gateway_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+		$is_pro  = class_exists( 'Aialtg_Pro_Addon' ) && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+		$gateway = isset( $options['api_gateway'] ) ? $options['api_gateway'] : 'openrouter';
+		?>
+		<select name="<?php echo esc_attr( self::$option_name . '[api_gateway]' ); ?>" id="aialtg-api-gateway" class="regular-text">
+			<option value="openrouter" <?php selected( $gateway, 'openrouter' ); ?>><?php esc_html_e( 'OpenRouter (Default)', 'kookoo-ai-alt-text-creator' ); ?></option>
+			<option value="openai" <?php selected( $gateway, 'openai' ); ?> <?php disabled( ! $is_pro ); ?>><?php esc_html_e( 'OpenAI Direct', 'kookoo-ai-alt-text-creator' ); ?></option>
+			<option value="gemini" <?php selected( $gateway, 'gemini' ); ?> <?php disabled( ! $is_pro ); ?>><?php esc_html_e( 'Google Gemini Direct', 'kookoo-ai-alt-text-creator' ); ?></option>
+		</select>
+		<?php if ( ! $is_pro ) : ?>
+			<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+			<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+		<?php endif; ?>
+		<?php
 	}
 
 	public function render_api_key_field() {
@@ -677,6 +760,135 @@ class Aialtg_Settings {
 		</label>
 		<p class="description">
 			<?php esc_html_e( 'Save the timestamp and generation source (manual vs cron) to the attachment metadata.', 'kookoo-ai-alt-text-creator' ); ?>
+			<?php if ( ! $has_pro_addon ) : ?>
+				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+			<?php elseif ( ! $is_compatible ) : ?>
+				<br><span class="aialtg-pro-only-note" style="color: var(--aialtg-error);"><?php
+					// translators: 1: Pro version, 2: Free version
+					echo wp_kses_post( sprintf( __( 'Version conflict: Pro Addon (%1$s) is lower than the main plugin (%2$s). Please <a href="https://violo.ir/?p=14" target="_blank">download the latest update</a>.', 'kookoo-ai-alt-text-creator' ), defined( 'AIALTG_PRO_VERSION' ) ? AIALTG_PRO_VERSION : 'N/A', defined( 'AIALTG_VERSION' ) ? AIALTG_VERSION : 'N/A' ) );
+				?></span>
+			<?php endif; ?>
+		</p>
+		<?php
+	}
+
+	public function render_enable_caption_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$checked = isset( $options['enable_caption'] ) ? $options['enable_caption'] : '0';
+		?>
+		<label class="aialtg-toggle <?php echo $is_compatible ? '' : 'aialtg-toggle-disabled'; ?>">
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_caption]' ); ?>" value="1" <?php checked( $checked, '1' ); ?> <?php disabled( ! $is_compatible ); ?> />
+			<span class="aialtg-toggle-slider"></span>
+			<span class="aialtg-toggle-label">
+				<?php esc_html_e( 'Generate Captions', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_compatible ) : ?>
+					<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
+			</span>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Automatically generate and update image Captions.', 'kookoo-ai-alt-text-creator' ); ?>
+			<?php if ( ! $has_pro_addon ) : ?>
+				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+			<?php elseif ( ! $is_compatible ) : ?>
+				<br><span class="aialtg-pro-only-note" style="color: var(--aialtg-error);"><?php
+					// translators: 1: Pro version, 2: Free version
+					echo wp_kses_post( sprintf( __( 'Version conflict: Pro Addon (%1$s) is lower than the main plugin (%2$s). Please <a href="https://violo.ir/?p=14" target="_blank">download the latest update</a>.', 'kookoo-ai-alt-text-creator' ), defined( 'AIALTG_PRO_VERSION' ) ? AIALTG_PRO_VERSION : 'N/A', defined( 'AIALTG_VERSION' ) ? AIALTG_VERSION : 'N/A' ) );
+				?></span>
+			<?php endif; ?>
+		</p>
+		<?php
+	}
+
+	public function render_caption_prompt_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$val = isset( $options['caption_prompt'] ) ? $options['caption_prompt'] : 'Generate a short, descriptive caption for the image.';
+		?>
+		<div class="aialtg-input-wrap">
+			<textarea name="<?php echo esc_attr( self::$option_name . '[caption_prompt]' ); ?>" rows="2" cols="50" class="large-text code" <?php disabled( ! $is_compatible ); ?>><?php echo esc_textarea( $val ); ?></textarea>
+		</div>
+		<?php
+	}
+
+	public function render_enable_description_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$checked = isset( $options['enable_description'] ) ? $options['enable_description'] : '0';
+		?>
+		<label class="aialtg-toggle <?php echo $is_compatible ? '' : 'aialtg-toggle-disabled'; ?>">
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_description]' ); ?>" value="1" <?php checked( $checked, '1' ); ?> <?php disabled( ! $is_compatible ); ?> />
+			<span class="aialtg-toggle-slider"></span>
+			<span class="aialtg-toggle-label">
+				<?php esc_html_e( 'Generate Descriptions', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_compatible ) : ?>
+					<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
+			</span>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Automatically generate and update image Descriptions.', 'kookoo-ai-alt-text-creator' ); ?>
+			<?php if ( ! $has_pro_addon ) : ?>
+				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+			<?php elseif ( ! $is_compatible ) : ?>
+				<br><span class="aialtg-pro-only-note" style="color: var(--aialtg-error);"><?php
+					// translators: 1: Pro version, 2: Free version
+					echo wp_kses_post( sprintf( __( 'Version conflict: Pro Addon (%1$s) is lower than the main plugin (%2$s). Please <a href="https://violo.ir/?p=14" target="_blank">download the latest update</a>.', 'kookoo-ai-alt-text-creator' ), defined( 'AIALTG_PRO_VERSION' ) ? AIALTG_PRO_VERSION : 'N/A', defined( 'AIALTG_VERSION' ) ? AIALTG_VERSION : 'N/A' ) );
+				?></span>
+			<?php endif; ?>
+		</p>
+		<?php
+	}
+
+	public function render_description_prompt_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$val = isset( $options['description_prompt'] ) ? $options['description_prompt'] : 'Generate a detailed description of the image content.';
+		?>
+		<div class="aialtg-input-wrap">
+			<textarea name="<?php echo esc_attr( self::$option_name . '[description_prompt]' ); ?>" rows="2" cols="50" class="large-text code" <?php disabled( ! $is_compatible ); ?>><?php echo esc_textarea( $val ); ?></textarea>
+		</div>
+		<?php
+	}
+
+	public function render_auto_generate_upload_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$checked = isset( $options['auto_generate_upload'] ) ? $options['auto_generate_upload'] : '0';
+		?>
+		<label class="aialtg-toggle <?php echo $is_compatible ? '' : 'aialtg-toggle-disabled'; ?>">
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[auto_generate_upload]' ); ?>" value="1" <?php checked( $checked, '1' ); ?> <?php disabled( ! $is_compatible ); ?> />
+			<span class="aialtg-toggle-slider"></span>
+			<span class="aialtg-toggle-label">
+				<?php esc_html_e( 'Auto-Generate on Upload', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_compatible ) : ?>
+					<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
+			</span>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Automatically generate Alt Text, Titles, and enabled details as soon as an image is uploaded.', 'kookoo-ai-alt-text-creator' ); ?>
 			<?php if ( ! $has_pro_addon ) : ?>
 				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
 			<?php elseif ( ! $is_compatible ) : ?>

@@ -108,90 +108,157 @@ jQuery(document).ready(function($) {
 		var customInput = $('#aialtg-custom-model-input');
 		var realInput = $('#aialtg-model-real-input');
 
-		$.ajax({
-			url: ajaxurl,
-			type: 'POST',
-			data: {
-				action: 'aialtg_get_models',
-				nonce: modelNonce
-			},
-			success: function(response) {
-				if (response.success && response.data.models) {
-					var models = response.data.models;
-					modelSelect.empty();
+		var gatewaySelect = $('#aialtg-api-gateway');
+		var openrouterModelsCached = null;
 
-					// Group models by provider
-					var grouped = {};
-					var foundCurrent = false;
+		var openaiModels = [
+			{ id: 'gpt-4o-mini', name: 'GPT-4o Mini (Vision)' },
+			{ id: 'gpt-4o', name: 'GPT-4o (Vision)' }
+		];
+		var geminiModels = [
+			{ id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+			{ id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite' },
+			{ id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' }
+		];
 
-					models.forEach(function(model) {
-						var id = model.id;
-						var name = model.name;
-						
-						// Parse provider from ID
-						var provider = 'Other';
-						if (id.indexOf('/') !== -1) {
-							provider = id.split('/')[0];
-							provider = provider.charAt(0).toUpperCase() + provider.slice(1);
-						}
-
-						if (!grouped[provider]) {
-							grouped[provider] = [];
-						}
-
-						grouped[provider].push({
-							id: id,
-							name: name
-						});
-
-						if (id === currentValue) {
-							foundCurrent = true;
-						}
-					});
-
-					// Sort and group by provider
-					var providers = Object.keys(grouped).sort(function(a, b) {
-						var priority = { 'Google': 1, 'Openai': 2, 'Anthropic': 3 };
-						var pA = priority[a] || 99;
-						var pB = priority[b] || 99;
-						if (pA !== pB) return pA - pB;
-						return a.localeCompare(b);
-					});
-
-					providers.forEach(function(provider) {
-						var optgroup = $('<optgroup>').attr('label', provider);
-						grouped[provider].sort(function(a, b) {
-							return a.name.localeCompare(b.name);
-						});
-						grouped[provider].forEach(function(item) {
-							optgroup.append($('<option>').val(item.id).text(item.name));
-						});
-						modelSelect.append(optgroup);
-					});
-
-					// Add custom model option
-					modelSelect.append($('<option>').val('custom').text('-- Enter Custom Model ID --'));
-
-					// Set initial state
-					if (foundCurrent) {
-						modelSelect.val(currentValue);
-						customInputWrap.hide();
-					} else {
-						modelSelect.val('custom');
-						customInput.val(currentValue);
-						customInputWrap.show();
-					}
-
-					skeleton.hide();
-					selectWrap.show();
+		function initModelField() {
+			var gateway = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
+			
+			if (gateway === 'openrouter') {
+				if (openrouterModelsCached) {
+					renderOpenRouterModels(openrouterModelsCached);
 				} else {
+					fetchOpenRouterModels();
+				}
+			} else {
+				populateStaticModels(gateway);
+			}
+		}
+
+		function populateStaticModels(gateway) {
+			modelSelect.empty();
+			modelSelect.show();
+			
+			var label = gateway === 'openai' ? 'OpenAI Direct' : 'Google Gemini Direct';
+			var models = gateway === 'openai' ? openaiModels : geminiModels;
+			var optgroup = $('<optgroup>').attr('label', label);
+			var foundCurrent = false;
+
+			models.forEach(function(item) {
+				optgroup.append($('<option>').val(item.id).text(item.name));
+				if (item.id === currentValue) {
+					foundCurrent = true;
+				}
+			});
+			modelSelect.append(optgroup);
+			modelSelect.append($('<option>').val('custom').text('-- Enter Custom Model ID --'));
+
+			if (foundCurrent) {
+				modelSelect.val(currentValue);
+				customInputWrap.hide();
+				realInput.val(currentValue);
+			} else {
+				modelSelect.val('custom');
+				customInput.val(currentValue);
+				customInputWrap.show();
+				realInput.val(currentValue);
+			}
+
+			skeleton.hide();
+			selectWrap.show();
+		}
+
+		function fetchOpenRouterModels() {
+			skeleton.show();
+			selectWrap.hide();
+			
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'aialtg_get_models',
+					nonce: modelNonce
+				},
+				success: function(response) {
+					if (response.success && response.data.models) {
+						openrouterModelsCached = response.data.models;
+						renderOpenRouterModels(openrouterModelsCached);
+					} else {
+						showFallbackInput();
+					}
+				},
+				error: function() {
 					showFallbackInput();
 				}
-			},
-			error: function() {
-				showFallbackInput();
+			});
+		}
+
+		function renderOpenRouterModels(models) {
+			modelSelect.empty();
+			modelSelect.show();
+			
+			var grouped = {};
+			var foundCurrent = false;
+
+			models.forEach(function(model) {
+				var id = model.id;
+				var name = model.name;
+				
+				var provider = 'Other';
+				if (id.indexOf('/') !== -1) {
+					provider = id.split('/')[0];
+					provider = provider.charAt(0).toUpperCase() + provider.slice(1);
+				}
+
+				if (!grouped[provider]) {
+					grouped[provider] = [];
+				}
+
+				grouped[provider].push({
+					id: id,
+					name: name
+				});
+
+				if (id === currentValue) {
+					foundCurrent = true;
+				}
+			});
+
+			var providers = Object.keys(grouped).sort(function(a, b) {
+				var priority = { 'Google': 1, 'Openai': 2, 'Anthropic': 3 };
+				var pA = priority[a] || 99;
+				var pB = priority[b] || 99;
+				if (pA !== pB) return pA - pB;
+				return a.localeCompare(b);
+			});
+
+			providers.forEach(function(provider) {
+				var optgroup = $('<optgroup>').attr('label', provider);
+				grouped[provider].sort(function(a, b) {
+					return a.name.localeCompare(b.name);
+				});
+				grouped[provider].forEach(function(item) {
+					optgroup.append($('<option>').val(item.id).text(item.name));
+				});
+				modelSelect.append(optgroup);
+			});
+
+			modelSelect.append($('<option>').val('custom').text('-- Enter Custom Model ID --'));
+
+			if (foundCurrent) {
+				modelSelect.val(currentValue);
+				customInputWrap.hide();
+				realInput.val(currentValue);
+			} else {
+				modelSelect.val('custom');
+				customInput.val(currentValue);
+				customInputWrap.show();
+				realInput.val(currentValue);
 			}
-		});
+
+			skeleton.hide();
+			selectWrap.show();
+		}
 
 		function showFallbackInput() {
 			skeleton.hide();
@@ -199,10 +266,15 @@ jQuery(document).ready(function($) {
 			modelSelect.hide();
 			customInput.val(currentValue);
 			customInputWrap.show();
-			customInput.on('input', function() {
-				realInput.val($(this).val());
-			});
+			realInput.val(currentValue);
 		}
+
+		gatewaySelect.on('change', function() {
+			currentValue = realInput.val();
+			initModelField();
+		});
+
+		initModelField();
 
 		// Handle select changes
 		modelSelect.on('change', function() {

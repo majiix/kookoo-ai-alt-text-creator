@@ -45,8 +45,13 @@ class Aialtg_Generator {
 		$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
-		$enable_alt   = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : true;
-		$enable_title = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : true;
+		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : true;
+		$enable_title       = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : true;
+		$enable_caption     = isset( $options['enable_caption'] ) ? (bool) $options['enable_caption'] : false;
+		$enable_description = isset( $options['enable_description'] ) ? (bool) $options['enable_description'] : false;
+
+		$allow_caption     = $enable_caption && apply_filters( 'aialtg_allow_generate_caption', false );
+		$allow_description = $enable_description && apply_filters( 'aialtg_allow_generate_description', false );
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'missing_key', __( 'API Key missing', 'kookoo-ai-alt-text-creator' ) );
@@ -104,6 +109,12 @@ class Aialtg_Generator {
 		$default_title_prompt = 'Generate a short, descriptive title for this image.';
 		$title_prompt         = isset( $options['title_prompt'] ) && ! empty( $options['title_prompt'] ) ? $options['title_prompt'] : $default_title_prompt;
 
+		$default_caption_prompt = 'Generate a short, descriptive caption for the image.';
+		$caption_prompt         = isset( $options['caption_prompt'] ) && ! empty( $options['caption_prompt'] ) ? $options['caption_prompt'] : $default_caption_prompt;
+
+		$default_description_prompt = 'Generate a detailed description of the image content.';
+		$description_prompt         = isset( $options['description_prompt'] ) && ! empty( $options['description_prompt'] ) ? $options['description_prompt'] : $default_description_prompt;
+
 		// Get Global Context.
 		$global_context = isset( $options['global_context'] ) && ! empty( $options['global_context'] ) ? $options['global_context'] : '';
 
@@ -129,9 +140,11 @@ class Aialtg_Generator {
 		$search_tags  = array( '{post_title}', '{post_content}' );
 
 		// Apply replacements to all prompt fields.
-		$global_context = str_replace( $search_tags, $replacements, (string) $global_context );
-		$alt_prompt     = str_replace( $search_tags, $replacements, (string) $alt_prompt );
-		$title_prompt   = str_replace( $search_tags, $replacements, (string) $title_prompt );
+		$global_context     = str_replace( $search_tags, $replacements, (string) $global_context );
+		$alt_prompt         = str_replace( $search_tags, $replacements, (string) $alt_prompt );
+		$title_prompt       = str_replace( $search_tags, $replacements, (string) $title_prompt );
+		$caption_prompt     = str_replace( $search_tags, $replacements, (string) $caption_prompt );
+		$description_prompt = str_replace( $search_tags, $replacements, (string) $description_prompt );
 
 		// Build System Instruction.
 		$system_instructions = "Analyze the image and generate text based on the following instructions.\n";
@@ -150,18 +163,29 @@ class Aialtg_Generator {
 			$system_instructions .= '2. Title Prompt: ' . $title_prompt . "\n";
 			$expected_keys[]      = "'title'";
 		}
+		if ( $allow_caption ) {
+			$system_instructions .= '3. Caption Prompt: ' . $caption_prompt . "\n";
+			$expected_keys[]      = "'caption'";
+		}
+		if ( $allow_description ) {
+			$system_instructions .= '4. Description Prompt: ' . $description_prompt . "\n";
+			$expected_keys[]      = "'description'";
+		}
 		$system_instructions .= 'Return ONLY valid JSON with keys ' . implode( ' and ', $expected_keys ) . '.';
 
 		// API Call.
+		$api_url = apply_filters( 'aialtg_api_url', 'https://openrouter.ai/api/v1/chat/completions', $options );
+		$headers = apply_filters( 'aialtg_api_headers', array(
+			'Authorization' => 'Bearer ' . $api_key,
+			'Content-Type'  => 'application/json',
+			'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
+			'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+		), $options );
+
 		$response = wp_remote_post(
-			'https://openrouter.ai/api/v1/chat/completions',
+			$api_url,
 			array(
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $api_key,
-					'Content-Type'  => 'application/json',
-					'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
-					'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-				),
+				'headers' => $headers,
 				'body'    => wp_json_encode(
 					array(
 						'model'           => $model,
@@ -224,12 +248,14 @@ class Aialtg_Generator {
 		$content_str = trim( $data['choices'][0]['message']['content'] );
 		$result_json = $this->robust_json_decode( $content_str );
 
-		$alt_text = '';
-		$title    = '';
+		$alt_text    = '';
+		$title       = '';
+		$caption     = '';
+		$description = '';
 
 		if ( false === $result_json ) {
 			// It's not valid JSON. Check if it's likely a JSON attempt.
-			$is_likely_json = ( strpos( $content_str, '{' ) === 0 || strpos( $content_str, '"alt_text"' ) !== false || strpos( $content_str, '"title"' ) !== false );
+			$is_likely_json = ( strpos( $content_str, '{' ) === 0 || strpos( $content_str, '"alt_text"' ) !== false || strpos( $content_str, '"title"' ) !== false || strpos( $content_str, '"caption"' ) !== false || strpos( $content_str, '"description"' ) !== false );
 			
 			if ( ! $is_likely_json ) {
 				// Fallback to raw string if it doesn't look like JSON.
@@ -248,17 +274,37 @@ class Aialtg_Generator {
 			if ( $enable_title ) {
 				$title = isset( $result_json['title'] ) ? wp_strip_all_tags( $result_json['title'] ) : '';
 			}
+			if ( $allow_caption ) {
+				$caption = isset( $result_json['caption'] ) ? wp_strip_all_tags( $result_json['caption'] ) : '';
+			}
+			if ( $allow_description ) {
+				$description = isset( $result_json['description'] ) ? wp_strip_all_tags( $result_json['description'] ) : '';
+			}
 		}
 
 		// Save Data.
 		if ( $enable_alt && ! empty( $alt_text ) ) {
 			update_post_meta( $post_id, '_wp_attachment_image_alt', $alt_text );
 		}
+
+		$update_args  = array( 'ID' => $post_id );
+		$needs_update = false;
+
 		if ( $enable_title && ! empty( $title ) ) {
-			wp_update_post( array(
-				'ID'         => $post_id,
-				'post_title' => $title,
-			) );
+			$update_args['post_title'] = $title;
+			$needs_update              = true;
+		}
+		if ( $allow_caption && ! empty( $caption ) ) {
+			$update_args['post_excerpt'] = $caption;
+			$needs_update                = true;
+		}
+		if ( $allow_description && ! empty( $description ) ) {
+			$update_args['post_content'] = $description;
+			$needs_update                = true;
+		}
+
+		if ( $needs_update ) {
+			wp_update_post( $update_args );
 		}
 
 		// Mark as processed by the plugin.
@@ -276,8 +322,10 @@ class Aialtg_Generator {
 		delete_post_meta( $post_id, '_aialtg_error_log' );
 
 		return array(
-			'alt_text' => $alt_text,
-			'title'    => $title,
+			'alt_text'    => $alt_text,
+			'title'       => $title,
+			'caption'     => $caption,
+			'description' => $description,
 		);
 	}
 

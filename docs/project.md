@@ -35,6 +35,10 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 * **Skip Existing Alt Texts**: [NEW] Premium option (located under the Bulk Generation tab) to skip generating Alt Text for images that already have one (written manually or by other plugins) during background processing.
 * **Pro Version Compatibility Verification**: [NEW] Automatically verifies version synchronization between the main plugin and the Pro addon to prevent mismatches and conflicts. If the Pro addon is outdated, it disables premium features and displays a warning to download updates.
 * **WP-CLI Commands**: [NEW] Premium WP-CLI command integration (`wp kookoo-alt-text process`) to trigger image processing or background batching directly from the command line.
+* **Auto-Generate on Upload**: [NEW] Premium hook to automatically process new images as soon as they are uploaded.
+* **Media Library Bulk Action**: [NEW] Premium action integrated into the native WordPress bulk actions dropdown to batch process selected images.
+* **Generate Captions & Descriptions**: [NEW] Premium option to generate, save, and update image Captions and Descriptions alongside Alt Texts and Titles.
+* **Multi-Gateway API Connection**: [NEW] Premium integration offering direct API connections to OpenAI and Google Gemini APIs alongside OpenRouter.
 
 ## Verification Commands
 Validate PHP syntax of the codebase:
