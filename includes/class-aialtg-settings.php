@@ -452,6 +452,43 @@ class Aialtg_Settings {
 		<?php
 	}
 
+	/**
+	 * Renders upgrade card to purchase Pro version.
+	 */
+	private function render_pro_card() {
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		if ( $is_compatible ) {
+			return; // Only show if Pro is not active or incompatible
+		}
+		?>
+		<div class="aialtg-card aialtg-upgrade-card">
+			<div class="aialtg-card-header">
+				<h3>
+					<span class="dashicons dashicons-star-filled"></span>
+					<?php esc_html_e( 'Upgrade to Pro', 'kookoo-ai-alt-text-creator' ); ?>
+				</h3>
+			</div>
+			<div class="aialtg-card-body">
+				<p>
+					<?php esc_html_e( 'Unlock advanced premium features to optimize your workflow:', 'kookoo-ai-alt-text-creator' ); ?>
+				</p>
+				<ul style="margin: 10px 0; padding-left: 20px; list-style-type: disc; font-size: 12px; color: var(--aialtg-text-muted); line-height: 1.6;">
+					<li><?php esc_html_e( 'Skip images with existing Alt Text during cron runs', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'Save generation timestamp & source metadata', 'kookoo-ai-alt-text-creator' ); ?></li>
+					<li><?php esc_html_e( 'WP-CLI command line processing support', 'kookoo-ai-alt-text-creator' ); ?></li>
+				</ul>
+				<div class="aialtg-btn-wrap" style="margin-top: 15px;">
+					<a href="https://violo.ir/?p=14" target="_blank" class="button button-primary" style="display: block; text-align: center; text-decoration: none; box-shadow: none;">
+						<?php esc_html_e( 'Get Pro Addon Now', 'kookoo-ai-alt-text-creator' ); ?>
+					</a>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
 
 
 	/**
@@ -793,6 +830,7 @@ wp kookoo-alt-text process --batch</pre>
 					</form>
 				</div>
 				<div class="aialtg-sidebar">
+					<?php $this->render_pro_card(); ?>
 					<?php $this->render_stats_card(); ?>
 				</div>
 			</div>
