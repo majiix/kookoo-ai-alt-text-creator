@@ -25,6 +25,23 @@ class Aialtg_Generator {
 		if ( ! is_array( $options ) ) {
 			$options = array();
 		}
+
+		// Allow filtering to skip image generation.
+		$skip = apply_filters( 'aialtg_skip_image_generation', false, $post_id, $source );
+		if ( $skip ) {
+			// Mark as processed so it doesn't get retried or stuck in the queue.
+			update_post_meta( $post_id, '_aialtg_processed', '1' );
+
+			// Clean up any previous error logs since we're skipping it.
+			delete_post_meta( $post_id, '_aialtg_error_log' );
+
+			return array(
+				'alt_text' => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
+				'title'    => get_the_title( $post_id ),
+				'skipped'  => true,
+			);
+		}
+
 		$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
@@ -247,8 +264,9 @@ class Aialtg_Generator {
 		// Mark as processed by the plugin.
 		update_post_meta( $post_id, '_aialtg_processed', '1' );
 
-		// Save Generation Meta if enabled.
-		if ( ! empty( $options['save_gen_meta'] ) ) {
+		// Save Generation Meta if enabled and allowed.
+		$allow_save = apply_filters( 'aialtg_allow_save_gen_meta', false );
+		if ( ! empty( $options['save_gen_meta'] ) && $allow_save ) {
 			// Use gmdate() instead of date() to avoid timezone issues.
 			update_post_meta( $post_id, '_aialtg_gen_date', gmdate( 'Y-m-d H:i:s' ) );
 			update_post_meta( $post_id, '_aialtg_gen_source', sanitize_text_field( $source ) );

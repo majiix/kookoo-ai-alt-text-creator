@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+define( 'AIALTG_VERSION', '1.8.2' );
+
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php';

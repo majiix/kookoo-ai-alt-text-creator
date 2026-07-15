@@ -156,6 +156,14 @@ class Aialtg_Settings {
 		);
 
 		add_settings_field(
+			'skip_existing_alt',
+			__( 'Skip Images with Existing Alt Text', 'kookoo-ai-alt-text-creator' ),
+			array( $this, 'render_skip_existing_alt_field' ),
+			'kookoo-ai-alt-text-creator',
+			'aialtg_cron_section'
+		);
+
+		add_settings_field(
 			'cron_batch_size',
 			__( 'Batch Size (Images per run)', 'kookoo-ai-alt-text-creator' ),
 			array( $this, 'render_cron_batch_field' ),
@@ -194,7 +202,17 @@ class Aialtg_Settings {
 		// Feature Toggles.
 		$new_input['enable_alt']    = isset( $input['enable_alt'] ) ? '1' : '0';
 		$new_input['enable_title']  = isset( $input['enable_title'] ) ? '1' : '0';
-		$new_input['save_gen_meta'] = isset( $input['save_gen_meta'] ) ? '1' : '0';
+
+		$is_compatible = class_exists( 'Aialtg_Pro_Addon' ) && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+		if ( $is_compatible ) {
+			$new_input['save_gen_meta'] = isset( $input['save_gen_meta'] ) ? '1' : '0';
+			$new_input['skip_existing_alt'] = isset( $input['skip_existing_alt'] ) ? '1' : '0';
+		} else {
+			$old_options = get_option( self::$option_name );
+			$old_options = is_array( $old_options ) ? $old_options : array();
+			$new_input['save_gen_meta'] = isset( $old_options['save_gen_meta'] ) ? $old_options['save_gen_meta'] : '0';
+			$new_input['skip_existing_alt'] = isset( $old_options['skip_existing_alt'] ) ? $old_options['skip_existing_alt'] : '0';
+		}
 
 		// Prompts & Formats.
 		if ( isset( $input['global_context'] ) ) {
@@ -516,6 +534,39 @@ class Aialtg_Settings {
 		<?php
 	}
 
+	public function render_skip_existing_alt_field() {
+		$options = get_option( self::$option_name );
+		$options = ( is_array( $options ) ) ? $options : array();
+		
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+		
+		$checked = isset( $options['skip_existing_alt'] ) ? $options['skip_existing_alt'] : '0';
+		?>
+		<label class="aialtg-toggle <?php echo $is_compatible ? '' : 'aialtg-toggle-disabled'; ?>">
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[skip_existing_alt]' ); ?>" value="1" <?php checked( $checked, '1' ); ?> <?php disabled( ! $is_compatible ); ?> />
+			<span class="aialtg-toggle-slider"></span>
+			<span class="aialtg-toggle-label">
+				<?php esc_html_e( 'Skip images with existing Alt Text', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_compatible ) : ?>
+					<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
+			</span>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Skip generating new Alt Text if the image already has an Alt Text (manually written or by other plugins). Only works during background processing.', 'kookoo-ai-alt-text-creator' ); ?>
+			<?php if ( ! $has_pro_addon ) : ?>
+				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+			<?php elseif ( ! $is_compatible ) : ?>
+				<br><span class="aialtg-pro-only-note" style="color: var(--aialtg-error);"><?php
+					// translators: 1: Pro version, 2: Free version
+					echo wp_kses_post( sprintf( __( 'Version conflict: Pro Addon (%1$s) is lower than the main plugin (%2$s). Please <a href="https://violo.ir/?p=14" target="_blank">download the latest update</a>.', 'kookoo-ai-alt-text-creator' ), defined( 'AIALTG_PRO_VERSION' ) ? AIALTG_PRO_VERSION : 'N/A', defined( 'AIALTG_VERSION' ) ? AIALTG_VERSION : 'N/A' ) );
+				?></span>
+			<?php endif; ?>
+		</p>
+		<?php
+	}
+
 	public function render_enable_alt_field() {
 		$options = get_option( self::$option_name );
 		$options = ( is_array( $options ) ) ? $options : array();
@@ -565,14 +616,33 @@ class Aialtg_Settings {
 	public function render_save_gen_meta_field() {
 		$options = get_option( self::$option_name );
 		$options = ( is_array( $options ) ) ? $options : array();
+
+		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
+		$is_compatible = $has_pro_addon && defined( 'AIALTG_PRO_VERSION' ) && defined( 'AIALTG_VERSION' ) && version_compare( AIALTG_PRO_VERSION, AIALTG_VERSION, '>=' );
+
+		$checked = isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0';
 		?>
-		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?> />
+		<label class="aialtg-toggle <?php echo $is_compatible ? '' : 'aialtg-toggle-disabled'; ?>">
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( $checked, '1' ); ?> <?php disabled( ! $is_compatible ); ?> />
 			<span class="aialtg-toggle-slider"></span>
 			<span class="aialtg-toggle-label">
 				<?php esc_html_e( 'Save generation metadata (timestamp/source)', 'kookoo-ai-alt-text-creator' ); ?>
+				<?php if ( ! $is_compatible ) : ?>
+					<span class="aialtg-pro-badge"><?php esc_html_e( 'PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+				<?php endif; ?>
 			</span>
 		</label>
+		<p class="description">
+			<?php esc_html_e( 'Save the timestamp and generation source (manual vs cron) to the attachment metadata.', 'kookoo-ai-alt-text-creator' ); ?>
+			<?php if ( ! $has_pro_addon ) : ?>
+				<br><span class="aialtg-pro-only-note"><?php echo wp_kses_post( __( 'Available in the <a href="https://violo.ir/?p=14" target="_blank">Pro Addon</a>.', 'kookoo-ai-alt-text-creator' ) ); ?></span>
+			<?php elseif ( ! $is_compatible ) : ?>
+				<br><span class="aialtg-pro-only-note" style="color: var(--aialtg-error);"><?php
+					// translators: 1: Pro version, 2: Free version
+					echo wp_kses_post( sprintf( __( 'Version conflict: Pro Addon (%1$s) is lower than the main plugin (%2$s). Please <a href="https://violo.ir/?p=14" target="_blank">download the latest update</a>.', 'kookoo-ai-alt-text-creator' ), defined( 'AIALTG_PRO_VERSION' ) ? AIALTG_PRO_VERSION : 'N/A', defined( 'AIALTG_VERSION' ) ? AIALTG_VERSION : 'N/A' ) );
+				?></span>
+			<?php endif; ?>
+		</p>
 		<?php
 	}
 

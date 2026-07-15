@@ -877,3 +877,42 @@
 .aialtg-tab-panel.active {
 	display: block;
 }
+
+/* --- PRO Feature Styling --- */
+.aialtg-pro-badge {
+	background: linear-gradient(135deg, var(--aialtg-accent), #c084fc);
+	color: #ffffff;
+	font-size: 9px;
+	font-weight: 800;
+	padding: 2px 6px;
+	border-radius: 4px;
+	margin-left: 8px;
+	letter-spacing: 0.5px;
+	display: inline-block;
+	vertical-align: middle;
+	box-shadow: 0 2px 4px rgba(168, 85, 247, 0.2);
+}
+
+.aialtg-toggle-disabled {
+	opacity: 0.6;
+	cursor: not-allowed !important;
+}
+
+.aialtg-toggle-disabled .aialtg-toggle-slider {
+	background-color: #e2e8f0;
+}
+
+.aialtg-pro-only-note {
+	color: var(--aialtg-accent);
+	font-weight: 500;
+	font-size: 11px;
+}
+
+.aialtg-pro-only-note a {
+	color: var(--aialtg-accent) !important;
+	text-decoration: underline;
+}
+
+.aialtg-pro-only-note a:hover {
+	color: var(--aialtg-primary) !important;
+}
