@@ -10,7 +10,7 @@ Requires at least: 6.0
 
 Tested up to: 7.0
 
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 
 License: GPLv2 or later
 
@@ -209,7 +209,17 @@ Use the "Retry Failed Images" button to move them back to the pending queue.
 
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
+= Can I generate Alt Text or Titles for free? =
+
+Yes. Choose a free model from OpenRouter to generate metadata without any cost.
+
 == Changelog ==
+
+= 1.8.3 =
+* Added premium option to skip images with existing Alt Texts during background/cron runs.
+* Added premium option to save generation metadata (timestamp/source).
+* Added premium WP-CLI command integration (`wp kookoo-alt-text process`).
+* Implemented Pro addon version compatibility validation checks and warning notices.
 
 = 1.8.2 =
 * Removed licensing logic and made all features completely free.

@@ -20,6 +20,7 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 * [includes/class-aialtg-licensing.php](class-aialtg-licensing.php): [NEW] Handles EDD Software Licensing communication, license activation, deactivation, daily check cron status, and local caching.
 * [docs/design_system.md](design_system.md): [NEW] Detailed specification of the plugin's visual tokens, typography, layouts, components, and animations.
 * [kookoo-ai-alt-text-creator-pro-addon/kookoo-ai-alt-text-creator-pro-addon.php](../kookoo-ai-alt-text-creator-pro-addon/kookoo-ai-alt-text-creator-pro-addon.php): [NEW] Pro addon plugin main file, implements premium filtering logic to skip existing alt texts.
+* [kookoo-ai-alt-text-creator-pro-addon/includes/class-aialtg-cli.php](../kookoo-ai-alt-text-creator-pro-addon/includes/class-aialtg-cli.php): [NEW] Registers premium WP-CLI commands (`wp kookoo-alt-text process`).
 
 
 ## Current Features
@@ -33,6 +34,7 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 * **Save Generation Metadata**: [NEW] Premium option to save generation source and timestamp to attachment metadata.
 * **Skip Existing Alt Texts**: [NEW] Premium option (located under the Bulk Generation tab) to skip generating Alt Text for images that already have one (written manually or by other plugins) during background processing.
 * **Pro Version Compatibility Verification**: [NEW] Automatically verifies version synchronization between the main plugin and the Pro addon to prevent mismatches and conflicts. If the Pro addon is outdated, it disables premium features and displays a warning to download updates.
+* **WP-CLI Commands**: [NEW] Premium WP-CLI command integration (`wp kookoo-alt-text process`) to trigger image processing or background batching directly from the command line.
 
 ## Verification Commands
 Validate PHP syntax of the codebase:
@@ -44,4 +46,5 @@ php -l includes/class-aialtg-cron.php
 php -l includes/class-aialtg-licensing.php
 php -l uninstall.php
 php -l ../kookoo-ai-alt-text-creator-pro-addon/kookoo-ai-alt-text-creator-pro-addon.php
+php -l ../kookoo-ai-alt-text-creator-pro-addon/includes/class-aialtg-cli.php
 ```

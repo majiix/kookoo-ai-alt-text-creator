@@ -480,6 +480,12 @@ class Aialtg_Settings {
 				<span class="dashicons dashicons-visibility"></span>
 			</button>
 		</div>
+		<p class="description">
+			<?php
+			// translators: %s: OpenRouter URL
+			echo wp_kses_post( sprintf( __( 'Get your API key from <a href="%s" target="_blank">OpenRouter</a>.', 'kookoo-ai-alt-text-creator' ), 'https://openrouter.ai/' ) );
+			?>
+		</p>
 		<?php
 	}
 
@@ -770,6 +776,10 @@ class Aialtg_Settings {
 									<li><?php esc_html_e( 'Configure your Alt Text & Title prompt guidelines.', 'kookoo-ai-alt-text-creator' ); ?></li>
 									<li><?php esc_html_e( 'Background processing will automatically analyze pending images.', 'kookoo-ai-alt-text-creator' ); ?></li>
 								</ol>
+								<p><strong><?php esc_html_e( 'WP-CLI Integration (PRO):', 'kookoo-ai-alt-text-creator' ); ?></strong></p>
+								<p class="description"><?php esc_html_e( 'Trigger metadata generation directly from the server command line:', 'kookoo-ai-alt-text-creator' ); ?></p>
+								<pre class="code" style="background: rgba(0,0,0,0.05); padding: 8px; border-radius: 4px; font-family: monospace; font-size: 11px; margin: 4px 0 12px 0;">wp kookoo-alt-text process --id=&lt;attachment_id&gt;
+wp kookoo-alt-text process --batch</pre>
 								<p class="description"><?php esc_html_e( 'Need support or want to read documentation? Visit the official plugin directory page.', 'kookoo-ai-alt-text-creator' ); ?></p>
 							</div>
 						</div>
