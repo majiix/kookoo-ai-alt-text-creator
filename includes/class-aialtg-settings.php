@@ -181,37 +181,7 @@ class Aialtg_Settings {
 		}
 		$new_input = array();
 
-		// License Settings.
-		$old_options = get_option( self::$option_name );
-		if ( ! is_array( $old_options ) ) {
-			$old_options = array();
-		}
-
-		if ( isset( $input['license_key'] ) ) {
-			$old_key = isset( $old_options['license_key'] ) ? $old_options['license_key'] : '';
-			$new_key = sanitize_text_field( $input['license_key'] );
-			$new_key = trim( $new_key );
-
-			$new_input['license_key'] = $new_key;
-
-			if ( $new_key !== $old_key ) {
-				if ( ! empty( $old_key ) && 'valid' === ( isset( $old_options['license_status'] ) ? $old_options['license_status'] : '' ) ) {
-					Aialtg_Licensing::deactivate_license( $old_key );
-				}
-				$new_input['license_status'] = 'inactive';
-				$new_input['license_data']   = array();
-				delete_transient( 'aialtg_license_check_lock' );
-			} else {
-				// Keep status from $input if explicitly set (e.g. from AJAX/Cron update_option calls).
-				// Otherwise, fallback to the saved old options status.
-				$new_input['license_status'] = isset( $input['license_status'] ) ? sanitize_text_field( $input['license_status'] ) : ( isset( $old_options['license_status'] ) ? $old_options['license_status'] : 'inactive' );
-				$new_input['license_data']   = isset( $input['license_data'] ) ? $input['license_data'] : ( isset( $old_options['license_data'] ) ? $old_options['license_data'] : array() );
-			}
-		} else {
-			$new_input['license_key']    = isset( $old_options['license_key'] ) ? $old_options['license_key'] : '';
-			$new_input['license_status'] = isset( $old_options['license_status'] ) ? $old_options['license_status'] : 'inactive';
-			$new_input['license_data']   = isset( $old_options['license_data'] ) ? $old_options['license_data'] : array();
-		}
+		// License Settings (Removed)
 
 		// API Settings.
 		if ( isset( $input['api_key'] ) ) {
@@ -464,71 +434,7 @@ class Aialtg_Settings {
 		<?php
 	}
 
-	public function render_license_card() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
-		$value   = isset( $options['license_key'] ) ? $options['license_key'] : '';
-		$status  = isset( $options['license_status'] ) ? $options['license_status'] : 'inactive';
-		$data    = isset( $options['license_data'] ) ? $options['license_data'] : array();
 
-		$is_valid = 'valid' === $status;
-		?>
-		<h2><?php esc_html_e( 'License Key', 'kookoo-ai-alt-text-creator' ); ?></h2>
-		<p class="aialtg-section-desc"><?php esc_html_e( 'Activate or manage your Pro license key to unlock premium features.', 'kookoo-ai-alt-text-creator' ); ?></p>
-		<div class="form-table aialtg-license-table">
-			<div class="aialtg-license-field-container" data-status="<?php echo esc_attr( $status ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_license_nonce' ) ); ?>">
-				<div class="aialtg-license-input-group">
-					<div class="aialtg-input-wrap aialtg-password-wrap aialtg-license-input-inner" style="flex: 1; margin: 0; position: relative;">
-						<input type="password" name="<?php echo esc_attr( self::$option_name . '[license_key]' ); ?>" value="<?php echo esc_attr( $value ); ?>" id="aialtg-license-key" class="regular-text" placeholder="e.g. 8f4e2..." style="width: 100%;"<?php if ( $is_valid ) : ?> readonly="readonly" style="background:#f0f0f1;color:#666;"<?php endif; ?> />
-						<button type="button" class="aialtg-toggle-password aialtg-toggle-license-visibility" aria-label="<?php esc_attr_e( 'Toggle License Key Visibility', 'kookoo-ai-alt-text-creator' ); ?>">
-							<span class="dashicons dashicons-visibility"></span>
-						</button>
-					</div>
-					
-					<?php if ( $is_valid ) : ?>
-						<button type="button" id="aialtg-deactivate-license-btn" class="button button-secondary">
-							<?php esc_html_e( 'Deactivate', 'kookoo-ai-alt-text-creator' ); ?>
-						</button>
-					<?php else : ?>
-						<button type="button" id="aialtg-activate-license-btn" class="button button-primary">
-							<?php esc_html_e( 'Activate', 'kookoo-ai-alt-text-creator' ); ?>
-						</button>
-					<?php endif; ?>
-				</div>
-
-				<div class="aialtg-license-status-wrap" style="margin-top: 10px;">
-					<?php if ( 'valid' === $status ) : ?>
-						<span class="aialtg-badge aialtg-badge-success">
-							<span class="dashicons dashicons-yes"></span> 
-							<?php 
-							if ( ! empty( $data['expiry'] ) ) {
-								/* translators: %s: Expiry date */
-								printf( esc_html__( 'Active (Expires: %s)', 'kookoo-ai-alt-text-creator' ), esc_html( date_i18n( get_option( 'date_format' ), strtotime( $data['expiry'] ) ) ) );
-							} else {
-								esc_html_e( 'Active (Lifetime)', 'kookoo-ai-alt-text-creator' );
-							}
-							?>
-						</span>
-					<?php elseif ( 'expired' === $status ) : ?>
-						<span class="aialtg-badge aialtg-badge-error">
-							<span class="dashicons dashicons-warning"></span> <?php esc_html_e( 'Expired', 'kookoo-ai-alt-text-creator' ); ?>
-						</span>
-					<?php elseif ( 'invalid' === $status ) : ?>
-						<span class="aialtg-badge aialtg-badge-error">
-							<span class="dashicons dashicons-no"></span> <?php esc_html_e( 'Invalid', 'kookoo-ai-alt-text-creator' ); ?>
-						</span>
-					<?php else : ?>
-						<span class="aialtg-badge aialtg-badge-neutral">
-							<span class="dashicons dashicons-admin-network"></span> <?php esc_html_e( 'Inactive', 'kookoo-ai-alt-text-creator' ); ?>
-						</span>
-					<?php endif; ?>
-				</div>
-				
-				<div class="aialtg-license-message" style="margin-top: 5px; font-weight: 500; display: none;"></div>
-			</div>
-		</div>
-		<?php
-	}
 
 	/**
 	 * Renders Cron section info.
@@ -659,17 +565,12 @@ class Aialtg_Settings {
 	public function render_save_gen_meta_field() {
 		$options = get_option( self::$option_name );
 		$options = ( is_array( $options ) ) ? $options : array();
-		$license_status = isset( $options['license_status'] ) ? $options['license_status'] : '';
-		$is_licensed = 'valid' === $license_status;
 		?>
 		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?><?php if ( ! $is_licensed ) : ?> disabled="disabled"<?php endif; ?> />
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[save_gen_meta]' ); ?>" value="1" <?php checked( isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0', '1' ); ?> />
 			<span class="aialtg-toggle-slider"></span>
 			<span class="aialtg-toggle-label">
 				<?php esc_html_e( 'Save generation metadata (timestamp/source)', 'kookoo-ai-alt-text-creator' ); ?>
-				<?php if ( ! $is_licensed ) : ?>
-					<span class="aialtg-badge aialtg-badge-error" style="margin-left: 6px;"><?php esc_html_e( 'Pro Only', 'kookoo-ai-alt-text-creator' ); ?></span>
-				<?php endif; ?>
 			</span>
 		</label>
 		<?php
@@ -717,36 +618,7 @@ class Aialtg_Settings {
 	/**
 	 * Renders upgrade card to purchase Pro version.
 	 */
-	public function render_upgrade_card() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
-		$status  = isset( $options['license_status'] ) ? $options['license_status'] : 'inactive';
 
-		// Hide if license is valid.
-		if ( 'valid' === $status ) {
-			return;
-		}
-		?>
-		<div class="aialtg-card aialtg-upgrade-card">
-			<div class="aialtg-card-header">
-				<h3>
-					<span class="dashicons dashicons-star-filled"></span>
-					<?php esc_html_e( 'Upgrade to Pro', 'kookoo-ai-alt-text-creator' ); ?>
-				</h3>
-			</div>
-			<div class="aialtg-card-body">
-				<p>
-					<?php esc_html_e( 'Unlock advanced SEO features, including automatic metadata saving (timestamp/source), premium priority support, and future visual enhancements.', 'kookoo-ai-alt-text-creator' ); ?>
-				</p>
-				<p class="aialtg-btn-wrap">
-					<a href="https://violo.ir/?p=14" target="_blank" class="button button-primary">
-						<?php esc_html_e( 'Get Pro License Key', 'kookoo-ai-alt-text-creator' ); ?>
-					</a>
-				</p>
-			</div>
-		</div>
-		<?php
-	}
 
 	private function render_section_by_id( $section_id ) {
 		global $wp_settings_sections, $wp_settings_fields;
@@ -798,10 +670,6 @@ class Aialtg_Settings {
 						echo '<span class="dashicons dashicons-backup"></span> ';
 						echo esc_html__( 'Bulk Generation', 'kookoo-ai-alt-text-creator' );
 						echo '</button>';
-						echo '<button type="button" class="aialtg-tab-btn" data-tab="license">';
-						echo '<span class="dashicons dashicons-lock"></span> ';
-						echo esc_html__( 'License', 'kookoo-ai-alt-text-creator' );
-						echo '</button>';
 						echo '<button type="button" class="aialtg-tab-btn" data-tab="help">';
 						echo '<span class="dashicons dashicons-editor-help"></span> ';
 						echo esc_html__( 'Help', 'kookoo-ai-alt-text-creator' );
@@ -818,10 +686,6 @@ class Aialtg_Settings {
 
 						echo '<div id="aialtg-tab-cron" class="aialtg-tab-panel">';
 						$this->render_section_by_id( 'aialtg_cron_section' );
-						echo '</div>';
-
-						echo '<div id="aialtg-tab-license" class="aialtg-tab-panel">';
-						$this->render_license_card();
 						echo '</div>';
 
 						echo '<div id="aialtg-tab-help" class="aialtg-tab-panel">';
@@ -849,7 +713,6 @@ class Aialtg_Settings {
 					</form>
 				</div>
 				<div class="aialtg-sidebar">
-					<?php $this->render_upgrade_card(); ?>
 					<?php $this->render_stats_card(); ?>
 				</div>
 			</div>

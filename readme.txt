@@ -10,7 +10,7 @@ Requires at least: 6.0
 
 Tested up to: 7.0
 
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 
 License: GPLv2 or later
 
@@ -210,6 +210,11 @@ Use the "Retry Failed Images" button to move them back to the pending queue.
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
 == Changelog ==
+
+= 1.8.2 =
+* Removed licensing logic and made all features completely free.
+* Discontinued EDD Software Licensing activation/deactivation support.
+* Made saving of generation metadata (timestamp/source) fully unlocked for all users.
 
 = 1.8.1 =
 * Consolidated duplicated AJAX event handlers in settings screen.

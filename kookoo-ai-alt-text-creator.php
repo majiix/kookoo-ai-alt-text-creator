@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     1.8.1
+ * Version:     1.8.2
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -19,7 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php';
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-licensing.php';
 
 // Include Cron class.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
@@ -36,9 +35,6 @@ class Aialtg_Image_Descriptor {
 	public function __construct() {
 		// Initialize Settings.
 		new Aialtg_Settings();
-
-		// Initialize Licensing.
-		new Aialtg_Licensing();
 
 		// Initialize Cron.
 		new Aialtg_Cron();
@@ -472,8 +468,8 @@ class Aialtg_Image_Descriptor {
 			return;
 		}
 
-		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.1' );
-		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.1', true );
+		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.2' );
+		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.2', true );
 
 		wp_localize_script( 'aialtg-admin-js', 'aialtg_vars', array(
 			'processing'    => __( 'Processing...', 'kookoo-ai-alt-text-creator' ),
