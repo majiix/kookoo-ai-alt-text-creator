@@ -269,12 +269,29 @@ jQuery(document).ready(function($) {
 			realInput.val(currentValue);
 		}
 
+		function updateApiKeyVisibility() {
+			var val = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
+			$('#aialtg-api-key').closest('tr').toggle(val === 'openrouter');
+			$('#aialtg-api-key-openai').closest('tr').toggle(val === 'openai');
+			$('#aialtg-api-key-gemini').closest('tr').toggle(val === 'gemini');
+
+			if (val === 'openai') {
+				customInput.attr('placeholder', 'e.g. gpt-4o-mini');
+			} else if (val === 'gemini') {
+				customInput.attr('placeholder', 'e.g. gemini-2.5-flash');
+			} else {
+				customInput.attr('placeholder', 'e.g. google/gemini-2.5-flash-lite');
+			}
+		}
+
 		gatewaySelect.on('change', function() {
 			currentValue = realInput.val();
 			initModelField();
+			updateApiKeyVisibility();
 		});
 
 		initModelField();
+		updateApiKeyVisibility();
 
 		// Handle select changes
 		modelSelect.on('change', function() {
@@ -349,5 +366,85 @@ jQuery(document).ready(function($) {
 	if (activeTab && $('.aialtg-tab-btn[data-tab="' + activeTab + '"]').length > 0) {
 		$('.aialtg-tab-btn[data-tab="' + activeTab + '"]').trigger('click');
 	}
+
+	// Test API Connection
+	$('#aialtg-test-conn-btn').on('click', function(e) {
+		e.preventDefault();
+		var btn = $(this);
+		var nonce = btn.data('nonce');
+		var spinner = btn.siblings('.aialtg-test-spinner');
+		var resultDiv = $('#aialtg-test-conn-result');
+
+		var gateway = $('#aialtg-api-gateway').val();
+		var key = '';
+		if (gateway === 'openai') {
+			key = $('#aialtg-api-key-openai').val();
+		} else if (gateway === 'gemini') {
+			key = $('#aialtg-api-key-gemini').val();
+		} else {
+			key = $('#aialtg-api-key').val();
+		}
+		var model = $('#aialtg-model-real-input').val();
+
+		resultDiv.hide().removeClass('notice notice-success notice-error').html('');
+		btn.prop('disabled', true);
+		spinner.addClass('is-active');
+
+		$.ajax({
+			url: ajaxurl,
+			type: 'POST',
+			data: {
+				action: 'aialtg_test_connection',
+				nonce: nonce,
+				api_gateway: gateway,
+				api_key: key,
+				model: model
+			},
+			success: function(response) {
+				btn.prop('disabled', false);
+				spinner.removeClass('is-active');
+
+				if (response.success) {
+					resultDiv.addClass('notice notice-success').css({
+						'display': 'block',
+						'color': '#46b450',
+						'padding': '10px',
+						'border-left': '4px solid #46b450',
+						'background': '#fff',
+						'box-shadow': '0 1px 1px 0 rgba(0,0,0,.1)'
+					}).text(response.data.message);
+				} else {
+					resultDiv.addClass('notice notice-error').css({
+						'display': 'block',
+						'color': '#dc3232',
+						'padding': '10px',
+						'border-left': '4px solid #dc3232',
+						'background': '#fff',
+						'box-shadow': '0 1px 1px 0 rgba(0,0,0,.1)'
+					}).text(response.data.message);
+				}
+			},
+			error: function() {
+				btn.prop('disabled', false);
+				spinner.removeClass('is-active');
+				resultDiv.addClass('notice notice-error').css({
+					'display': 'block',
+					'color': '#dc3232',
+					'padding': '10px',
+					'border-left': '4px solid #dc3232',
+					'background': '#fff',
+					'box-shadow': '0 1px 1px 0 rgba(0,0,0,.1)'
+				}).text(aialtg_vars.network_error);
+			}
+		});
+	});
+
+	// Handle Prompt Reset Buttons
+	$(document).on('click', '.aialtg-reset-prompt-btn', function(e) {
+		e.preventDefault();
+		var targetId = $(this).data('target');
+		var defaultValue = $(this).data('default');
+		$('#' + targetId).val(defaultValue);
+	});
 
 });

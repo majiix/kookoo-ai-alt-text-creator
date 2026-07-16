@@ -1,22 +1,14 @@
-
-
 === KooKoo AI Alt Text Creator ===
 
 Contributors: micromax2
-
 Tags: images, alt text, seo, accessibility, media library
-
 Requires at least: 6.0
-
 Tested up to: 7.0
-
-Stable tag: 1.8.3
-
+Stable tag: 1.9.0
 License: GPLv2 or later
-
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Automatically generates descriptive Alt Text and Titles for your Media Library images using AI via OpenRouter.
+Automatically generates descriptive Alt Text and Titles for your Media Library images using AI via OpenRouter, OpenAI, or Google Gemini.
 
 == Description ==
 
@@ -46,40 +38,31 @@ By connecting to OpenRouter, this plugin bypasses expensive monthly subscription
 
 **Format Control:** Choose exactly which file types to process (JPG, PNG, WEBP, etc.).
 
-**🧠 Why OpenRouter?**
+== Pro Version ==
 
-OpenRouter is an AI aggregator that offers significant benefits for WordPress users:
+Unlock the ultimate media optimization toolkit with the **KooKoo AI Alt Text Creator Pro Addon**. 
 
-**Cheaper:** Models like Google Gemini 1.5 Flash are incredibly affordable (often fractions of a cent per image).
+### How to Get the Pro Version
+You can purchase the Pro Addon directly from [Violo.ir](https://violo.ir/?p=14). Once purchased, upload and activate the Pro Addon plugin alongside the free version of KooKoo AI Alt Text Creator.
 
-**Flexible:** Switch models instantly. If a new model is released tomorrow, you can simply paste its ID and use it immediately.
+### What You Get with Pro
+* **Auto-Generate on Upload:** Automatically analyzes and generates image details (Alt, Title, Caption, Description) the moment you upload them to the Media Library.
+* **Media Library Bulk Actions:** Select multiple images and generate details in bulk directly from the WordPress Media Library list view.
+* **Generate Captions & Descriptions:** Expand image metadata beyond alt text and titles. Automate descriptive captions and detailed content descriptions with custom prompts.
+* **Direct API Gateways (OpenAI & Gemini):** Connect directly to OpenAI (ChatGPT) and Google Gemini direct APIs using your own keys to bypass third-party platforms.
+* **Granular Overwrite Protection:** Enable "Do Not Overwrite Existing Details" to selectively generate and save only empty metadata fields. If all enabled fields are already filled, the image is skipped without making API calls.
+* **Unlimited Cron Scheduler:** Remove all background processing limits. Unlocks intervals down to 1 minute and unlimited batch sizes.
+* **WP-CLI Integration:** Trigger metadata generation directly from the server command line.
+* **Save Generation Metadata:** Save timestamps and execution source indicators in database.
 
-**No Middleman:** You use your own API key.
-
-**💡 Context & Prompts**
-
-You can customize exactly how the AI behaves using placeholders in your prompts:
-
-**Examples of Global Context:**
-
-    Inputs:
-    – Page Topic: [{post_title}]
-    – Page Content: [{post_content}]
-    – Image: [attached image]
-
-Examples of Alt Text Prompt:
-
-    Role: Web Accessibility and SEO Expert.
-    Task: Generate a single, optimized alt text string (MAX 125 characters) for the provided image, situated within the context of inputs.
-
-Examples of Alt Text Prompt:
-
-    Role: SEO Copywriting Specialist.
-    Task: Generate 1 optimized image title based on the provided topic and attached image.
+### Why You Should Upgrade to Pro
+* **Save Hours of Manual Work:** Upload and automate everything. Your site will automatically generate search-engine optimized alt texts, titles, captions, and descriptions in the background.
+* **Better SEO & Accessibility:** Captions and descriptions add deep, keyword-rich context to your image pages and attachments, boosting search visibility and accessibility compliance.
+* **Complete Gateway Autonomy:** Choose direct endpoints to utilize your custom account credits and direct API models like gpt-4o-mini and gemini-2.5-flash.
 
 == External Services ==
 
-This plugin relies on OpenRouter as a third-party service to provide Artificial Intelligence capabilities.
+This plugin relies on OpenRouter as a third-party service to provide Artificial Intelligence capabilities. When the Pro Addon is active, it can optionally connect directly to OpenAI and Google Gemini APIs.
 
 > Service Name: OpenRouter
 >
@@ -93,43 +76,56 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 > Privacy Policy: OpenRouter Privacy Policy
 > https://openrouter.ai/privacy
 
-**Note:** You must obtain your own API key from OpenRouter to use this plugin.
+> Service Name: OpenAI Direct API (Optional Pro Addon Feature)
+>
+> Service URL: https://openai.com/
+>
+> Data Sent: Image URLs, Post Titles, and Post Content (context) are
+> sent to the OpenAI API for processing.
+>
+> Terms of Service: OpenAI Terms https://openai.com/policies/terms-of-use
+>
+> Privacy Policy: OpenAI Privacy Policy
+> https://openai.com/policies/privacy-policy
+
+> Service Name: Google Gemini Direct API (Optional Pro Addon Feature)
+>
+> Service URL: https://ai.google.dev/
+>
+> Data Sent: Image URLs, Post Titles, and Post Content (context) are
+> sent to the Google Generative Language API for processing.
+>
+> Terms of Service: Google APIs Terms of Service https://developers.google.com/terms
+>
+> Privacy Policy: Google Privacy Policy
+> https://policies.google.com/privacy
+
+**Note:** You must obtain your own API keys from OpenRouter, OpenAI, or Google to use these services.
 
 == Installation ==
 
-Upload the plugin folder to the /wp-content/plugins/ directory.
-
-Activate the plugin through the 'Plugins' menu in WordPress.
-
-Navigate to Settings > AI Alt Text to configure the plugin.
+1. Upload the plugin folder to the `/wp-content/plugins/` directory.
+2. Activate the plugin through the 'Plugins' menu in WordPress.
+3. Navigate to Settings > AI Alt Text to configure the plugin.
 
 == Configuration ==
 
-1-API Configuration
+### 1. API Configuration
+* **API Gateway:** Choose between OpenRouter, OpenAI Direct, and Google Gemini Direct.
+* **API Keys:** Provide the API key for your chosen gateway.
+* **Model Selection:** Choose the model you wish to use from the dynamic dropdown menu (default: google/gemini-2.5-flash-lite).
 
-**OpenRouter API Key:** Sign up at OpenRouter.ai and paste your key here.
+### 2. Generation Options
+* **Global Context:** Instructions sent with every request. Great for setting the "persona" of the AI.
+* **Supported Image Formats:** Define which file extensions the plugin should process.
+* **Enable Fields:** Toggle which metadata fields you want to generate (Alt Text, Title, Caption, Description).
+* **Prompts:** Customize the specific instructions for generating Alt Text, Titles, Captions, or Descriptions. Includes "Reset to Default" buttons.
+* **Save Generation Info:** Enables logging of timestamps and error messages to the database.
 
-**Model Selection:** Choose the model you wish to use from the dynamic dropdown menu (default: google/gemini-2.5-flash-lite).
-
-2-Generation Options
-
-**Global Context:** Instructions sent with every request. Great for setting the "persona" of the AI.
-
-**Supported Image Formats:** Define which file extensions the plugin should process.
-
-**Enable Alt Text / Title:** Toggle which metadata fields you want to generate.
-
-**Prompts:** Customize the specific instructions for generating Alt Text vs Titles.
-
-**Save Generation Info:** Enables logging of timestamps and error messages to the database.
-
-3-Bulk Generation (Cron)
-
-**Enable Background Processing:** Turns on the automatic generator.
-
-**Batch Size:** How many images to process per run. Keep this low (1-2) to prevent server timeouts.
-
-**Interval:** How often the job runs (in minutes).
+### 3. Bulk Generation (Cron)
+* **Enable Background Processing:** Turns on the automatic generator.
+* **Batch Size:** How many images to process per run. Keep this low (1-2) in free version to prevent server timeouts. Unlimited in Pro.
+* **Interval:** How often the job runs (in minutes).
 
 == Frequently Asked Questions ==
 
@@ -192,21 +188,15 @@ Manual Generation (Button): Yes. If you click the "Regenerate" button on a speci
 = What happens if I uninstall the plugin? =
 
 If you delete the plugin via the Plugins screen:
-
 It will clean up its own settings and temporary statistics.
-
 It will remove internal logs (timestamps, error logs).
-
 Crucially: The Alt Text and Titles generated for your images will remain. They become part of your site's standard content and are not deleted.
 
 = My bulk generation seems stuck. What do I do? =
 
 Go to Settings > AI Alt Text. Look at the "Statistics" box.
-
 Check the "Failed" count. If images are failing, check the "Edit Media" screen of a failed image to see the error message.
-
 Use the "Retry Failed Images" button to move them back to the pending queue.
-
 Use the "Reset Cron Progress" button if you want to completely restart the analysis from scratch (this allows the plugin to look at all images again).
 
 = Can I generate Alt Text or Titles for free? =
@@ -214,6 +204,18 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 1.9.0 =
+* Added Direct API Gateways for OpenAI and Google Gemini (Pro).
+* Added dynamic model switcher and placeholder updates based on selected Gateway.
+* Added option to generate image Captions and Descriptions with customizable prompts (Pro).
+* Added instant upload hook to automatically generate details on image upload (Pro).
+* Added Media Library bulk actions to process multiple images at once (Pro).
+* Refactored skip logic to granular field-level overwrite prevention (Pro).
+* Added Cron batch size and interval limits for free version, unlocked in Pro.
+* Added "Reset to Default" action link buttons under prompt textareas.
+* Redesigned settings layout to use premium HSL colors, focus states, and glassmorphism.
+* Added AJAX Test API Connection button to instantly verify API key and model config.
 
 = 1.8.3 =
 * Added premium option to skip images with existing Alt Texts during background/cron runs.
@@ -229,58 +231,8 @@ Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 = 1.8.1 =
 * Consolidated duplicated AJAX event handlers in settings screen.
 * Removed redundant cron health watchdog hook and method.
-* Removed redundant defensive settings sanitization fallback logic.
-* Cleaned up redundant class/method existence verification checks.
-* Removed redundant attachment URL fallback check.
+* Removed redundant cron interval filtering code.
 * Optimized database uninstall metadata deletion query using SQL IN operator.
-* Fixed local/private URL detection to correctly process localhost and private IP addresses and fallback to Base64.
-
-= 1.8.0 =
-* Added Easy Digital Downloads (EDD) Software Licensing.
-* Added a dedicated licensing card in the settings sidebar with AJAX activation/deactivation support.
-* Integrated the Violo.ir store API and verified its licensing constants.
-* Bumped plugin version to 1.8.0.
-
-= 1.7.1 =
-* Hardened plugin codebase against PHP warnings, notices, and type deprecations under PHP 8.0+.
-* Wrapped classes in class_exists checks to prevent redeclaration crashes.
-* Added try-catch blocks to AJAX handlers to prevent HTTP 500 fatal errors.
-* Implemented Base64-encoding fallback for local development servers to avoid connection/download failures for local image URLs.
-* Added robust JSON parsing and error handling when extracting Alt Texts/Titles.
-* Added set_time_limit(60) in the background cron worker to prevent timeout crashes on slow requests.
-* Optimized database deletion operations to use bulk SQL statements rather than queries in loops.
-
-= 1.7.0 =
-
-* Added a dynamic model selector dropdown that automatically retrieves all available models from OpenRouter via AJAX with a skeleton loading screen.
-* Grouped models in the dropdown by provider and added a visual camera indicator (📷) next to models that support image/vision analysis.
-* Implemented a seamless fallback text input for entering custom model IDs or when the API fetching is unavailable.
-* Updated the default model to google/gemini-2.5-flash-lite.
-* Added robust HTTP response validation for API requests.
-* Resolved a bug in the generation process where successful generation did not clear previous metadata error logs for the image.
-* Improved response JSON structure safety validation.
-* Removed redundant logic and ensured optimal codebase structure.
-* Bumped compatibility tag to support WordPress 7.0.
-
-= 1.6.0 =
-
-Redesigned Admin UI
-Added Cron
-
-= 1.5.3 =
-
-Improved Cron reliability with a new watchdog function.
-
-Added error logging for failed API requests in the Edit Media screen.
-
-Fixed issue where failed images would block the bulk generation queue.
-
-Added uninstall.php for clean removal of plugin data.
-
-Added "Scan & Fix JSON Errors" tool to settings.
-
-Added "Retry Failed Images" tool to settings.
 
 = 1.0.0 =
-
-Initial release.
+* Initial release.

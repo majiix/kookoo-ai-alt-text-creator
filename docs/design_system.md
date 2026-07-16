@@ -106,7 +106,8 @@ The main dashboard is constructed as a two-column responsive grid:
 - **Stats Card (`.aialtg-stats-card`)**: Enhances standard cards by drawing a `5px` vertical linear gradient highlight along the left border.
 
 ### B. Form Inputs
-- **Inputs & Dropdowns**: Applied to standard text fields, passwords, numbers, and custom selects (`#aialtg-model-select`). Features a minimal border, interior shadow, and soft hover/focus animations.
+- **Inputs & Dropdowns**: Applied to standard text fields, passwords, numbers, select elements, and custom selects (`#aialtg-model-select`). When wrapped in `.aialtg-input-wrap` or `.aialtg-input-group`, these elements inherit a minimal border, soft inset shadow, custom focus outline, and smooth hover/focus animations.
+- **Buttons Row (`.aialtg-buttons-row`)**: Flexible container for custom actions (such as test connection buttons or database control buttons), rendering buttons consistently with premium radius, hover/active scaling states, and icon alignment.
 - **Bouncy Toggle Switch**:
   - Wrap structure: `.aialtg-toggle`
   - Leverages `.aialtg-toggle-slider` and a hidden checkbox input to create a spring-like toggle action when clicked (`transform: translateX(...)`).

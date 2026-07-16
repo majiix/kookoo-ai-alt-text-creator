@@ -157,6 +157,7 @@
 /* --- Inputs & Textareas --- */
 .aialtg-input-wrap input[type="text"],
 .aialtg-input-wrap input[type="password"],
+.aialtg-input-wrap select,
 .aialtg-input-wrap textarea,
 .aialtg-input-group input[type="number"],
 #aialtg-model-select {
@@ -173,6 +174,7 @@
 }
 
 .aialtg-input-wrap input:focus,
+.aialtg-input-wrap select:focus,
 .aialtg-input-wrap textarea:focus,
 .aialtg-input-group input:focus,
 #aialtg-model-select:focus {

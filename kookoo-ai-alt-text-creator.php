@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     1.8.3
+ * Version:     1.9.0
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIALTG_VERSION', '1.8.3' );
+define( 'AIALTG_VERSION', '1.9.0' );
 
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
@@ -57,6 +57,8 @@ class Aialtg_Image_Descriptor {
 		add_action( 'wp_ajax_aialtg_retry_failed', array( $this, 'handle_retry_failed_request' ) );
 		// New AJAX for fetching models
 		add_action( 'wp_ajax_aialtg_get_models', array( $this, 'handle_get_models_request' ) );
+		// New AJAX for testing connection
+		add_action( 'wp_ajax_aialtg_test_connection', array( $this, 'handle_test_connection_request' ) );
 
 		// Assets.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
@@ -115,7 +117,7 @@ class Aialtg_Image_Descriptor {
 	 * @return array New columns.
 	 */
 	public function add_media_column( $columns ) {
-		$columns['aialtg_alt_gen'] = __( 'AI Alt Text', 'kookoo-ai-alt-text-creator' );
+		$columns['aialtg_alt_gen'] = __( 'AI Info', 'kookoo-ai-alt-text-creator' );
 		return $columns;
 	}
 
@@ -454,6 +456,117 @@ class Aialtg_Image_Descriptor {
 			}
 
 			wp_send_json_success( array( 'models' => $models ) );
+		} catch ( Throwable $e ) {
+			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+		}
+	}
+
+	/**
+	 * AJAX Handler for testing API connection.
+	 */
+	public function handle_test_connection_request() {
+		try {
+			if ( ! isset( $_POST['nonce'] ) ) {
+				wp_send_json_error( array( 'message' => __( 'Nonce missing', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aialtg_test_conn_nonce' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Security check failed', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( array( 'message' => __( 'Permission denied', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			$gateway = isset( $_POST['api_gateway'] ) ? sanitize_text_field( wp_unslash( $_POST['api_gateway'] ) ) : 'openrouter';
+			$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
+			$model   = isset( $_POST['model'] ) ? sanitize_text_field( wp_unslash( $_POST['model'] ) ) : '';
+
+			$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
+			if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
+				wp_send_json_error( array( 'message' => __( 'Direct API Gateways are premium features. Please activate the Pro Addon.', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			if ( empty( $api_key ) ) {
+				wp_send_json_error( array( 'message' => __( 'API Key is empty. Please enter your key first.', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			if ( empty( $model ) ) {
+				wp_send_json_error( array( 'message' => __( 'Please select or enter an AI Model first.', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			$options = array(
+				'api_gateway'     => $gateway,
+				'api_key'         => $api_key,
+				'api_key_openai'  => $api_key,
+				'api_key_gemini'  => $api_key,
+			);
+
+			$api_url = apply_filters( 'aialtg_api_url', 'https://openrouter.ai/api/v1/chat/completions', $options );
+			$headers = apply_filters( 'aialtg_api_headers', array(
+				'Authorization' => 'Bearer ' . $api_key,
+				'Content-Type'  => 'application/json',
+				'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
+				'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+			), $options );
+
+			$model = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
+
+			$body = array(
+				'model'      => $model,
+				'max_tokens' => 10,
+				'messages'   => array(
+					array(
+						'role'    => 'user',
+						'content' => array(
+							array(
+								'type' => 'text',
+								'text' => 'connection test. reply OK.',
+							),
+							array(
+								'type'      => 'image_url',
+								'image_url' => array( 'url' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' ),
+							),
+						),
+					),
+				),
+			);
+
+			$response = wp_remote_post(
+				$api_url,
+				array(
+					'headers' => $headers,
+					'body'    => wp_json_encode( $body ),
+					'timeout' => 20,
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+			}
+
+			$response_code = wp_remote_retrieve_response_code( $response );
+			if ( 200 !== $response_code ) {
+				$resp_body = wp_remote_retrieve_body( $response );
+				$resp_data = json_decode( $resp_body, true );
+				$err_msg = '';
+				if ( is_array( $resp_data ) && isset( $resp_data['error']['message'] ) ) {
+					$err_msg = $resp_data['error']['message'];
+				} else {
+					$err_msg = wp_remote_retrieve_response_message( $response );
+				}
+				/* translators: 1: HTTP status code, 2: error message */
+				wp_send_json_error( array( 'message' => sprintf( __( 'API returned HTTP %1$d: %2$s', 'kookoo-ai-alt-text-creator' ), $response_code, $err_msg ) ) );
+			}
+
+			$resp_body = wp_remote_retrieve_body( $response );
+			$resp_data = json_decode( $resp_body, true );
+
+			if ( ! is_array( $resp_data ) || isset( $resp_data['error'] ) ) {
+				wp_send_json_error( array( 'message' => isset( $resp_data['error']['message'] ) ? $resp_data['error']['message'] : __( 'Invalid API Key or Model details.', 'kookoo-ai-alt-text-creator' ) ) );
+			}
+
+			wp_send_json_success( array( 'message' => __( 'Connection successful! The API Key and Model details are valid.', 'kookoo-ai-alt-text-creator' ) ) );
 		} catch ( Throwable $e ) {
 			wp_send_json_error( array( 'message' => $e->getMessage() ) );
 		}

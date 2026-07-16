@@ -42,7 +42,20 @@ class Aialtg_Generator {
 			);
 		}
 
-		$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
+		$gateway = isset( $options['api_gateway'] ) ? $options['api_gateway'] : 'openrouter';
+		$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
+		if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
+			$gateway = 'openrouter';
+		}
+
+		$api_key = '';
+		if ( 'openai' === $gateway ) {
+			$api_key = isset( $options['api_key_openai'] ) ? $options['api_key_openai'] : '';
+		} elseif ( 'gemini' === $gateway ) {
+			$api_key = isset( $options['api_key_gemini'] ) ? $options['api_key_gemini'] : '';
+		} else {
+			$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
+		}
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
 		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : true;
@@ -52,6 +65,39 @@ class Aialtg_Generator {
 
 		$allow_caption     = $enable_caption && apply_filters( 'aialtg_allow_generate_caption', false );
 		$allow_description = $enable_description && apply_filters( 'aialtg_allow_generate_description', false );
+
+		$skip_overwrite = ! empty( $options['skip_existing_alt'] ) && '1' === $options['skip_existing_alt'];
+		if ( $skip_overwrite ) {
+			$existing_alt   = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
+			$existing_title = get_post_field( 'post_title', $post_id );
+			$existing_cap   = get_post_field( 'post_excerpt', $post_id );
+			$existing_desc  = get_post_field( 'post_content', $post_id );
+
+			if ( $enable_alt && ! empty( $existing_alt ) ) {
+				$enable_alt = false;
+			}
+			if ( $enable_title && ! empty( $existing_title ) ) {
+				$enable_title = false;
+			}
+			if ( $allow_caption && ! empty( $existing_cap ) ) {
+				$allow_caption = false;
+			}
+			if ( $allow_description && ! empty( $existing_desc ) ) {
+				$allow_description = false;
+			}
+		}
+
+		// If everything is already filled and we are not overwriting, skip the process.
+		if ( ! $enable_alt && ! $enable_title && ! $allow_caption && ! $allow_description ) {
+			delete_post_meta( $post_id, '_aialtg_error_log' );
+			return array(
+				'alt_text'    => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
+				'title'       => get_the_title( $post_id ),
+				'caption'     => get_post_field( 'post_excerpt', $post_id ),
+				'description' => get_post_field( 'post_content', $post_id ),
+				'skipped'     => true,
+			);
+		}
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'missing_key', __( 'API Key missing', 'kookoo-ai-alt-text-creator' ) );
@@ -181,6 +227,8 @@ class Aialtg_Generator {
 			'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
 			'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
 		), $options );
+
+		$model = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
 
 		$response = wp_remote_post(
 			$api_url,
