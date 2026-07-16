@@ -57,13 +57,8 @@ class Aialtg_Cron {
 	 */
 	public function add_custom_cron_schedule( $schedules ) {
 		$options = get_option( $this->option_name );
-		if ( ! is_array( $options ) ) {
-			$options = array();
-		}
-		$minutes = isset( $options['cron_interval'] ) ? (int) $options['cron_interval'] : 5;
-		if ( $minutes < 1 ) {
-			$minutes = 1;
-		}
+		$options = is_array( $options ) ? $options : array();
+		$minutes = max( 1, (int) ( $options['cron_interval'] ?? 5 ) );
 
 		$schedules[ self::INTERVAL_NAME ] = array(
 			'interval' => $minutes * 60,
@@ -78,18 +73,13 @@ class Aialtg_Cron {
 	 */
 	public function process_cron_batch() {
 		$options = get_option( $this->option_name );
-		if ( ! is_array( $options ) ) {
-			$options = array();
-		}
+		$options = is_array( $options ) ? $options : array();
 		// Double check if enabled.
 		if ( empty( $options['cron_enabled'] ) ) {
 			return;
 		}
 
-		$batch_size = isset( $options['cron_batch_size'] ) ? (int) $options['cron_batch_size'] : 1;
-		if ( $batch_size < 1 ) {
-			$batch_size = 1;
-		}
+		$batch_size = max( 1, (int) ( $options['cron_batch_size'] ?? 1 ) );
 
 		// Use the allowed types for the query.
 		$allowed_mimes = Aialtg_Settings::get_allowed_mimes();

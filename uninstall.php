@@ -29,6 +29,7 @@ delete_option( 'aialtg_settings' );
 // 3. Delete Transients.
 delete_transient( 'aialtg_stats' );
 delete_transient( 'aialtg_license_check_lock' );
+delete_transient( 'aialtg_openrouter_models' );
 
 // 4. Delete Post Meta Data.
 // We use direct SQL for performance to avoid loading every post ID into memory via get_posts().

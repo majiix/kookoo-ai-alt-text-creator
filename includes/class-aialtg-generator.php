@@ -48,14 +48,9 @@ class Aialtg_Generator {
 			$gateway = 'openrouter';
 		}
 
-		$api_key = '';
-		if ( 'openai' === $gateway ) {
-			$api_key = isset( $options['api_key_openai'] ) ? $options['api_key_openai'] : '';
-		} elseif ( 'gemini' === $gateway ) {
-			$api_key = isset( $options['api_key_gemini'] ) ? $options['api_key_gemini'] : '';
-		} else {
-			$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
-		}
+		$key_map   = array( 'openai' => 'api_key_openai', 'gemini' => 'api_key_gemini' );
+		$key_field = $key_map[ $gateway ] ?? 'api_key';
+		$api_key   = $options[ $key_field ] ?? '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
 		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : true;
@@ -185,12 +180,12 @@ class Aialtg_Generator {
 		$replacements = array( $parent_title, $parent_content );
 		$search_tags  = array( '{post_title}', '{post_content}' );
 
-		// Apply replacements to all prompt fields.
-		$global_context     = str_replace( $search_tags, $replacements, (string) $global_context );
-		$alt_prompt         = str_replace( $search_tags, $replacements, (string) $alt_prompt );
-		$title_prompt       = str_replace( $search_tags, $replacements, (string) $title_prompt );
-		$caption_prompt     = str_replace( $search_tags, $replacements, (string) $caption_prompt );
-		$description_prompt = str_replace( $search_tags, $replacements, (string) $description_prompt );
+		// Apply replacements to all prompt fields in a single call.
+		list( $global_context, $alt_prompt, $title_prompt, $caption_prompt, $description_prompt ) = str_replace(
+			$search_tags,
+			$replacements,
+			array( (string) $global_context, (string) $alt_prompt, (string) $title_prompt, (string) $caption_prompt, (string) $description_prompt )
+		);
 
 		// Build System Instruction.
 		$system_instructions = "Analyze the image and generate text based on the following instructions.\n";
@@ -200,22 +195,20 @@ class Aialtg_Generator {
 			$system_instructions .= "CONTEXT:\n" . $global_context . "\n\n";
 		}
 
+		$prompts_to_add = array_filter( array(
+			'alt_text'    => $enable_alt ? $alt_prompt : null,
+			'title'       => $enable_title ? $title_prompt : null,
+			'caption'     => $allow_caption ? $caption_prompt : null,
+			'description' => $allow_description ? $description_prompt : null,
+		) );
+
 		$expected_keys = array();
-		if ( $enable_alt ) {
-			$system_instructions .= '1. Alt Text Prompt: ' . $alt_prompt . "\n";
-			$expected_keys[]      = "'alt_text'";
-		}
-		if ( $enable_title ) {
-			$system_instructions .= '2. Title Prompt: ' . $title_prompt . "\n";
-			$expected_keys[]      = "'title'";
-		}
-		if ( $allow_caption ) {
-			$system_instructions .= '3. Caption Prompt: ' . $caption_prompt . "\n";
-			$expected_keys[]      = "'caption'";
-		}
-		if ( $allow_description ) {
-			$system_instructions .= '4. Description Prompt: ' . $description_prompt . "\n";
-			$expected_keys[]      = "'description'";
+		$index = 1;
+		foreach ( $prompts_to_add as $key => $prompt ) {
+			$label = ucfirst( str_replace( '_', ' ', $key ) );
+			$system_instructions .= "{$index}. {$label} Prompt: {$prompt}\n";
+			$expected_keys[]      = "'{$key}'";
+			$index++;
 		}
 		$system_instructions .= 'Return ONLY valid JSON with keys ' . implode( ' and ', $expected_keys ) . '.';
 

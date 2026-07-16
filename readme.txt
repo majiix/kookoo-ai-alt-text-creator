@@ -4,7 +4,7 @@ Contributors: micromax2
 Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
 Tested up to: 7.0
-Stable tag: 1.9.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,12 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 2.0.0 =
+* Implement settings fields unification, eliminating redundant teaser callbacks.
+* Refactor API key gateway lookups, tag replacements, and sequentially numbered prompts loop.
+* Enforce exact matching version checks between core and Pro Addon.
+* Add uninstallation cleanup for the OpenRouter models list transient.
 
 = 1.9.0 =
 * Added Direct API Gateways for OpenAI and Google Gemini (Pro).
