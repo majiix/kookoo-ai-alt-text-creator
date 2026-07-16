@@ -46,7 +46,7 @@ class Aialtg_Cron {
 		add_filter( 'cron_schedules', array( $this, 'add_custom_cron_schedule' ) );
 
 		// Register Worker.
-		add_action( self::CRON_HOOK, array( $this, 'process_cron_batch' ) );
+		add_action( self::CRON_HOOK, array( __CLASS__, 'process_cron_batch' ) );
 	}
 
 	/**
@@ -71,8 +71,8 @@ class Aialtg_Cron {
 	/**
 	 * Cron Worker: Processes a batch of images.
 	 */
-	public function process_cron_batch() {
-		$options = get_option( $this->option_name );
+	public static function process_cron_batch() {
+		$options = get_option( Aialtg_Settings::$option_name );
 		$options = is_array( $options ) ? $options : array();
 		// Double check if enabled.
 		if ( empty( $options['cron_enabled'] ) ) {

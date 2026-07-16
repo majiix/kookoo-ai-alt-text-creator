@@ -24,6 +24,26 @@ class Aialtg_Settings {
 	public static $option_name = 'aialtg_settings';
 
 	/**
+	 * Cached settings options.
+	 *
+	 * @var array|null
+	 */
+	private $options = null;
+
+	/**
+	 * Get settings options, cached in instance.
+	 *
+	 * @return array
+	 */
+	private function get_options() {
+		if ( null === $this->options ) {
+			$options = get_option( self::$option_name );
+			$this->options = is_array( $options ) ? $options : array();
+		}
+		return $this->options;
+	}
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -593,8 +613,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_api_gateway_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$gateway = isset( $options['api_gateway'] ) ? $options['api_gateway'] : 'openrouter';
 		?>
 		<div class="aialtg-input-wrap">
@@ -618,8 +637,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_api_key_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$value   = isset( $options['api_key'] ) ? $options['api_key'] : '';
 		?>
 		<div class="aialtg-input-wrap aialtg-password-wrap">
@@ -632,8 +650,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_model_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$value   = isset( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 		?>
 		<div class="aialtg-model-field-container" data-current-value="<?php echo esc_attr( $value ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'aialtg_models_nonce' ) ); ?>">
@@ -672,8 +689,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_global_context_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$val     = isset( $options['global_context'] ) ? $options['global_context'] : '';
 		?>
 		<div class="aialtg-input-wrap">
@@ -684,8 +700,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_allowed_formats_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$val     = isset( $options['allowed_formats'] ) ? $options['allowed_formats'] : 'jpg,jpeg,png,webp';
 		?>
 		<div class="aialtg-input-wrap">
@@ -696,8 +711,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_enable_alt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		?>
 		<label class="aialtg-toggle">
 			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_alt]' ); ?>" value="1" <?php checked( isset( $options['enable_alt'] ) ? $options['enable_alt'] : '1', '1' ); ?> />
@@ -708,8 +722,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_alt_prompt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$default = 'Generate a concise, descriptive alt text for this image. Do not use phrases like "Image of".';
 		$val     = isset( $options['prompt'] ) ? $options['prompt'] : $default;
 		?>
@@ -723,8 +736,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_enable_title_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		?>
 		<label class="aialtg-toggle">
 			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_title]' ); ?>" value="1" <?php checked( isset( $options['enable_title'] ) ? $options['enable_title'] : '1', '1' ); ?> />
@@ -735,8 +747,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_title_prompt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$default = 'Generate a short, descriptive title for this image.';
 		$val     = isset( $options['title_prompt'] ) ? $options['title_prompt'] : $default;
 		?>
@@ -750,8 +761,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_cron_enabled_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 
 		$val = isset( $options['cron_enabled'] ) ? $options['cron_enabled'] : '0';
 		?>
@@ -764,8 +774,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_cron_batch_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$val     = isset( $options['cron_batch_size'] ) ? $options['cron_batch_size'] : 1;
 
 		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
@@ -786,8 +795,7 @@ class Aialtg_Settings {
 	}
 
 	public function render_cron_interval_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$val     = isset( $options['cron_interval'] ) ? $options['cron_interval'] : 5;
 
 		$has_pro_addon = class_exists( 'Aialtg_Pro_Addon' );
@@ -925,8 +933,7 @@ wp kookoo-alt-text process --batch</pre>
 	// --- Unified Rendering Callbacks (Free/Pro) ---
 
 	public function render_api_key_openai_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$value   = isset( $options['api_key_openai'] ) ? $options['api_key_openai'] : '';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -946,8 +953,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_api_key_gemini_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$value   = isset( $options['api_key_gemini'] ) ? $options['api_key_gemini'] : '';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -967,8 +973,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_save_gen_meta_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$checked = isset( $options['save_gen_meta'] ) ? $options['save_gen_meta'] : '0';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -992,8 +997,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_enable_caption_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$checked = isset( $options['enable_caption'] ) ? $options['enable_caption'] : '0';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -1017,8 +1021,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_caption_prompt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$default = 'Generate a short, descriptive caption for the image.';
 		$val     = isset( $options['caption_prompt'] ) ? $options['caption_prompt'] : $default;
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
@@ -1033,8 +1036,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_enable_description_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$checked = isset( $options['enable_description'] ) ? $options['enable_description'] : '0';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -1058,8 +1060,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_description_prompt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$default = 'Generate a detailed description of the image content.';
 		$val     = isset( $options['description_prompt'] ) ? $options['description_prompt'] : $default;
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
@@ -1074,8 +1075,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_auto_generate_upload_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$checked = isset( $options['auto_generate_upload'] ) ? $options['auto_generate_upload'] : '0';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>
@@ -1099,8 +1099,7 @@ wp kookoo-alt-text process --batch</pre>
 	}
 
 	public function render_skip_existing_alt_field() {
-		$options = get_option( self::$option_name );
-		$options = ( is_array( $options ) ) ? $options : array();
+		$options = $this->get_options();
 		$checked = isset( $options['skip_existing_alt'] ) ? $options['skip_existing_alt'] : '0';
 		$is_pro  = class_exists( 'Aialtg_Pro_Addon' );
 		?>

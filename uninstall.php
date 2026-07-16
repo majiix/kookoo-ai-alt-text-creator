@@ -28,7 +28,6 @@ delete_option( 'aialtg_settings' );
 
 // 3. Delete Transients.
 delete_transient( 'aialtg_stats' );
-delete_transient( 'aialtg_license_check_lock' );
 delete_transient( 'aialtg_openrouter_models' );
 
 // 4. Delete Post Meta Data.
