@@ -53,8 +53,8 @@ class Aialtg_Generator {
 		$api_key   = $options[ $key_field ] ?? '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
-		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : true;
-		$enable_title       = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : true;
+		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : false;
+		$enable_title       = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : false;
 		$enable_caption     = isset( $options['enable_caption'] ) ? (bool) $options['enable_caption'] : false;
 		$enable_description = isset( $options['enable_description'] ) ? (bool) $options['enable_description'] : false;
 
@@ -157,7 +157,8 @@ class Aialtg_Generator {
 		$description_prompt         = isset( $options['description_prompt'] ) && ! empty( $options['description_prompt'] ) ? $options['description_prompt'] : $default_description_prompt;
 
 		// Get Global Context.
-		$global_context = isset( $options['global_context'] ) && ! empty( $options['global_context'] ) ? $options['global_context'] : '';
+		$default_context = 'Focus on the visual contents of the image. Refer to the associated page title ({post_title}) and content ({post_content}) to provide relevant context.';
+		$global_context  = isset( $options['global_context'] ) && ! empty( $options['global_context'] ) ? $options['global_context'] : $default_context;
 
 		// Context Replacement.
 		$parent_title   = 'N/A';

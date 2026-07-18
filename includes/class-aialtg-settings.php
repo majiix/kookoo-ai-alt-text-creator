@@ -690,10 +690,14 @@ class Aialtg_Settings {
 
 	public function render_global_context_field() {
 		$options = $this->get_options();
-		$val     = isset( $options['global_context'] ) ? $options['global_context'] : '';
+		$default = 'Focus on the visual contents of the image. Refer to the associated page title ({post_title}) and content ({post_content}) to provide relevant context.';
+		$val     = isset( $options['global_context'] ) ? $options['global_context'] : $default;
 		?>
 		<div class="aialtg-input-wrap">
-			<textarea name="<?php echo esc_attr( self::$option_name . '[global_context]' ); ?>" rows="3" cols="50" class="large-text code"><?php echo esc_textarea( $val ); ?></textarea>
+			<textarea name="<?php echo esc_attr( self::$option_name . '[global_context]' ); ?>" id="aialtg-global-context" rows="3" cols="50" class="large-text code"><?php echo esc_textarea( $val ); ?></textarea>
+			<div style="margin-top: 5px; text-align: right;">
+				<button type="button" class="button button-link aialtg-reset-prompt-btn" style="font-size: 11px; padding: 0; min-height: 20px; line-height: 20px; text-decoration: none;" data-target="aialtg-global-context" data-default="<?php echo esc_attr( $default ); ?>"><?php esc_html_e( 'Reset to Default', 'kookoo-ai-alt-text-creator' ); ?></button>
+			</div>
 			<p class="description"><?php esc_html_e( 'Global instructions included in all requests. Use {post_title} and {post_content} variables here.', 'kookoo-ai-alt-text-creator' ); ?></p>
 		</div>
 		<?php
@@ -714,7 +718,7 @@ class Aialtg_Settings {
 		$options = $this->get_options();
 		?>
 		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_alt]' ); ?>" value="1" <?php checked( isset( $options['enable_alt'] ) ? $options['enable_alt'] : '1', '1' ); ?> />
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_alt]' ); ?>" value="1" <?php checked( isset( $options['enable_alt'] ) ? $options['enable_alt'] : '0', '1' ); ?> />
 			<span class="aialtg-toggle-slider"></span>
 			<span class="aialtg-toggle-label"><?php esc_html_e( 'Enable Alt Text', 'kookoo-ai-alt-text-creator' ); ?></span>
 		</label>
@@ -739,7 +743,7 @@ class Aialtg_Settings {
 		$options = $this->get_options();
 		?>
 		<label class="aialtg-toggle">
-			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_title]' ); ?>" value="1" <?php checked( isset( $options['enable_title'] ) ? $options['enable_title'] : '1', '1' ); ?> />
+			<input type="checkbox" name="<?php echo esc_attr( self::$option_name . '[enable_title]' ); ?>" value="1" <?php checked( isset( $options['enable_title'] ) ? $options['enable_title'] : '0', '1' ); ?> />
 			<span class="aialtg-toggle-slider"></span>
 			<span class="aialtg-toggle-label"><?php esc_html_e( 'Enable Title', 'kookoo-ai-alt-text-creator' ); ?></span>
 		</label>
