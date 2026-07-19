@@ -857,7 +857,7 @@ class Aialtg_Settings {
 
 			<div class="aialtg-dashboard-layout">
 				<div class="aialtg-main-content">
-					<form action="options.php" method="post" class="aialtg-main-form">
+					<form action="options.php" method="post" class="aialtg-main-form" novalidate>
 						<?php
 						settings_fields( 'aialtg_plugin_options' );
 
