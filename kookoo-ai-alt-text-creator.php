@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     2.0.1
+ * Version:     2.0.2
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIALTG_VERSION', '2.0.1' );
+define( 'AIALTG_VERSION', '2.0.2' );
 
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
@@ -583,8 +583,8 @@ class Aialtg_Image_Descriptor {
 			return;
 		}
 
-		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), '1.8.3' );
-		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), '1.8.3', true );
+		wp_enqueue_style( 'aialtg-admin-css', plugins_url( 'assets/css/admin.css', __FILE__ ), array(), AIALTG_VERSION );
+		wp_enqueue_script( 'aialtg-admin-js', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery' ), AIALTG_VERSION, true );
 
 		wp_localize_script( 'aialtg-admin-js', 'aialtg_vars', array(
 			'processing'    => __( 'Processing...', 'kookoo-ai-alt-text-creator' ),

@@ -3,8 +3,8 @@
 Contributors: micromax2
 Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
-Tested up to: 7.0
-Stable tag: 2.0.1
+Tested up to: 7.1.0
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,10 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 2.0.2 =
+* Confirmed compatibility with WordPress 7.1.0.
+* Synced dynamic asset versioning to main plugin version constant.
 
 = 2.0.1 =
 * Add `novalidate` attribute to the settings form to resolve form submission failures caused by browser-side HTML5 validation on hidden tabs.

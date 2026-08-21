@@ -5,7 +5,7 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 
 ## Tech Stack
 * **PHP**: 7.4+ (Compatible with PHP 8.0+)
-* **WordPress**: 6.0+ (Compatible up to 7.0)
+* **WordPress**: 6.0+ (Compatible up to 7.1.0)
 * **API**: OpenRouter Chat Completions API (using WP HTTP API)
 * **Assets**: Vanilla CSS & JavaScript / jQuery (for settings panel animations, skeleton loaders, and AJAX actions)
 
