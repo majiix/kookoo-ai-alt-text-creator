@@ -4,7 +4,7 @@ Contributors: micromax2
 Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
 Tested up to: 7.1.0
-Stable tag: 2.0.2
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,8 +51,7 @@ You can purchase the Pro Addon directly from [Violo.ir](https://violo.ir/?p=14).
 * **Generate Captions & Descriptions:** Expand image metadata beyond alt text and titles. Automate descriptive captions and detailed content descriptions with custom prompts.
 * **Direct API Gateways (OpenAI & Gemini):** Connect directly to OpenAI (ChatGPT) and Google Gemini direct APIs using your own keys to bypass third-party platforms.
 * **Granular Overwrite Protection:** Enable "Do Not Overwrite Existing Details" to selectively generate and save only empty metadata fields. If all enabled fields are already filled, the image is skipped without making API calls.
-* **Unlimited Cron Scheduler:** Remove all background processing limits. Unlocks intervals down to 1 minute and unlimited batch sizes.
-* **WP-CLI Integration:** Trigger metadata generation directly from the server command line.
+* **WP-CLI Integration:** Trigger metadata generation and background batch processing directly from the server command line.
 * **Save Generation Metadata:** Save timestamps and execution source indicators in database.
 
 ### Why You Should Upgrade to Pro
@@ -111,20 +110,19 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 == Configuration ==
 
 ### 1. API Configuration
-* **API Gateway:** Choose between OpenRouter, OpenAI Direct, and Google Gemini Direct.
+* **API Gateway:** Select your AI provider (OpenRouter in core; direct OpenAI and Google Gemini connections available when Pro Addon is active).
 * **API Keys:** Provide the API key for your chosen gateway.
 * **Model Selection:** Choose the model you wish to use from the dynamic dropdown menu (default: google/gemini-2.5-flash-lite).
 
 ### 2. Generation Options
 * **Global Context:** Instructions sent with every request. Great for setting the "persona" of the AI.
 * **Supported Image Formats:** Define which file extensions the plugin should process.
-* **Enable Fields:** Toggle which metadata fields you want to generate (Alt Text, Title, Caption, Description).
-* **Prompts:** Customize the specific instructions for generating Alt Text, Titles, Captions, or Descriptions. Includes "Reset to Default" buttons.
-* **Save Generation Info:** Enables logging of timestamps and error messages to the database.
+* **Enable Fields:** Toggle which metadata fields you want to generate (Alt Text, Title; Caption and Description available via Pro Addon).
+* **Prompts:** Customize the specific instructions for generating Alt Text or Titles. Includes "Reset to Default" buttons.
 
 ### 3. Bulk Generation (Cron)
 * **Enable Background Processing:** Turns on the automatic generator.
-* **Batch Size:** How many images to process per run. Keep this low (1-2) in free version to prevent server timeouts. Unlimited in Pro.
+* **Batch Size:** How many images to process per run. Recommended 1-3 to prevent server timeouts.
 * **Interval:** How often the job runs (in minutes).
 
 == Frequently Asked Questions ==
@@ -204,6 +202,19 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 2.1.1 =
+* Add contextual Pro Tip callouts below settings with enhanced Pro counterparts.
+* Add uninstallation cleanup script (`uninstall.php`) for the Pro Addon to cleanly remove Pro options.
+* Modernize sidebar Upgrade to Pro card with direct tab switching to the Pro preview.
+
+= 2.1.0 =
+* Add dedicated Pro Preview showcase tab for free users with feature cards and upgrade guidance.
+* Automatically hide the Pro preview tab when the Pro Addon is active.
+* Implement dynamic Pro settings injection via WordPress action hooks (`aialtg_register_settings_fields`).
+* Remove dummy inputs, disabled controls, and inline Pro badges to comply with WordPress.org Plugin Directory guidelines.
+* Decouple Pro post-processing logic (captions, descriptions, and metadata) from core generator via extensible filter and action hooks.
+* Replace artificial commercial limits on Cron scheduler settings with server timeout advisories.
 
 = 2.0.2 =
 * Confirmed compatibility with WordPress 7.1.0.

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: AI Alt Text Creator\n"
-"POT-Creation-Date: 2026-01-29 00:19+0330\n"
+"POT-Creation-Date: 2026-09-10 14:11+0330\n"
 "PO-Revision-Date: 2026-01-28 20:44+0330\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -21,291 +21,616 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: kookoo-ai-alt-text-creator.php:103 includes/class-aialtg-settings.php:38
-#: includes/class-aialtg-settings.php:39
+#. translators: %d: number of minutes
+#: includes/class-aialtg-cron.php:66
+#, php-format
+msgid "Every %d Minutes (AI Alt Text)"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:60
+msgid "API Key missing"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:67
+msgid "Image URL not found"
+msgstr ""
+
+#. translators: %s: MIME type (e.g. image/jpeg)
+#: includes/class-aialtg-generator.php:86
+#, php-format
+msgid "Format %s not supported in settings"
+msgstr ""
+
+#. translators: 1: HTTP response status code, 2: error message
+#. translators: 1: HTTP status code, 2: error message
+#: includes/class-aialtg-generator.php:240 kookoo-ai-alt-text-creator.php:559
+#, php-format
+msgid "API returned HTTP %1$d: %2$s"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:247
+msgid "Invalid response format from API"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:251
+msgid "Unknown error"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:255
+msgid "Empty response from API"
+msgstr ""
+
+#: includes/class-aialtg-generator.php:279
+msgid "API response was JSON but could not be parsed"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:59 includes/class-aialtg-settings.php:60
 msgid "AI Alt Text"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:118 kookoo-ai-alt-text-creator.php:130
+#: includes/class-aialtg-settings.php:76 includes/class-aialtg-settings.php:816
+msgid "General"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:83
+msgid "API Gateway"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:91
+msgid "OpenRouter API Key"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:99
+msgid "AI Model"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:107
+msgid "Test Connection"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:116
+#: includes/class-aialtg-settings.php:820
+msgid "Generation Options"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:124
+msgid "Global Context"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:132
+msgid "Supported Image Formats"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:140
+msgid "Generate Alt Text"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:148
+msgid "Alt Text Prompt"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:156
+msgid "Generate Title"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:164
+msgid "Title Prompt"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:173
+msgid "Bulk Generation (Cron)"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:180
+#: includes/class-aialtg-settings.php:735
+msgid "Enable Background Processing"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:188
+msgid "Batch Size (Images per run)"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:196
+msgid "Interval (Minutes)"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:408
+msgid "Statistics"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:413
+msgid "Total Images"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:417
+msgid "Processed"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:421
+msgid "Failed"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:425
+msgid "Pending"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:434
+msgid "Complete"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:443
+msgid "Reset Progress"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:448
+msgid "Retry Failed"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:453
+msgid "Fix JSON Errors"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:465
+msgid ""
+"Resetting will re-analyze all images. Retry Failed moves error images back "
+"to pending. Fix JSON repairs accidental raw code in metadata."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:487
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:492
+msgid ""
+"Supercharge your media workflow with advanced automation and direct AI "
+"access:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:497
+msgid "Direct API Gateways:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:497
+msgid "OpenAI & Google Gemini direct keys"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:501
+msgid "Full Metadata:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:501
+msgid "Captions & Descriptions alongside Alt & Titles"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:505
+msgid "Instant Automation:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:505
+msgid "Auto-generate on new image uploads"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:509
+msgid "Media Library Actions:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:509
+msgid "Bulk process selected images with 1-click"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:513
+msgid "Smart Overwrite Rules:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:513
+msgid "Skip existing fields to save API credits"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:517
+msgid "Developer Tools:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:517
+msgid "WP-CLI commands & metadata auditing"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:522
+msgid "Get Pro Addon Now"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:527
+msgid "Preview Pro Features"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:549
+msgid "PRO TIP"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:554
+msgid "Learn more in Pro Preview"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:567
+msgid "Configure the background scheduler to process images automatically."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:571
+msgid ""
+"Enter your OpenRouter API credentials to connect your site to advanced "
+"models."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:575
+msgid "Configure how details are generated for your images."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:586
+msgid "OpenRouter (Default)"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:595
+msgid ""
+"Need direct API access without third-party routing? The Pro Addon unlocks "
+"native OpenAI (GPT-4o, GPT-4o-mini) and Google Gemini (Gemini 2.5 Flash/Pro) "
+"direct gateways with your personal API keys."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:604
+msgid "Toggle API Key Visibility"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:631
+msgid "Select the language model to use."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:642
+msgid "Test API Connection"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:658
+#: includes/class-aialtg-settings.php:695
+#: includes/class-aialtg-settings.php:720
+msgid "Reset to Default"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:660
+msgid ""
+"Global instructions included in all requests. Use {post_title} and "
+"{post_content} variables here."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:671
+msgid "Comma-separated list (e.g., jpg, png, webp)."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:682
+msgid "Enable Alt Text"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:707
+msgid "Enable Title"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:724
+msgid ""
+"Expand beyond Alt Text and Titles. The Pro Addon unlocks automated "
+"generation of WordPress Captions and Content Descriptions with dedicated "
+"custom prompts, plus hands-free auto-generation on image upload."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:746
+msgid "images per run"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:749
+msgid "Recommended: 1 to 5 images per run to avoid server timeouts."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:760
+msgid "minutes"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:763
+msgid "Define the background schedule frequency (minimum 1 minute)."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:766
+msgid ""
+"Prevent duplicate API costs and save time. The Pro Addon adds granular "
+"overwrite protection to automatically skip images that already have text, "
+"plus native WP-CLI command-line processing."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:802
+msgid "Automate your Image SEO with AI"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:824
+msgid "Bulk Generation"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:829
+msgid "Pro Features"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:834
+msgid "Help"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:858
+msgid "Quick Help & Resources"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:859
+msgid "Learn how the plugin works and find support resources."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:862
+msgid "How it works:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:864
+msgid "Choose your API Gateway, enter your API Key, and select an AI model."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:865
+msgid "Configure your Alt Text and Title prompt instructions."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:866
+msgid ""
+"Configure background bulk generation to process your existing media catalog."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:870
+msgid ""
+"Get your OpenRouter API key from <a href=\"https://openrouter.ai/\" target="
+"\"_blank\">OpenRouter</a>."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:874
+msgid "WP-CLI Integration:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:875
+msgid "Trigger metadata generation directly from the server command line:"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:879
+msgid ""
+"Need support or want to read documentation? Visit the official plugin "
+"directory page."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:886
+msgid "Save Settings"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:907
+msgid "Take Your Image SEO Further with Pro"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:909
+msgid ""
+"The KooKoo AI Alt Text Creator Pro Addon unlocks direct API gateways, "
+"complete metadata generation, instant upload automation, and server-level WP-"
+"CLI control."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:918
+msgid "Direct OpenAI & Google Gemini Gateways"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:919
+msgid ""
+"Connect directly to your OpenAI (GPT-4o, GPT-4o-mini) or Google AI Studio "
+"(Gemini 2.5 Flash, Gemini 2.5 Pro) accounts using your own API keys for "
+"lower latency."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:926
+msgid "Generate Captions & Descriptions"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:927
+msgid ""
+"Go beyond alt text and titles. Automatically generate engaging captions and "
+"detailed, accessible image descriptions with custom prompts."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:934
+msgid "Auto-Generate on Upload"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:935
+msgid ""
+"Hands-free automation. The instant an author uploads a new image anywhere in "
+"WordPress, AI generates and fills all enabled fields immediately."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:942
+msgid "Media Library Bulk Actions"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:943
+msgid ""
+"Select multiple images in the WordPress Media Library list view and click "
+"\"Generate AI Details\" to process your selection on demand."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:950
+msgid "Granular Overwrite Protection"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:951
+msgid ""
+"Preserve manual human edits. The plugin checks each metadata field "
+"individually and only generates missing values, skipping complete images."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:962
+msgid "WP-CLI Command Line Tool"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:963
+msgid ""
+"Manage heavy generation workloads via terminal or server cron with the "
+"native \"wp kookoo-alt-text process\" command."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:969
+msgid "Ready to upgrade your media workflow?"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:970
+msgid ""
+"Install the Pro Addon alongside this free version to unlock all premium "
+"capabilities."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:974
+msgid "Get Pro Addon"
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:106
+msgid "Settings"
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:120
+msgid "AI Info"
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:135 kookoo-ai-alt-text-creator.php:146
 msgid "N/A"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:137 kookoo-ai-alt-text-creator.php:386
+#: kookoo-ai-alt-text-creator.php:152 kookoo-ai-alt-text-creator.php:591
 msgid "Regenerate"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:137
+#: kookoo-ai-alt-text-creator.php:152
 msgid "Generate Info"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:159
+#: kookoo-ai-alt-text-creator.php:174
 msgid "AI Generation Info"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:179
+#: kookoo-ai-alt-text-creator.php:194
 msgid "Generation Failed:"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:185
+#: kookoo-ai-alt-text-creator.php:200
 msgid "No generation info available."
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:190
+#: kookoo-ai-alt-text-creator.php:205
 msgid "Last Generated:"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:191
+#: kookoo-ai-alt-text-creator.php:206
 msgid "Source:"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:201
+#: kookoo-ai-alt-text-creator.php:217
 msgid "Invalid ID"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:205 kookoo-ai-alt-text-creator.php:240
-#: kookoo-ai-alt-text-creator.php:272 kookoo-ai-alt-text-creator.php:315
+#: kookoo-ai-alt-text-creator.php:221 kookoo-ai-alt-text-creator.php:260
+#: kookoo-ai-alt-text-creator.php:296 kookoo-ai-alt-text-creator.php:343
+#: kookoo-ai-alt-text-creator.php:418 kookoo-ai-alt-text-creator.php:470
 msgid "Nonce missing"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:210 kookoo-ai-alt-text-creator.php:244
-#: kookoo-ai-alt-text-creator.php:276 kookoo-ai-alt-text-creator.php:319
+#: kookoo-ai-alt-text-creator.php:226 kookoo-ai-alt-text-creator.php:264
+#: kookoo-ai-alt-text-creator.php:300 kookoo-ai-alt-text-creator.php:347
+#: kookoo-ai-alt-text-creator.php:422 kookoo-ai-alt-text-creator.php:474
 msgid "Security check failed"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:214 kookoo-ai-alt-text-creator.php:248
-#: kookoo-ai-alt-text-creator.php:280 kookoo-ai-alt-text-creator.php:323
+#: kookoo-ai-alt-text-creator.php:230 kookoo-ai-alt-text-creator.php:268
+#: kookoo-ai-alt-text-creator.php:304 kookoo-ai-alt-text-creator.php:351
+#: kookoo-ai-alt-text-creator.php:426 kookoo-ai-alt-text-creator.php:478
 msgid "Permission denied"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:228
+#: kookoo-ai-alt-text-creator.php:244
 msgid "Info Saved!"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:264
+#: kookoo-ai-alt-text-creator.php:284
 msgid "Progress reset successfully."
 msgstr ""
 
 #. translators: %d: Number of images moved to queue
-#: kookoo-ai-alt-text-creator.php:299
+#: kookoo-ai-alt-text-creator.php:323
 #, php-format
 msgid "Moved %d failed images back to the processing queue."
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:301
+#: kookoo-ai-alt-text-creator.php:325
 msgid "No failed images found."
 msgstr ""
 
 #. translators: %d: number of images fixed
-#: kookoo-ai-alt-text-creator.php:362
+#: kookoo-ai-alt-text-creator.php:401
 #, php-format
 msgid ""
 "Found and reset %d images with bad JSON data. They are now pending "
 "regeneration."
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:364
+#: kookoo-ai-alt-text-creator.php:403
 msgid "No JSON errors found."
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:385
+#. translators: %d: HTTP status code
+#: kookoo-ai-alt-text-creator.php:442
+#, php-format
+msgid "API returned HTTP %d"
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:449
+msgid "Invalid data format from API"
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:487
+msgid ""
+"Direct API Gateways are premium features. Please activate the Pro Addon."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:491
+msgid "API Key is empty. Please enter your key first."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:495
+msgid "Please select or enter an AI Model first."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:566
+msgid "Invalid API Key or Model details."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:569
+msgid "Connection successful! The API Key and Model details are valid."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:590
 msgid "Processing..."
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:387
+#: kookoo-ai-alt-text-creator.php:592
 msgid "Network error"
 msgstr ""
 
-#: kookoo-ai-alt-text-creator.php:388
+#: kookoo-ai-alt-text-creator.php:593
 msgid ""
 "Are you sure you want to reset the progress? The cron job will re-analyze "
 "all images. This does not delete existing Alt Texts."
 msgstr ""
 
-#. translators: %d: number of minutes
-#: includes/class-aialtg-cron.php:70
-#, php-format
-msgid "Every %d Minutes (AI Alt Text)"
-msgstr ""
-
-#: includes/class-aialtg-generator.php:31
-msgid "API Key missing"
-msgstr ""
-
-#: includes/class-aialtg-generator.php:46
-msgid "Image URL not found"
-msgstr ""
-
-#. translators: %s: MIME type (e.g. image/jpeg)
-#: includes/class-aialtg-generator.php:67
-#, php-format
-msgid "Format %s not supported in settings"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:55
-msgid "API Configuration"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:62
-msgid "OpenRouter API Key"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:70
-msgid "AI Model"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:79
-msgid "Generation Options"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:87
-msgid "Global Context"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:95
-msgid "Supported Image Formats"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:103
-msgid "Generate Alt Text"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:111
-msgid "Alt Text Prompt"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:119
-msgid "Generate Title"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:127
-msgid "Title Prompt"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:135
-msgid "Save Generation Info"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:146
-msgid "Bulk Generation (Cron)"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:153
-msgid "Enable Background Processing"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:161
-msgid "Batch Size (Images per run)"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:169
-msgid "Interval (Minutes)"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:384
-msgid "Statistics"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:386
-msgid "Total Images:"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:387
-msgid "Processed:"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:388
-msgid "Failed:"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:389
-msgid "Pending:"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:398
-msgid "Reset Cron Progress"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:406
-msgid "Retry Failed Images"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:414
-msgid "Scan & Fix JSON Errors"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:422
-msgid "Resetting will allow the cron job to re-analyze all images."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:423
-msgid "Retry Failed moves error images back to pending queue."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:424
-msgid ""
-"Scan & Fix will check for images where the AI accidentally saved raw JSON as "
-"text and mark them for regeneration."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:430
-msgid "Enter your OpenRouter API credentials."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:431
-msgid "Configure generation behavior."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:457
-msgid ""
-"Global instructions or context included in all requests. Use {post_title} "
-"and {post_content} here to send them once, saving tokens."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:467
-msgid ""
-"Comma-separated list of file extensions to process (e.g., jpg, png, webp)."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:477
-msgid "Enable Alt Text"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:488
-msgid "Specific instructions for Alt Text."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:498
-msgid "Enable Title"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:509
-msgid "Specific instructions for Title."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:519
-msgid ""
-"Save timestamp and source (manual/cron) of generation to display in Edit "
-"Media."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:532
-msgid "Run automatically in background"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:544
-msgid "images per run"
-msgstr ""
-
-#: includes/class-aialtg-settings.php:545
-msgid "Keep this low (1-3) to avoid server timeouts."
-msgstr ""
-
-#: includes/class-aialtg-settings.php:555
-msgid "minutes"
-msgstr ""
-
 #. Plugin Name of the plugin/theme
-msgid "AI Alt Text Creator"
+msgid "KooKoo AI Alt Text Creator"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
@@ -319,5 +644,5 @@ msgid ""
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "micormax"
+msgid "micromax"
 msgstr ""

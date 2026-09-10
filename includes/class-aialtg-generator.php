@@ -53,46 +53,8 @@ class Aialtg_Generator {
 		$api_key   = $options[ $key_field ] ?? '';
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
-		$enable_alt         = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : false;
-		$enable_title       = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : false;
-		$enable_caption     = isset( $options['enable_caption'] ) ? (bool) $options['enable_caption'] : false;
-		$enable_description = isset( $options['enable_description'] ) ? (bool) $options['enable_description'] : false;
-
-		$allow_caption     = $enable_caption && apply_filters( 'aialtg_allow_generate_caption', false );
-		$allow_description = $enable_description && apply_filters( 'aialtg_allow_generate_description', false );
-
-		$skip_overwrite = ! empty( $options['skip_existing_alt'] ) && '1' === $options['skip_existing_alt'];
-		if ( $skip_overwrite ) {
-			$existing_alt   = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
-			$existing_title = get_post_field( 'post_title', $post_id );
-			$existing_cap   = get_post_field( 'post_excerpt', $post_id );
-			$existing_desc  = get_post_field( 'post_content', $post_id );
-
-			if ( $enable_alt && ! empty( $existing_alt ) ) {
-				$enable_alt = false;
-			}
-			if ( $enable_title && ! empty( $existing_title ) ) {
-				$enable_title = false;
-			}
-			if ( $allow_caption && ! empty( $existing_cap ) ) {
-				$allow_caption = false;
-			}
-			if ( $allow_description && ! empty( $existing_desc ) ) {
-				$allow_description = false;
-			}
-		}
-
-		// If everything is already filled and we are not overwriting, skip the process.
-		if ( ! $enable_alt && ! $enable_title && ! $allow_caption && ! $allow_description ) {
-			delete_post_meta( $post_id, '_aialtg_error_log' );
-			return array(
-				'alt_text'    => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
-				'title'       => get_the_title( $post_id ),
-				'caption'     => get_post_field( 'post_excerpt', $post_id ),
-				'description' => get_post_field( 'post_content', $post_id ),
-				'skipped'     => true,
-			);
-		}
+		$enable_alt   = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : false;
+		$enable_title = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : false;
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'missing_key', __( 'API Key missing', 'kookoo-ai-alt-text-creator' ) );
@@ -150,12 +112,6 @@ class Aialtg_Generator {
 		$default_title_prompt = 'Generate a short, descriptive title for this image.';
 		$title_prompt         = isset( $options['title_prompt'] ) && ! empty( $options['title_prompt'] ) ? $options['title_prompt'] : $default_title_prompt;
 
-		$default_caption_prompt = 'Generate a short, descriptive caption for the image.';
-		$caption_prompt         = isset( $options['caption_prompt'] ) && ! empty( $options['caption_prompt'] ) ? $options['caption_prompt'] : $default_caption_prompt;
-
-		$default_description_prompt = 'Generate a detailed description of the image content.';
-		$description_prompt         = isset( $options['description_prompt'] ) && ! empty( $options['description_prompt'] ) ? $options['description_prompt'] : $default_description_prompt;
-
 		// Get Global Context.
 		$default_context = 'Focus on the visual contents of the image. Refer to the associated page title ({post_title}) and content ({post_content}) to provide relevant context.';
 		$global_context  = isset( $options['global_context'] ) && ! empty( $options['global_context'] ) ? $options['global_context'] : $default_context;
@@ -181,11 +137,11 @@ class Aialtg_Generator {
 		$replacements = array( $parent_title, $parent_content );
 		$search_tags  = array( '{post_title}', '{post_content}' );
 
-		// Apply replacements to all prompt fields in a single call.
-		list( $global_context, $alt_prompt, $title_prompt, $caption_prompt, $description_prompt ) = str_replace(
+		// Apply replacements to core prompt fields.
+		list( $global_context, $alt_prompt, $title_prompt ) = str_replace(
 			$search_tags,
 			$replacements,
-			array( (string) $global_context, (string) $alt_prompt, (string) $title_prompt, (string) $caption_prompt, (string) $description_prompt )
+			array( (string) $global_context, (string) $alt_prompt, (string) $title_prompt )
 		);
 
 		// Build System Instruction.
@@ -196,12 +152,25 @@ class Aialtg_Generator {
 			$system_instructions .= "CONTEXT:\n" . $global_context . "\n\n";
 		}
 
-		$prompts_to_add = array_filter( array(
-			'alt_text'    => $enable_alt ? $alt_prompt : null,
-			'title'       => $enable_title ? $title_prompt : null,
-			'caption'     => $allow_caption ? $caption_prompt : null,
-			'description' => $allow_description ? $description_prompt : null,
-		) );
+		$prompts_to_add = array();
+		if ( $enable_alt ) {
+			$prompts_to_add['alt_text'] = $alt_prompt;
+		}
+		if ( $enable_title ) {
+			$prompts_to_add['title'] = $title_prompt;
+		}
+
+		// Allow extensions (e.g. Pro Addon) to filter/add prompts (caption, description, etc.).
+		$prompts_to_add = apply_filters( 'aialtg_generation_prompts', $prompts_to_add, $post_id, $options );
+
+		if ( empty( $prompts_to_add ) ) {
+			delete_post_meta( $post_id, '_aialtg_error_log' );
+			return array(
+				'alt_text' => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
+				'title'    => get_the_title( $post_id ),
+				'skipped'  => true,
+			);
+		}
 
 		$expected_keys = array();
 		$index = 1;
@@ -316,12 +285,6 @@ class Aialtg_Generator {
 			if ( $enable_title ) {
 				$title = isset( $result_json['title'] ) ? wp_strip_all_tags( $result_json['title'] ) : '';
 			}
-			if ( $allow_caption ) {
-				$caption = isset( $result_json['caption'] ) ? wp_strip_all_tags( $result_json['caption'] ) : '';
-			}
-			if ( $allow_description ) {
-				$description = isset( $result_json['description'] ) ? wp_strip_all_tags( $result_json['description'] ) : '';
-			}
 		}
 
 		// Save Data.
@@ -329,46 +292,29 @@ class Aialtg_Generator {
 			update_post_meta( $post_id, '_wp_attachment_image_alt', $alt_text );
 		}
 
-		$update_args  = array( 'ID' => $post_id );
-		$needs_update = false;
-
 		if ( $enable_title && ! empty( $title ) ) {
-			$update_args['post_title'] = $title;
-			$needs_update              = true;
-		}
-		if ( $allow_caption && ! empty( $caption ) ) {
-			$update_args['post_excerpt'] = $caption;
-			$needs_update                = true;
-		}
-		if ( $allow_description && ! empty( $description ) ) {
-			$update_args['post_content'] = $description;
-			$needs_update                = true;
-		}
-
-		if ( $needs_update ) {
-			wp_update_post( $update_args );
+			wp_update_post( array(
+				'ID'         => $post_id,
+				'post_title' => $title,
+			) );
 		}
 
 		// Mark as processed by the plugin.
 		update_post_meta( $post_id, '_aialtg_processed', '1' );
 
-		// Save Generation Meta if enabled and allowed.
-		$allow_save = apply_filters( 'aialtg_allow_save_gen_meta', false );
-		if ( ! empty( $options['save_gen_meta'] ) && $allow_save ) {
-			// Use gmdate() instead of date() to avoid timezone issues.
-			update_post_meta( $post_id, '_aialtg_gen_date', gmdate( 'Y-m-d H:i:s' ) );
-			update_post_meta( $post_id, '_aialtg_gen_source', sanitize_text_field( $source ) );
-		}
-
 		// Cleanup any previous error log since it succeeded this time.
 		delete_post_meta( $post_id, '_aialtg_error_log' );
 
-		return array(
-			'alt_text'    => $alt_text,
-			'title'       => $title,
-			'caption'     => $caption,
-			'description' => $description,
+		$result_data = array(
+			'alt_text' => $alt_text,
+			'title'    => $title,
 		);
+
+		// Allow extensions (e.g. Pro Addon) to process additional fields or update result.
+		$result_data = apply_filters( 'aialtg_processed_result', $result_data, $result_json, $post_id, $source, $options );
+		do_action( 'aialtg_image_processed', $post_id, $source, $result_json, $options );
+
+		return $result_data;
 	}
 
 

@@ -117,6 +117,7 @@ jQuery(document).ready(function($) {
 		];
 		var geminiModels = [
 			{ id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+			{ id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
 			{ id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite' },
 			{ id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' }
 		];
@@ -352,7 +353,7 @@ jQuery(document).ready(function($) {
 		$('.aialtg-tab-panel').removeClass('active');
 		$('#aialtg-tab-' + tabId).addClass('active');
 
-		if (tabId === 'help') {
+		if (tabId === 'help' || tabId === 'pro') {
 			$('.aialtg-submit-wrap').hide();
 		} else {
 			$('.aialtg-submit-wrap').show();
@@ -366,6 +367,19 @@ jQuery(document).ready(function($) {
 	if (activeTab && $('.aialtg-tab-btn[data-tab="' + activeTab + '"]').length > 0) {
 		$('.aialtg-tab-btn[data-tab="' + activeTab + '"]').trigger('click');
 	}
+
+	// Quick switch tab links (e.g. from sidebar Upgrade card)
+	$(document).on('click', '.aialtg-switch-tab', function(e) {
+		e.preventDefault();
+		var targetTab = $(this).data('tab');
+		if (targetTab) {
+			var tabBtn = $('.aialtg-tab-btn[data-tab="' + targetTab + '"]');
+			if (tabBtn.length > 0) {
+				tabBtn.trigger('click');
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		}
+	});
 
 	// Test API Connection
 	$('#aialtg-test-conn-btn').on('click', function(e) {
