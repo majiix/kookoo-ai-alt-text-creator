@@ -3,12 +3,12 @@
 Contributors: micromax2
 Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
-Tested up to: 7.1.0
-Stable tag: 2.1.1
+Tested up to: 7.1
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Automatically generates descriptive Alt Text and Titles for your Media Library images using AI via OpenRouter, OpenAI, or Google Gemini.
+Automatically generates descriptive Alt Text and Titles for your Media Library images using AI via OpenRouter.
 
 == Description ==
 
@@ -32,15 +32,15 @@ By connecting to OpenRouter, this plugin bypasses expensive monthly subscription
 
 **JSON Fixer:** A specialized tool to scan and fix images where the AI might have accidentally saved raw code instead of text.
 
-**Detailed Logging:** View the exact generation timestamp, source (Manual vs Cron), and any error messages directly in the "Edit Media" screen.
+**Error Logging:** View detailed error logs directly in the "Edit Media" screen if an image generation fails.
 
 **Cost Control:** You bring your own API key. You pay only for exactly what you use, with no markup.
 
 **Format Control:** Choose exactly which file types to process (JPG, PNG, WEBP, etc.).
 
-== Pro Version ==
+== Upgrade ==
 
-Unlock the ultimate media optimization toolkit with the **KooKoo AI Alt Text Creator Pro Addon**. 
+Unlock the ultimate media optimization toolkit with the **KooKoo AI Alt Text Creator Pro Addon**.
 
 ### How to Get the Pro Version
 You can purchase the Pro Addon directly from [Violo.ir](https://violo.ir/?p=14). Once purchased, upload and activate the Pro Addon plugin alongside the free version of KooKoo AI Alt Text Creator.
@@ -61,45 +61,19 @@ You can purchase the Pro Addon directly from [Violo.ir](https://violo.ir/?p=14).
 
 == External Services ==
 
-This plugin relies on OpenRouter as a third-party service to provide Artificial Intelligence capabilities. When the Pro Addon is active, it can optionally connect directly to OpenAI and Google Gemini APIs.
+This plugin relies on OpenRouter as a third-party service to provide Artificial Intelligence capabilities.
 
 > Service Name: OpenRouter
 >
 > Service URL: https://openrouter.ai/
 >
-> Data Sent: Image URLs, Post Titles, and Post Content (context) are
-> sent to the OpenRouter API for processing.
+> Data Sent: Image URLs, Post Titles, and Post Content (context) are sent to the OpenRouter API when an administrator generates metadata manually in the Media Library or automatically during scheduled background batch processing (WP-Cron).
 >
 > Terms of Service: OpenRouter Terms https://openrouter.ai/terms
 >
-> Privacy Policy: OpenRouter Privacy Policy
-> https://openrouter.ai/privacy
+> Privacy Policy: OpenRouter Privacy Policy https://openrouter.ai/privacy
 
-> Service Name: OpenAI Direct API (Optional Pro Addon Feature)
->
-> Service URL: https://openai.com/
->
-> Data Sent: Image URLs, Post Titles, and Post Content (context) are
-> sent to the OpenAI API for processing.
->
-> Terms of Service: OpenAI Terms https://openai.com/policies/terms-of-use
->
-> Privacy Policy: OpenAI Privacy Policy
-> https://openai.com/policies/privacy-policy
-
-> Service Name: Google Gemini Direct API (Optional Pro Addon Feature)
->
-> Service URL: https://ai.google.dev/
->
-> Data Sent: Image URLs, Post Titles, and Post Content (context) are
-> sent to the Google Generative Language API for processing.
->
-> Terms of Service: Google APIs Terms of Service https://developers.google.com/terms
->
-> Privacy Policy: Google Privacy Policy
-> https://policies.google.com/privacy
-
-**Note:** You must obtain your own API keys from OpenRouter, OpenAI, or Google to use these services.
+**Note:** You must obtain your own API key from OpenRouter to use this service.
 
 == Installation ==
 
@@ -110,14 +84,14 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 == Configuration ==
 
 ### 1. API Configuration
-* **API Gateway:** Select your AI provider (OpenRouter in core; direct OpenAI and Google Gemini connections available when Pro Addon is active).
+* **API Gateway:** Select your AI provider (OpenRouter).
 * **API Keys:** Provide the API key for your chosen gateway.
 * **Model Selection:** Choose the model you wish to use from the dynamic dropdown menu (default: google/gemini-2.5-flash-lite).
 
 ### 2. Generation Options
 * **Global Context:** Instructions sent with every request. Great for setting the "persona" of the AI.
 * **Supported Image Formats:** Define which file extensions the plugin should process.
-* **Enable Fields:** Toggle which metadata fields you want to generate (Alt Text, Title; Caption and Description available via Pro Addon).
+* **Enable Fields:** Toggle which metadata fields you want to generate (Alt Text, Title).
 * **Prompts:** Customize the specific instructions for generating Alt Text or Titles. Includes "Reset to Default" buttons.
 
 ### 3. Bulk Generation (Cron)
@@ -132,43 +106,43 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 OpenRouter supports a vast array of models from all major providers. As of the latest update, supported model families include (but are not limited to):
 
     Google: Gemini, PaLM
-    
+
     OpenAI: GPT (GPT-3.5, GPT-4, GPT-4o, etc.)
-    
+
     Anthropic: Claude (Haiku, Sonnet, Opus)
-    
+
     Meta: Llama
-    
+
     Mistral AI: Mistral, Mixtral, Codestral
-    
+
     DeepSeek: DeepSeek Chat/Coder
-    
+
     Qwen: Qwen (Alibaba)
-    
+
     Microsoft: WizardLM, Phi
-    
+
     Perplexity: Perplexity Online/Chat
-    
+
     X.ai: Grok
-    
+
     Cohere: Command
-    
+
     Nvidia: Nemotron
-    
+
     Amazon: Nova, Bedrock
-    
+
     Databricks: DBRX
-    
+
     Nous Research: Hermes
-    
+
     Liquid: Liquid
-    
+
     Arcee AI: Arcee
-    
+
     Moonshot AI: Kimi
-    
+
     Z.ai: GLM
-    
+
     MiniMax: MiniMax
 
 You can find the specific Model IDs for these families on the OpenRouter Models page.
@@ -202,6 +176,27 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 2.4.0 =
+* Enhance WordPress.org Guideline 5 compliance by isolating Pro gateway documentation into Pro Addon hooks.
+* Pass settings options array to the aialtg_skip_image_generation filter for clean external consumption.
+* Purge Pro-only marketing strings from core translation template.
+* Scope configuration documentation strictly to free features.
+
+= 2.3.0 =
+* Enhance WordPress.org Guideline 5 (trialware) compliance by removing inline promotional callouts from settings form fields.
+* Relocate advanced automation and Pro feature tips to the Help tab documentation.
+* Introduce public helper function aialtg_process_image() and aialtg_process_batch action hook for clean third-party and addon decoupling.
+* Decouple attachment generation metadata rendering via the aialtg_attachment_meta_box_details action hook.
+* Decouple connection testing options via the aialtg_test_connection_options filter hook.
+* Correct description to accurately reflect standalone core error logging.
+
+= 2.2.0 =
+* Enhance compliance with WordPress.org Guideline 5 (trialware) and Guideline 11.
+* Fully decouple free core from Pro Addon using extensible action and filter hooks (aialtg_loaded, aialtg_show_pro_card, aialtg_show_pro_tips, aialtg_show_pro_tab, aialtg_gateway_api_key).
+* Ensure API Gateway configuration is preserved and validated during settings save.
+* Replace commercial error notices in test connection handler with neutral validation messages.
+* Clean up JavaScript architecture to remove hardcoded third-party gateway references from the free bundle.
 
 = 2.1.1 =
 * Add contextual Pro Tip callouts below settings with enhanced Pro counterparts.

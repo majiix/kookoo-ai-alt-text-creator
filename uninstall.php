@@ -37,8 +37,6 @@ global $wpdb;
 // The meta keys used by this plugin.
 $aialtg_meta_keys = array(
 	'_aialtg_processed',   // Flag indicating image was processed.
-	'_aialtg_gen_date',    // Timestamp of generation.
-	'_aialtg_gen_source',  // Source (manual vs cron).
 	'_aialtg_error_log',   // Error logs for failed generations.
 );
 

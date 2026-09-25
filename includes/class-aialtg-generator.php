@@ -27,7 +27,7 @@ class Aialtg_Generator {
 		}
 
 		// Allow filtering to skip image generation.
-		$skip = apply_filters( 'aialtg_skip_image_generation', false, $post_id, $source );
+		$skip = apply_filters( 'aialtg_skip_image_generation', false, $post_id, $source, $options );
 		if ( $skip ) {
 			// Mark as processed so it doesn't get retried or stuck in the queue.
 			update_post_meta( $post_id, '_aialtg_processed', '1' );
@@ -48,9 +48,8 @@ class Aialtg_Generator {
 			$gateway = 'openrouter';
 		}
 
-		$key_map   = array( 'openai' => 'api_key_openai', 'gemini' => 'api_key_gemini' );
-		$key_field = $key_map[ $gateway ] ?? 'api_key';
-		$api_key   = $options[ $key_field ] ?? '';
+		$api_key = isset( $options['api_key'] ) ? $options['api_key'] : '';
+		$api_key = apply_filters( 'aialtg_gateway_api_key', $api_key, $gateway, $options );
 		$model   = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
 
 		$enable_alt   = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : false;

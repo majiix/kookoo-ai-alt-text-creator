@@ -111,17 +111,6 @@ jQuery(document).ready(function($) {
 		var gatewaySelect = $('#aialtg-api-gateway');
 		var openrouterModelsCached = null;
 
-		var openaiModels = [
-			{ id: 'gpt-4o-mini', name: 'GPT-4o Mini (Vision)' },
-			{ id: 'gpt-4o', name: 'GPT-4o (Vision)' }
-		];
-		var geminiModels = [
-			{ id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-			{ id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
-			{ id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite' },
-			{ id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' }
-		];
-
 		function initModelField() {
 			var gateway = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
 			
@@ -132,41 +121,12 @@ jQuery(document).ready(function($) {
 					fetchOpenRouterModels();
 				}
 			} else {
-				populateStaticModels(gateway);
-			}
-		}
-
-		function populateStaticModels(gateway) {
-			modelSelect.empty();
-			modelSelect.show();
-			
-			var label = gateway === 'openai' ? 'OpenAI Direct' : 'Google Gemini Direct';
-			var models = gateway === 'openai' ? openaiModels : geminiModels;
-			var optgroup = $('<optgroup>').attr('label', label);
-			var foundCurrent = false;
-
-			models.forEach(function(item) {
-				optgroup.append($('<option>').val(item.id).text(item.name));
-				if (item.id === currentValue) {
-					foundCurrent = true;
+				var handled = { done: false };
+				$(document).trigger('aialtg_populate_gateway_models', [gateway, currentValue, handled]);
+				if (!handled.done) {
+					showFallbackInput();
 				}
-			});
-			modelSelect.append(optgroup);
-			modelSelect.append($('<option>').val('custom').text('-- Enter Custom Model ID --'));
-
-			if (foundCurrent) {
-				modelSelect.val(currentValue);
-				customInputWrap.hide();
-				realInput.val(currentValue);
-			} else {
-				modelSelect.val('custom');
-				customInput.val(currentValue);
-				customInputWrap.show();
-				realInput.val(currentValue);
 			}
-
-			skeleton.hide();
-			selectWrap.show();
 		}
 
 		function fetchOpenRouterModels() {
@@ -273,16 +233,10 @@ jQuery(document).ready(function($) {
 		function updateApiKeyVisibility() {
 			var val = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
 			$('#aialtg-api-key').closest('tr').toggle(val === 'openrouter');
-			$('#aialtg-api-key-openai').closest('tr').toggle(val === 'openai');
-			$('#aialtg-api-key-gemini').closest('tr').toggle(val === 'gemini');
+			customInput.attr('placeholder', 'e.g. google/gemini-2.5-flash-lite');
 
-			if (val === 'openai') {
-				customInput.attr('placeholder', 'e.g. gpt-4o-mini');
-			} else if (val === 'gemini') {
-				customInput.attr('placeholder', 'e.g. gemini-2.5-flash');
-			} else {
-				customInput.attr('placeholder', 'e.g. google/gemini-2.5-flash-lite');
-			}
+			// Trigger event for addons to manage their custom gateway fields
+			$(document).trigger('aialtg_gateway_changed', [val]);
 		}
 
 		gatewaySelect.on('change', function() {
@@ -390,14 +344,9 @@ jQuery(document).ready(function($) {
 		var resultDiv = $('#aialtg-test-conn-result');
 
 		var gateway = $('#aialtg-api-gateway').val();
-		var key = '';
-		if (gateway === 'openai') {
-			key = $('#aialtg-api-key-openai').val();
-		} else if (gateway === 'gemini') {
-			key = $('#aialtg-api-key-gemini').val();
-		} else {
-			key = $('#aialtg-api-key').val();
-		}
+		var keyData = { key: $('#aialtg-api-key').val(), gateway: gateway };
+		$(document).trigger('aialtg_get_test_key', [keyData]);
+		var key = keyData.key;
 		var model = $('#aialtg-model-real-input').val();
 
 		resultDiv.hide().removeClass('notice notice-success notice-error').html('');

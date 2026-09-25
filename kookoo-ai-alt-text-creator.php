@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     2.1.1
+ * Version:     2.4.0
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIALTG_VERSION', '2.1.1' );
+define( 'AIALTG_VERSION', '2.4.0' );
 
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
@@ -24,6 +24,21 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php'
 
 // Include Cron class.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
+
+/**
+ * Process image metadata generation for an attachment.
+ *
+ * @param int    $post_id Attachment post ID.
+ * @param string $source  Source of generation ('manual', 'cron', 'upload', 'bulk').
+ * @return array|WP_Error Generated metadata result or error.
+ */
+function aialtg_process_image( $post_id, $source = 'manual' ) {
+	$generator = new Aialtg_Generator();
+	return $generator->process_image( $post_id, $source );
+}
+
+// Action hook for background batch processing.
+add_action( 'aialtg_process_batch', array( 'Aialtg_Cron', 'process_cron_batch' ) );
 
 if ( ! class_exists( 'Aialtg_Image_Descriptor' ) ) {
 /**
@@ -69,6 +84,9 @@ class Aialtg_Image_Descriptor {
 		// Activation & Deactivation.
 		register_activation_hook( __FILE__, array( $this, 'activation_logic' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivation_cleanup' ) );
+
+		// Fire action hook to allow addons/extensions to boot cleanly.
+		do_action( 'aialtg_loaded' );
 	}
 
 	/**
@@ -185,8 +203,6 @@ class Aialtg_Image_Descriptor {
 	 * @param WP_Post $post Post object.
 	 */
 	public function render_meta_box( $post ) {
-		$date = get_post_meta( $post->ID, '_aialtg_gen_date', true );
-		$source = get_post_meta( $post->ID, '_aialtg_gen_source', true );
 		$error = get_post_meta( $post->ID, '_aialtg_error_log', true );
 
 		if ( ! empty( $error ) ) {
@@ -196,14 +212,15 @@ class Aialtg_Image_Descriptor {
 			echo '</div>';
 		}
 
-		if ( empty( $date ) && empty( $error ) ) {
-			echo '<p>' . esc_html__( 'No generation info available.', 'kookoo-ai-alt-text-creator' ) . '</p>';
-			return;
-		}
+		ob_start();
+		// Action hook allowing extensions (e.g. Pro Addon) to output generation metadata details.
+		do_action( 'aialtg_attachment_meta_box_details', $post );
+		$extra_details = ob_get_clean();
 
-		if ( ! empty( $date ) ) {
-			echo '<p><strong>' . esc_html__( 'Last Generated:', 'kookoo-ai-alt-text-creator' ) . '</strong><br>' . esc_html( $date ) . '</p>';
-			echo '<p><strong>' . esc_html__( 'Source:', 'kookoo-ai-alt-text-creator' ) . '</strong> ' . esc_html( ucfirst( $source ) ) . '</p>';
+		if ( ! empty( $extra_details ) ) {
+			echo $extra_details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		} elseif ( empty( $error ) ) {
+			echo '<p>' . esc_html__( 'No generation info available.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 	}
 
@@ -484,7 +501,7 @@ class Aialtg_Image_Descriptor {
 
 			$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
 			if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
-				wp_send_json_error( array( 'message' => __( 'Direct API Gateways are premium features. Please activate the Pro Addon.', 'kookoo-ai-alt-text-creator' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Selected API Gateway is not supported.', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
 			if ( empty( $api_key ) ) {
@@ -496,11 +513,10 @@ class Aialtg_Image_Descriptor {
 			}
 
 			$options = array(
-				'api_gateway'     => $gateway,
-				'api_key'         => $api_key,
-				'api_key_openai'  => $api_key,
-				'api_key_gemini'  => $api_key,
+				'api_gateway' => $gateway,
+				'api_key'     => $api_key,
 			);
+			$options = apply_filters( 'aialtg_test_connection_options', $options, $gateway, $api_key );
 
 			$api_url = apply_filters( 'aialtg_api_url', 'https://openrouter.ai/api/v1/chat/completions', $options );
 			$headers = apply_filters( 'aialtg_api_headers', array(
