@@ -1,0 +1,5 @@
+# Exclude development files and documentation from release archives / SVN exports
+.gitattributes export-ignore
+.gitignore export-ignore
+.codegraph/ export-ignore
+docs/ export-ignore

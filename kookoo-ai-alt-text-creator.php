@@ -3,7 +3,9 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     2.4.0
+ * Version:     2.4.1
+ * Requires at least: 6.0
+ * Requires PHP: 7.4
  * Author:      micromax
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
@@ -16,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIALTG_VERSION', '2.4.0' );
+define( 'AIALTG_VERSION', '2.4.1' );
 
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
@@ -75,6 +77,12 @@ class Aialtg_Image_Descriptor {
 		// New AJAX for testing connection
 		add_action( 'wp_ajax_aialtg_test_connection', array( $this, 'handle_test_connection_request' ) );
 
+		// Internationalization.
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+
+		// Privacy Policy Content.
+		add_action( 'admin_init', array( $this, 'register_privacy_policy_content' ) );
+
 		// Assets.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 
@@ -87,6 +95,33 @@ class Aialtg_Image_Descriptor {
 
 		// Fire action hook to allow addons/extensions to boot cleanly.
 		do_action( 'aialtg_loaded' );
+	}
+
+	/**
+	 * Loads plugin textdomain.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'kookoo-ai-alt-text-creator', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	}
+
+	/**
+	 * Registers privacy policy content.
+	 */
+	public function register_privacy_policy_content() {
+		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
+			return;
+		}
+
+		$content = sprintf(
+			/* translators: %s: OpenRouter privacy policy URL */
+			__( 'When generating image metadata using KooKoo AI Alt Text Creator, image attachment URLs (or Base64-encoded image data for local installations), post titles, and post contents are transmitted to the external OpenRouter API. This data is processed in accordance with the OpenRouter Privacy Policy (%s). No personal user information is transmitted or stored externally.', 'kookoo-ai-alt-text-creator' ),
+			'https://openrouter.ai/privacy'
+		);
+
+		wp_add_privacy_policy_content(
+			__( 'KooKoo AI Alt Text Creator', 'kookoo-ai-alt-text-creator' ),
+			wp_kses_post( wpautop( $content, false ) )
+		);
 	}
 
 	/**
@@ -264,7 +299,8 @@ class Aialtg_Image_Descriptor {
 				) );
 			}
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
@@ -300,7 +336,8 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => __( 'Progress reset successfully.', 'kookoo-ai-alt-text-creator' ) ) );
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
@@ -344,7 +381,8 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => $message ) );
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
@@ -422,7 +460,8 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => $message ) );
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
@@ -474,7 +513,8 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'models' => $models ) );
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
@@ -584,7 +624,8 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => __( 'Connection successful! The API Key and Model details are valid.', 'kookoo-ai-alt-text-creator' ) ) );
 		} catch ( Throwable $e ) {
-			wp_send_json_error( array( 'message' => $e->getMessage() ) );
+			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 

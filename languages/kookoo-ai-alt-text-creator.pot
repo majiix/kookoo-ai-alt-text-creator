@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Project-Id-Version: KooKoo AI Alt Text Creator 2.4.0\n"
+"Project-Id-Version: KooKoo AI Alt Text Creator 2.4.1\n"
 "POT-Creation-Date: 2026-09-25 12:30+0330\n"
 "PO-Revision-Date: 2026-09-25 12:30+0330\n"
 "Last-Translator: \n"
@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Antigravity Code Assistant\n"
+"X-Generator: Poedit 3.4.4\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: kookoo-ai-alt-text-creator.php\n"
@@ -398,8 +398,8 @@ msgstr ""
 msgid "HTTP 402 or 429 Quota Exceeded:"
 msgstr ""
 
-#: includes/class-aialtg-settings.php:900
-msgid "Check your account credit balance with your provider. OpenAI requires API credits separate from ChatGPT Plus."
+#: includes/class-aialtg-settings.php:908
+msgid "Check your account credit balance with OpenRouter under Account > Credits if you are using paid models."
 msgstr ""
 
 #: includes/class-aialtg-settings.php:903
@@ -447,3 +447,82 @@ msgstr ""
 msgid "Every %d Minutes (AI Alt Text)"
 msgstr ""
 
+#: kookoo-ai-alt-text-creator.php:111
+msgid "When generating image metadata using KooKoo AI Alt Text Creator, image attachment URLs (or Base64-encoded image data for local installations), post titles, and post contents are transmitted to the external OpenRouter API. This data is processed in accordance with the OpenRouter Privacy Policy (%s). No personal user information is transmitted or stored externally."
+msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:303 kookoo-ai-alt-text-creator.php:340 kookoo-ai-alt-text-creator.php:385 kookoo-ai-alt-text-creator.php:464 kookoo-ai-alt-text-creator.php:517 kookoo-ai-alt-text-creator.php:628
+msgid "An unexpected system error occurred. Please check server logs."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:808
+msgid "Pro Features"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:943
+msgid "Take Your Image SEO Further with Pro"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:945
+msgid "The KooKoo AI Alt Text Creator Pro Addon unlocks direct API gateways, complete metadata generation, instant upload automation, and server-level WP-CLI control."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:953
+msgid "Direct OpenAI & Google Gemini Gateways"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:954
+msgid "Connect directly to your OpenAI (GPT-4o, GPT-4o-mini) or Google AI Studio (Gemini 2.5 Flash, Gemini 2.5 Pro) accounts using your own API keys for lower latency."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:961
+msgid "Generate Captions & Descriptions"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:962
+msgid "Go beyond alt text and titles. Automatically generate engaging captions and detailed, accessible image descriptions with custom prompts."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:969
+msgid "Auto-Generate on Upload"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:970
+msgid "Hands-free automation. The instant an author uploads a new image anywhere in WordPress, AI generates and fills all enabled fields immediately."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:977
+msgid "Media Library Bulk Actions"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:978
+msgid "Select multiple images in the WordPress Media Library list view and click \"Generate AI Details\" to process your selection on demand."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:985
+msgid "Granular Overwrite Protection"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:986
+msgid "Preserve manual human edits. The plugin checks each metadata field individually and only generates missing values, skipping complete images."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:998
+msgid "WP-CLI Command Line Tool"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:999
+msgid "Manage heavy generation workloads via terminal or server cron with the native \"wp kookoo-alt-text process\" command."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:1006
+msgid "Ready to upgrade your media workflow?"
+msgstr ""
+
+#: includes/class-aialtg-settings.php:1007
+msgid "Install the Pro Addon alongside this free version to unlock all premium capabilities."
+msgstr ""
+
+#: includes/class-aialtg-settings.php:1011
+msgid "Get Pro Addon"
+msgstr ""

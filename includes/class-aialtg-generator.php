@@ -88,17 +88,24 @@ class Aialtg_Generator {
 		// Check if URL is local/private, and if so, load it as Base64 to prevent API fetch issues.
 		$file_path = get_attached_file( $post_id );
 		if ( $file_path && file_exists( $file_path ) && is_readable( $file_path ) ) {
-			$file_size = filesize( $file_path );
-			// 5 MB limit for Base64 encoding.
-			if ( $file_size > 0 && $file_size <= 5 * 1024 * 1024 ) {
-				$host = wp_parse_url( $image_url, PHP_URL_HOST );
-				$is_local = ( 'localhost' === $host || '127.0.0.1' === $host || preg_match( '/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/', (string) $host ) );
-				if ( $is_local || ! wp_http_validate_url( $image_url ) ) {
-					$file_data = file_get_contents( $file_path );
-					if ( $file_data ) {
-						$mime_type = get_post_mime_type( $post_id );
-						$base64_data = base64_encode( $file_data );
-						$image_url = 'data:' . $mime_type . ';base64,' . $base64_data;
+			$uploads   = wp_upload_dir();
+			$basedir   = wp_normalize_path( $uploads['basedir'] );
+			$real_path = wp_normalize_path( (string) realpath( $file_path ) );
+
+			// Ensure file is strictly within uploads directory.
+			if ( 0 === strpos( $real_path, $basedir ) ) {
+				$file_size = filesize( $real_path );
+				// 5 MB limit for Base64 encoding.
+				if ( $file_size > 0 && $file_size <= 5 * 1024 * 1024 ) {
+					$host = wp_parse_url( $image_url, PHP_URL_HOST );
+					$is_local = ( 'localhost' === $host || '127.0.0.1' === $host || preg_match( '/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/', (string) $host ) );
+					if ( $is_local || ! wp_http_validate_url( $image_url ) ) {
+						$file_data = file_get_contents( $real_path );
+						if ( $file_data ) {
+							$mime_type = get_post_mime_type( $post_id );
+							$base64_data = base64_encode( $file_data );
+							$image_url = 'data:' . $mime_type . ';base64,' . $base64_data;
+						}
 					}
 				}
 			}
@@ -258,14 +265,12 @@ class Aialtg_Generator {
 		$content_str = trim( $data['choices'][0]['message']['content'] );
 		$result_json = $this->robust_json_decode( $content_str );
 
-		$alt_text    = '';
-		$title       = '';
-		$caption     = '';
-		$description = '';
+		$alt_text = '';
+		$title    = '';
 
 		if ( false === $result_json ) {
 			// It's not valid JSON. Check if it's likely a JSON attempt.
-			$is_likely_json = ( strpos( $content_str, '{' ) === 0 || strpos( $content_str, '"alt_text"' ) !== false || strpos( $content_str, '"title"' ) !== false || strpos( $content_str, '"caption"' ) !== false || strpos( $content_str, '"description"' ) !== false );
+			$is_likely_json = ( strpos( $content_str, '{' ) === 0 || strpos( $content_str, '"alt_text"' ) !== false || strpos( $content_str, '"title"' ) !== false );
 			
 			if ( ! $is_likely_json ) {
 				// Fallback to raw string if it doesn't look like JSON.

@@ -3,8 +3,9 @@
 Contributors: micromax2
 Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
+Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,7 +68,7 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 >
 > Service URL: https://openrouter.ai/
 >
-> Data Sent: Image URLs, Post Titles, and Post Content (context) are sent to the OpenRouter API when an administrator generates metadata manually in the Media Library or automatically during scheduled background batch processing (WP-Cron).
+> Data Sent: Public Image URLs (or Base64-encoded image data for local or private network environments), Post Titles, Post Content (context), the site URL (HTTP-Referer header), and the site title (X-Title header) are sent to the OpenRouter API when an administrator generates metadata manually in the Media Library, runs the connection test, or during scheduled background batch processing (WP-Cron).
 >
 > Terms of Service: OpenRouter Terms https://openrouter.ai/terms
 >
@@ -176,6 +177,15 @@ Use the "Reset Cron Progress" button if you want to completely restart the analy
 Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 
 == Changelog ==
+
+= 2.4.1 =
+* Security: Validate image file paths against the WordPress uploads directory prior to Base64 encoding to prevent path traversal.
+* Security: Mask internal error and exception details in AJAX responses to prevent sensitive information disclosure.
+* Compliance: Remove latent Pro variables and sanitize remaining settings fields for WordPress.org compliance.
+* Compliance: Declare Requires PHP header (7.4) and register data disclosure with wp_add_privacy_policy_content.
+* Compliance: Disclose external services and terms/privacy links in documentation.
+* Internationalization: Localize all user-facing strings in the Pro showcase preview tab.
+* Code Quality: Purge unused CSS rules and add .gitattributes for clean release archives.
 
 = 2.4.0 =
 * Enhance WordPress.org Guideline 5 compliance by isolating Pro gateway documentation into Pro Addon hooks.

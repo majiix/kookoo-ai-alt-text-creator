@@ -287,8 +287,8 @@ class Aialtg_Settings {
 			}
 		}
 
-		// Filter to allow Pro addon to sanitize and add its own options.
-		$new_input = apply_filters( 'aialtg_sanitize_settings', $new_input, $input, $old_options );
+		// Filter to allow extensions to modify or append sanitized settings.
+		$new_input = apply_filters( 'aialtg_sanitize_settings', $new_input, $new_input, $old_options );
 
 		// Clear stats cache whenever settings are saved so counts update immediately.
 		delete_transient( 'aialtg_stats' );
@@ -349,23 +349,31 @@ class Aialtg_Settings {
 		global $wpdb;
 		$allowed_mimes = self::get_allowed_mimes();
 
-		if ( is_array( $allowed_mimes ) ) {
+		if ( is_array( $allowed_mimes ) && ! empty( $allowed_mimes ) ) {
 			$placeholders = implode( ',', array_fill( 0, count( $allowed_mimes ), '%s' ) );
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-			$mime_where = $wpdb->prepare( "p.post_mime_type IN ($placeholders)", $allowed_mimes );
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$results = $wpdb->get_results( $wpdb->prepare(
+				"SELECT pm.meta_value as status, COUNT(p.ID) as count
+				FROM {$wpdb->posts} p
+				LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_aialtg_processed'
+				WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND p.post_mime_type IN ($placeholders)
+				GROUP BY pm.meta_value",
+				$allowed_mimes
+			) );
+			// phpcs:enable
 		} else {
-			$mime_where = $wpdb->prepare( 'p.post_mime_type LIKE %s', $allowed_mimes . '/%' );
+			$mime_like = ( is_string( $allowed_mimes ) && ! empty( $allowed_mimes ) ? $allowed_mimes : 'image' ) . '/%';
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$results = $wpdb->get_results( $wpdb->prepare(
+				"SELECT pm.meta_value as status, COUNT(p.ID) as count
+				FROM {$wpdb->posts} p
+				LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_aialtg_processed'
+				WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND p.post_mime_type LIKE %s
+				GROUP BY pm.meta_value",
+				$mime_like
+			) );
+			// phpcs:enable
 		}
-
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$results = $wpdb->get_results( "
-			SELECT pm.meta_value as status, COUNT(p.ID) as count
-			FROM {$wpdb->posts} p
-			LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_aialtg_processed'
-			WHERE p.post_type = 'attachment' AND p.post_status = 'inherit' AND {$mime_where}
-			GROUP BY pm.meta_value
-		" );
-		// phpcs:enable
 
 		$total     = 0;
 		$processed = 0;
@@ -797,7 +805,7 @@ class Aialtg_Settings {
 						if ( $show_pro_tab ) {
 							echo '<button type="button" class="aialtg-tab-btn aialtg-tab-btn-pro" data-tab="pro">';
 							echo '<span class="dashicons dashicons-star-filled"></span> ';
-							echo 'Pro Features';
+							echo esc_html__( 'Pro Features', 'kookoo-ai-alt-text-creator' );
 							echo '</button>';
 						}
 						echo '<button type="button" class="aialtg-tab-btn" data-tab="help">';
@@ -897,7 +905,7 @@ class Aialtg_Settings {
 										</li>
 										<li>
 											<strong><?php esc_html_e( 'HTTP 402 or 429 Quota Exceeded:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-											<?php esc_html_e( 'Check your account credit balance with your provider. OpenAI requires API credits separate from ChatGPT Plus.', 'kookoo-ai-alt-text-creator' ); ?>
+											<?php esc_html_e( 'Check your account credit balance with OpenRouter under Account > Credits if you are using paid models.', 'kookoo-ai-alt-text-creator' ); ?>
 										</li>
 										<li>
 											<strong><?php esc_html_e( 'Localhost / Private Network Compatibility:', 'kookoo-ai-alt-text-creator' ); ?></strong>
@@ -932,9 +940,9 @@ class Aialtg_Settings {
 		?>
 		<div class="aialtg-pro-showcase">
 			<div class="aialtg-pro-hero">
-				<h2>Take Your Image SEO Further with Pro</h2>
+				<h2><?php echo esc_html__( 'Take Your Image SEO Further with Pro', 'kookoo-ai-alt-text-creator' ); ?></h2>
 				<p class="aialtg-pro-lead">
-					The KooKoo AI Alt Text Creator Pro Addon unlocks direct API gateways, complete metadata generation, instant upload automation, and server-level WP-CLI control.
+					<?php echo esc_html__( 'The KooKoo AI Alt Text Creator Pro Addon unlocks direct API gateways, complete metadata generation, instant upload automation, and server-level WP-CLI control.', 'kookoo-ai-alt-text-creator' ); ?>
 				</p>
 			</div>
 
@@ -943,40 +951,40 @@ class Aialtg_Settings {
 					<div class="aialtg-pro-feature-icon">
 						<span class="dashicons dashicons-admin-network"></span>
 					</div>
-					<h3>Direct OpenAI & Google Gemini Gateways</h3>
-					<p>Connect directly to your OpenAI (GPT-4o, GPT-4o-mini) or Google AI Studio (Gemini 2.5 Flash, Gemini 2.5 Pro) accounts using your own API keys for lower latency.</p>
+					<h3><?php echo esc_html__( 'Direct OpenAI & Google Gemini Gateways', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Connect directly to your OpenAI (GPT-4o, GPT-4o-mini) or Google AI Studio (Gemini 2.5 Flash, Gemini 2.5 Pro) accounts using your own API keys for lower latency.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 
 				<div class="aialtg-pro-feature-card">
 					<div class="aialtg-pro-feature-icon">
 						<span class="dashicons dashicons-media-document"></span>
 					</div>
-					<h3>Generate Captions & Descriptions</h3>
-					<p>Go beyond alt text and titles. Automatically generate engaging captions and detailed, accessible image descriptions with custom prompts.</p>
+					<h3><?php echo esc_html__( 'Generate Captions & Descriptions', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Go beyond alt text and titles. Automatically generate engaging captions and detailed, accessible image descriptions with custom prompts.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 
 				<div class="aialtg-pro-feature-card">
 					<div class="aialtg-pro-feature-icon">
 						<span class="dashicons dashicons-upload"></span>
 					</div>
-					<h3>Auto-Generate on Upload</h3>
-					<p>Hands-free automation. The instant an author uploads a new image anywhere in WordPress, AI generates and fills all enabled fields immediately.</p>
+					<h3><?php echo esc_html__( 'Auto-Generate on Upload', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Hands-free automation. The instant an author uploads a new image anywhere in WordPress, AI generates and fills all enabled fields immediately.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 
 				<div class="aialtg-pro-feature-card">
 					<div class="aialtg-pro-feature-icon">
 						<span class="dashicons dashicons-images-alt2"></span>
 					</div>
-					<h3>Media Library Bulk Actions</h3>
-					<p>Select multiple images in the WordPress Media Library list view and click "Generate AI Details" to process your selection on demand.</p>
+					<h3><?php echo esc_html__( 'Media Library Bulk Actions', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Select multiple images in the WordPress Media Library list view and click "Generate AI Details" to process your selection on demand.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 
 				<div class="aialtg-pro-feature-card">
 					<div class="aialtg-pro-feature-icon">
 						<span class="dashicons dashicons-shield"></span>
 					</div>
-					<h3>Granular Overwrite Protection</h3>
-					<p>Preserve manual human edits. The plugin checks each metadata field individually and only generates missing values, skipping complete images.</p>
+					<h3><?php echo esc_html__( 'Granular Overwrite Protection', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Preserve manual human edits. The plugin checks each metadata field individually and only generates missing values, skipping complete images.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 
 				<div class="aialtg-pro-feature-card">
@@ -987,19 +995,19 @@ class Aialtg_Settings {
 							<line x1="13" y1="15" x2="17" y2="15"></line>
 						</svg>
 					</div>
-					<h3>WP-CLI Command Line Tool</h3>
-					<p>Manage heavy generation workloads via terminal or server cron with the native "wp kookoo-alt-text process" command.</p>
+					<h3><?php echo esc_html__( 'WP-CLI Command Line Tool', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Manage heavy generation workloads via terminal or server cron with the native "wp kookoo-alt-text process" command.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 			</div>
 
 			<div class="aialtg-pro-cta-banner">
 				<div class="aialtg-pro-cta-text">
-					<h3>Ready to upgrade your media workflow?</h3>
-					<p>Install the Pro Addon alongside this free version to unlock all premium capabilities.</p>
+					<h3><?php echo esc_html__( 'Ready to upgrade your media workflow?', 'kookoo-ai-alt-text-creator' ); ?></h3>
+					<p><?php echo esc_html__( 'Install the Pro Addon alongside this free version to unlock all premium capabilities.', 'kookoo-ai-alt-text-creator' ); ?></p>
 				</div>
 				<div class="aialtg-pro-cta-action">
 					<a href="https://violo.ir/?p=14" target="_blank" rel="noopener noreferrer" class="button button-primary button-hero">
-						<span>Get Pro Addon</span>
+						<span><?php echo esc_html__( 'Get Pro Addon', 'kookoo-ai-alt-text-creator' ); ?></span>
 						<span class="dashicons dashicons-external"></span>
 					</a>
 				</div>
