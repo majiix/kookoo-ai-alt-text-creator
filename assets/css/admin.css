@@ -798,27 +798,6 @@
 	padding: 0 !important;
 }
 
-.aialtg-guide-badge {
-	font-size: 10px;
-	font-weight: 700;
-	padding: 2px 8px;
-	border-radius: 12px;
-	letter-spacing: 0.3px;
-	text-transform: uppercase;
-}
-
-.aialtg-badge-free {
-	background: #ecfdf5;
-	color: #059669;
-	border: 1px solid #a7f3d0;
-}
-
-.aialtg-badge-pro {
-	background: #faf5ff;
-	color: #7c3aed;
-	border: 1px solid #e9d5ff;
-}
-
 .aialtg-gateway-guide-desc {
 	font-size: 12px;
 	line-height: 1.5;

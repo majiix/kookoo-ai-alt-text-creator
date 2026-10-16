@@ -238,13 +238,16 @@ class Aialtg_Image_Descriptor {
 	 * @param WP_Post $post Post object.
 	 */
 	public function render_meta_box( $post ) {
-		$error = get_post_meta( $post->ID, '_aialtg_error_log', true );
+		$error     = get_post_meta( $post->ID, '_aialtg_error_log', true );
+		$processed = get_post_meta( $post->ID, '_aialtg_processed', true );
 
 		if ( ! empty( $error ) ) {
 			echo '<div style="color: #d63638; margin-bottom: 10px;">';
 			echo '<strong>' . esc_html__( 'Generation Failed:', 'kookoo-ai-alt-text-creator' ) . '</strong><br>';
 			echo esc_html( $error );
 			echo '</div>';
+		} elseif ( '1' === $processed ) {
+			echo '<p style="color: #059669; font-weight: 600; margin-bottom: 8px;">' . esc_html__( 'Status: Generated with AI', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 
 		ob_start();
@@ -254,7 +257,7 @@ class Aialtg_Image_Descriptor {
 
 		if ( ! empty( $extra_details ) ) {
 			echo $extra_details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} elseif ( empty( $error ) ) {
+		} elseif ( empty( $error ) && '1' !== $processed ) {
 			echo '<p>' . esc_html__( 'No generation info available.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 	}
@@ -287,6 +290,9 @@ class Aialtg_Image_Descriptor {
 			$result = $generator->process_image( $post_id, 'manual' );
 
 			if ( is_wp_error( $result ) ) {
+				update_post_meta( $post_id, '_aialtg_processed', 'failed' );
+				update_post_meta( $post_id, '_aialtg_error_log', substr( $result->get_error_message(), 0, 250 ) );
+				delete_transient( 'aialtg_stats' );
 				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 			} else {
 				// Clear stats cache.

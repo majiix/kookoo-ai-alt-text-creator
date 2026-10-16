@@ -68,7 +68,7 @@ This plugin relies on OpenRouter as a third-party service to provide Artificial 
 >
 > Service URL: https://openrouter.ai/
 >
-> Data Sent: Public Image URLs (or Base64-encoded image data for local or private network environments), Post Titles, Post Content (context), the site URL (HTTP-Referer header), and the site title (X-Title header) are sent to the OpenRouter API when an administrator generates metadata manually in the Media Library, runs the connection test, or during scheduled background batch processing (WP-Cron).
+> Data Sent: Public Image URLs (or Base64-encoded image data for local or private network environments), Post Titles, Post Content (context), the site URL (HTTP-Referer header), and the site title (X-Title header) are sent to the OpenRouter API when an administrator generates metadata manually in the Media Library, runs the connection test, or during scheduled background batch processing (WP-Cron). Additionally, the settings dashboard queries https://openrouter.ai/api/v1/models to retrieve the list of available vision models.
 >
 > Terms of Service: OpenRouter Terms https://openrouter.ai/terms
 >
@@ -162,7 +162,7 @@ Manual Generation (Button): Yes. If you click the "Regenerate" button on a speci
 
 If you delete the plugin via the Plugins screen:
 It will clean up its own settings and temporary statistics.
-It will remove internal logs (timestamps, error logs).
+It will remove internal logs and error logs.
 Crucially: The Alt Text and Titles generated for your images will remain. They become part of your site's standard content and are not deleted.
 
 = My bulk generation seems stuck. What do I do? =
@@ -241,21 +241,21 @@ Yes. Choose a free model from OpenRouter to generate metadata without any cost.
 * Added instant upload hook to automatically generate details on image upload (Pro).
 * Added Media Library bulk actions to process multiple images at once (Pro).
 * Refactored skip logic to granular field-level overwrite prevention (Pro).
-* Added Cron batch size and interval limits for free version, unlocked in Pro.
+* Configured cron batch size and interval parameters for server performance.
 * Added "Reset to Default" action link buttons under prompt textareas.
 * Redesigned settings layout to use premium HSL colors, focus states, and glassmorphism.
 * Added AJAX Test API Connection button to instantly verify API key and model config.
 
 = 1.8.3 =
-* Added premium option to skip images with existing Alt Texts during background/cron runs.
-* Added premium option to save generation metadata (timestamp/source).
-* Added premium WP-CLI command integration (`wp kookoo-alt-text process`).
+* Added option to skip images with existing Alt Texts during background/cron runs.
+* Added option to save generation metadata (timestamp/source).
+* Added WP-CLI command integration (`wp kookoo-alt-text process`).
 * Implemented Pro addon version compatibility validation checks and warning notices.
 
 = 1.8.2 =
-* Removed licensing logic and made all features completely free.
+* Removed licensing logic and made all core features accessible.
 * Discontinued EDD Software Licensing activation/deactivation support.
-* Made saving of generation metadata (timestamp/source) fully unlocked for all users.
+* Optimized attachment metadata handling and query routines.
 
 = 1.8.1 =
 * Consolidated duplicated AJAX event handlers in settings screen.

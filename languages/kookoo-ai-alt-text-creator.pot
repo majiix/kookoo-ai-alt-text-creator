@@ -526,3 +526,7 @@ msgstr ""
 #: includes/class-aialtg-settings.php:1011
 msgid "Get Pro Addon"
 msgstr ""
+
+#: kookoo-ai-alt-text-creator.php:249
+msgid "Status: Generated with AI"
+msgstr ""

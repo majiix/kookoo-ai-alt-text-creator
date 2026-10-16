@@ -25,8 +25,14 @@ KooKoo AI Alt Text Creator is a WordPress plugin that automatically generates de
 
 ## Assumptions & Pre-Submission Decisions
 * **PHP Requirement**: Declared `Requires PHP: 7.4` to support syntax requirements while ensuring wide host compatibility.
+* **WordPress Core Target**: Tested up to `7.1` maintained per user direction.
+* **Plugin URI**: Maintained as `https://wordpress.org/plugins/kookoo-ai-alt-text-creator/` per user direction.
+* **Author & Contributor Handles**: Maintained as `micromax` (Author header) and `micromax2` (Contributors list) per user direction.
 * **Release Packaging**: `docs/` is retained for internal architecture reference but excluded from release builds and WordPress.org SVN exports via `.gitattributes`.
-* **Internationalization**: The Pro Features showcase tab is fully localized with `esc_html__()` and included in `languages/kookoo-ai-alt-text-creator.pot`.
+* **Internationalization**: The Pro Features showcase tab is fully localized with `esc_html__()` and included in `languages/kookoo-ai-alt-text-creator.pot`. Added `Status: Generated with AI` for free attachment meta box.
+* **External Services Disclosure**: Explicitly discloses `https://openrouter.ai/api/v1/models` queried on settings screen alongside `/api/v1/chat/completions`.
+* **Dormant Code Purge**: Free `admin.css` purged of unused Pro badge classes, which are now scoped into Pro addon asset enqueue.
+* **Error & Status Observability**: Free attachment meta box reports `Status: Generated with AI` on successful processing; manual AJAX generation failures persist error logs and mark status as failed.
 
 ## Current Features
 * **AI Generation**: Descriptive Alt Text and Title generation with custom vision/image models.
