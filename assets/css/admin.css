@@ -636,12 +636,6 @@ body.rtl .aialtg-pro-card:hover {
 	animation: aialtgFadeIn 0.3s var(--aialtg-ease);
 }
 
-.aialtg-status-area.processing {
-	border-left-color: var(--aialtg-primary);
-	background: #eff6ff;
-	color: #1e3a8a;
-}
-
 .aialtg-status-area.success {
 	border-left-color: var(--aialtg-success);
 	background: #ecfdf5;
@@ -728,13 +722,6 @@ body.rtl .aialtg-pro-card:hover {
 	line-height: 1.5;
 	margin-bottom: 6px;
 	color: var(--aialtg-text-muted);
-}
-
-.aialtg-help-content .description {
-	font-size: 11px;
-	color: var(--aialtg-text-muted);
-	line-height: 1.4;
-	margin: 10px 0 0 0;
 }
 
 .aialtg-help-section {
@@ -992,12 +979,6 @@ body.rtl .aialtg-pro-card:hover {
 
 .aialtg-message.success { color: var(--aialtg-success); }
 .aialtg-message.error { color: var(--aialtg-error); }
-
-
-
-
-
-
 
 /* --- Tabs Navigation & Panels --- */
 .aialtg-tabs-nav {

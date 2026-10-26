@@ -17,13 +17,6 @@ if ( ! class_exists( 'Aialtg_Generator' ) ) {
 class Aialtg_Generator {
 
 	/**
-	 * Settings option name.
-	 *
-	 * @var string
-	 */
-	private $option_name = 'aialtg_settings';
-
-	/**
 	 * Process a single image.
 	 *
 	 * @param int    $post_id Attachment ID.
@@ -31,7 +24,7 @@ class Aialtg_Generator {
 	 * @return array|WP_Error Result data.
 	 */
 	public function process_image( $post_id, $source = 'manual' ) {
-		$options = get_option( $this->option_name );
+		$options = get_option( Aialtg_Settings::$option_name );
 		if ( ! is_array( $options ) ) {
 			$options = array();
 		}

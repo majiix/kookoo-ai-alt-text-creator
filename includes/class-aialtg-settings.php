@@ -203,9 +203,6 @@ class Aialtg_Settings {
 		}
 		$new_input = array();
 
-		$old_options = get_option( self::$option_name );
-		$old_options = is_array( $old_options ) ? $old_options : array();
-
 		// API Settings.
 		if ( isset( $input['api_key'] ) ) {
 			$new_input['api_key'] = sanitize_text_field( $input['api_key'] );

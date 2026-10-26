@@ -33,7 +33,7 @@ KooKoo AI Alt Text Creator is a completely free WordPress plugin that automatica
 * **Safe Uninstall Preservation**: Settings and postmeta are preserved in `uninstall.php` per user direction to prevent wiping active user configuration or image metadata upon reinstall or update.
 * **Neutral Upsell Signatures**: Pro upsell card in settings uses neutral phrasing for WP-CLI tools without exposing `-pro` command signatures.
 * **Strict WPCS Compliance**: Background cron execution time limit extension avoids error suppression operators.
-* **Clean Free Reachability**: All leftover signatures from Pro overwrite rules (docblock references, unused helper parameters, dead return status keys) and dead CSS selectors (`.aialtg-help-card`) have been completely removed. Statistics grid selectors are aligned with `.aialtg-stat-item` markup.
+* **Clean Free Reachability**: All leftover signatures from Pro overwrite rules, redundant `$option_name` instance properties, unused `$old_options` variable assignments, obsolete PHP 5.3 runtime checks (`safe_mode`), and dead/redundant CSS rules (`.aialtg-help-content .description`, `.aialtg-status-area.processing`) have been completely removed for net-negative LOC. Statistics grid selectors are aligned with `.aialtg-stat-item` markup.
 
 ## Current Features
 * **OpenRouter AI Generation**: Descriptive Alt Text and Title generation using OpenRouter vision models (Gemini 2.5 Flash, GPT-4o, Claude 3.5, and free community models).

@@ -18,13 +18,6 @@ if ( ! class_exists( 'Aialtg_Cron' ) ) {
 class Aialtg_Cron {
 
 	/**
-	 * Option key.
-	 *
-	 * @var string
-	 */
-	private $option_name = 'aialtg_settings';
-
-	/**
 	 * Cron hook name.
 	 *
 	 * @var string
@@ -56,7 +49,7 @@ class Aialtg_Cron {
 	 * @return array Modified schedules.
 	 */
 	public function add_custom_cron_schedule( $schedules ) {
-		$options = get_option( $this->option_name );
+		$options = get_option( Aialtg_Settings::$option_name );
 		$options = is_array( $options ) ? $options : array();
 		$minutes = max( 1, (int) ( $options['cron_interval'] ?? 5 ) );
 
@@ -106,7 +99,7 @@ class Aialtg_Cron {
 			$generator = new Aialtg_Generator();
 			foreach ( $images as $image_id ) {
 				// Extend execution time limit for this request if function is available.
-				if ( function_exists( 'set_time_limit' ) && false === strpos( (string) ini_get( 'disable_functions' ), 'set_time_limit' ) && ! ini_get( 'safe_mode' ) ) {
+				if ( function_exists( 'set_time_limit' ) && false === strpos( (string) ini_get( 'disable_functions' ), 'set_time_limit' ) ) {
 					
 					// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Execution time extension for background batch processing.
 					set_time_limit( 60 );
