@@ -1,21 +1,21 @@
 # KooKoo AI Alt Text Creator - Design System
 
-This document outlines the visual identity, tokens, layout grid, CSS classes, and UI components used in the settings and administration pages of the KooKoo AI Alt Text Creator WordPress plugin. Refer to this specification when expanding the UI or designing new admin pages to maintain consistency and premium aesthetics.
+This document outlines the visual identity, tokens, layout grid, CSS classes, and UI components used in the settings and administration pages of the KooKoo AI Alt Text Creator WordPress plugin. Refer to this specification when expanding the UI or designing new admin pages to maintain consistency and polished aesthetics.
 
 ---
 
 ## 1. Design Philosophy
 
 The KooKoo AI Alt Text Creator settings UI is designed to feel:
-- **Premium & Modern**: Avoids standard, uninspired flat WordPress admin controls.
-- **Dynamic & Responsive**: Incorporates micro-interactions, smooth CSS transitions, and fluid grid systems that adapt from desktop down to mobile.
-- **Glassmorphism-Inspired**: Uses light borders, subtle backdrops, and soft shadows to create visual layers.
+* **Polished & Modern**: Avoids standard, uninspired flat WordPress admin controls.
+* **Dynamic & Responsive**: Incorporates micro-interactions, smooth CSS transitions, and fluid grid systems that adapt from desktop down to mobile.
+* **Glassmorphism-Inspired**: Uses light borders, subtle backdrops, and soft shadows to create visual layers.
 
 ---
 
 ## 2. Design Tokens (CSS Variables)
 
-All key style values are defined as CSS custom properties under `:root` in [admin.css](/assets/css/admin.css).
+All key style values are defined as CSS custom properties under `:root` in [admin.css](../assets/css/admin.css).
 
 ### Color Palette
 
@@ -25,7 +25,7 @@ All key style values are defined as CSS custom properties under `:root` in [admi
 | **Primary Hover** | `--aialtg-primary-hover` | `#4f46e5` | Hover state for primary buttons and interactive elements |
 | **Primary Light** | `--aialtg-primary-light` | `#e0e7ff` | Light background for button hovers, subtle highlights |
 | **Secondary** | `--aialtg-secondary` | `#818cf8` | Secondary brand color, gradient mixes |
-| **Accent** | `--aialtg-accent` | `#a855f7` | Dynamic accents (e.g. side-borders, brand highlights, decorations) |
+| **Accent** | `--aialtg-accent` | `#a855f7` | Dynamic accents (side-borders, brand highlights, decorations) |
 | **Background** | `--aialtg-bg` | `#f8fafc` | Main wrapper background |
 | **Card Background** | `--aialtg-card-bg` | `rgba(255, 255, 255, 0.9)` | Glassmorphic base for form tables and sidebar cards |
 | **Text** | `--aialtg-text` | `#1e293b` | Primary body text (Slate 800) |
@@ -36,24 +36,24 @@ All key style values are defined as CSS custom properties under `:root` in [admi
 
 ### Geometry & Animation Tokens
 
-- **Border Radius**: `--aialtg-radius: 12px` (used on cards, headers, major sections).
-- **Default Shadow**: `--aialtg-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.04), 0 4px 6px -4px rgba(99, 102, 241, 0.04), ...`
-- **Hover Shadow**: `--aialtg-shadow-hover: 0 20px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(99, 102, 241, 0.08)`
-- **Easing Curve**: `--aialtg-ease: cubic-bezier(0.4, 0, 0.2, 1)` (standardized cubic-bezier for smooth interactions).
+* **Border Radius**: `--aialtg-radius: 12px` (used on cards, headers, major sections).
+* **Default Shadow**: `--aialtg-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.04), 0 4px 6px -4px rgba(99, 102, 241, 0.04), ...`
+* **Hover Shadow**: `--aialtg-shadow-hover: 0 20px 25px -5px rgba(99, 102, 241, 0.08), 0 8px 10px -6px rgba(99, 102, 241, 0.08)`
+* **Easing Curve**: `--aialtg-ease: cubic-bezier(0.4, 0, 0.2, 1)` (standardized cubic-bezier for smooth interactions).
 
 ---
 
 ## 3. Typography & Spacing
 
-- **Font Family**: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` (system font stack with fallbacks).
-- **Titles**:
-  - Main Heading (`h1`): `26px`, bold (`800`), white in the header.
-  - Section Heading (`h2`): `18px`, bold (`700`), `#0f172a`.
-  - Sidebar Heading (`h3`): `16px`, bold (`700`), uppercase, `var(--aialtg-primary)`.
-- **Body & Captions**:
-  - Settings Labels / Primary text: `13px`.
-  - Muted Descriptions (`.aialtg-section-desc`): `13px`, line-height `1.5`, colored via `--aialtg-text-muted`.
-  - Footnotes / Badges: `11px` to `12px`.
+* **Font Family**: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` (system font stack with fallbacks).
+* **Titles**:
+  * Main Heading (`h1`): `26px`, bold (`800`), white in the header.
+  * Section Heading (`h2`): `18px`, bold (`700`), `#0f172a`.
+  * Sidebar Heading (`h3`): `16px`, bold (`700`), uppercase, `var(--aialtg-primary)`.
+* **Body & Labels**:
+  * Settings Labels / Primary text: `13px`.
+  * Muted Descriptions (`.aialtg-section-desc`): `13px`, line-height `1.5`, colored via `--aialtg-text-muted`.
+  * Footnotes / Badges: `11px` to `12px`.
 
 ---
 
@@ -70,59 +70,44 @@ The main dashboard is constructed as a two-column responsive grid:
 |                                        | |                  |
 |  +----------------------------------+  | |  +------------+  |
 |  |           .form-table            |  | |  | .aialtg-   |  |
-|  |           (Main Card)            |  | |  |  license-  |  |
-|  +----------------------------------+  | |  |  card      |  |
-|                                        | |  +------------+  |
-|  +----------------------------------+  | |                  |
-|  |           .form-table            |  | |  +------------+  |
-|  |           (Main Card)            |  | |  | .aialtg-   |  |
-|  +----------------------------------+  | |  |  upgrade-  |  |
-|                                        | |  |  card      |  |
-|                                        | |  +------------+  |
+|  |           (Main Card)            |  | |  |  stats-card|  |
+|  +----------------------------------+  | |  +------------+  |
 |                                        | |                  |
-|                                        | |  +------------+  |
-|                                        | |  | .aialtg-   |  |
-|                                        | |  |  stats-card|  |
-|                                        | |  +------------+  |
+|  +----------------------------------+  | |                  |
+|  |           .form-table            |  | |                  |
+|  |           (Main Card)            |  | |                  |
+|  +----------------------------------+  | |                  |
 +----------------------------------------+ +------------------+
 ```
 
 ### Layout Classes
-- **`.aialtg-wrapper`**: Outer container wrapping the entire admin page structure. Sets max-width to `1100px` and custom margins.
-- **`.aialtg-header`**: Top block. Colored with a linear gradient of `--aialtg-primary` to `--aialtg-secondary`, containing a radial background circle effect.
-- **`.aialtg-dashboard-layout`**: Sets up the 2-column grid (`grid-template-columns: 1fr 340px`).
-- **Responsive Collapsing**: Automatically collapses the sidebar under the main area at widths $\le$ `900px` (`grid-template-columns: 1fr`).
+* **`.aialtg-wrapper`**: Outer container wrapping the entire admin page structure. Sets max-width to `1100px` and custom margins.
+* **`.aialtg-header`**: Top block. Colored with a linear gradient of `--aialtg-primary` to `--aialtg-secondary`, containing a radial background circle effect.
+* **`.aialtg-dashboard-layout`**: Sets up the 2-column grid (`grid-template-columns: 1fr 340px`).
+* **Responsive Collapsing**: Automatically collapses the sidebar under the main area at widths <= `900px` (`grid-template-columns: 1fr`).
 
 ---
 
 ## 5. UI Components
 
 ### A. Cards & Containers
-- **Main settings sections** style the standard WordPress `.form-table` to look like a cards container:
-  - Background is white translucent (`rgba(255, 255, 255, 0.9)`) combined with a blur backdrop-filter (`blur(8px)`).
-  - Outlined with `--aialtg-border` and given `--aialtg-radius` corners.
-  - Hover states transition the box-shadow to `--aialtg-shadow-hover` and border color to a soft primary glow.
-- **Sidebar cards** use the `.aialtg-card` class, mirroring the visual layout of main cards.
-- **Stats Card (`.aialtg-stats-card`)**: Enhances standard cards by drawing a `5px` vertical linear gradient highlight along the left border.
+* **Main settings sections** style the standard WordPress `.form-table` to look like a cards container:
+  * Background is white translucent (`rgba(255, 255, 255, 0.9)`) combined with a blur backdrop-filter (`blur(8px)`).
+  * Outlined with `--aialtg-border` and given `--aialtg-radius` corners.
+  * Hover states transition the box-shadow to `--aialtg-shadow-hover` and border color to a soft primary glow.
+* **Sidebar cards** use the `.aialtg-card` class, mirroring the visual layout of main cards.
+* **Stats Card (`.aialtg-stats-card`)**: Enhances standard cards by drawing a `5px` vertical linear gradient highlight along the left border.
 
 ### B. Form Inputs
-- **Inputs & Dropdowns**: Applied to standard text fields, passwords, numbers, select elements, and custom selects (`#aialtg-model-select`). When wrapped in `.aialtg-input-wrap` or `.aialtg-input-group`, these elements inherit a minimal border, soft inset shadow, custom focus outline, and smooth hover/focus animations.
-- **Buttons Row (`.aialtg-buttons-row`)**: Flexible container for custom actions (such as test connection buttons or database control buttons), rendering buttons consistently with premium radius, hover/active scaling states, and icon alignment.
-- **Bouncy Toggle Switch**:
-  - Wrap structure: `.aialtg-toggle`
-  - Leverages `.aialtg-toggle-slider` and a hidden checkbox input to create a spring-like toggle action when clicked (`transform: translateX(...)`).
+* **Inputs & Dropdowns**: Applied to standard text fields, passwords, numbers, select elements, and custom selects (`#aialtg-model-select`). When wrapped in `.aialtg-input-wrap` or `.aialtg-input-group`, these elements inherit a minimal border, soft inset shadow, custom focus outline, and smooth hover/focus animations.
+* **Buttons Row (`.aialtg-buttons-row`)**: Flexible container for custom actions (such as test connection buttons or database control buttons), rendering buttons consistently with polished radius, hover/active scaling states, and icon alignment.
+* **Bouncy Toggle Switch**:
+  * Wrap structure: `.aialtg-toggle`
+  * Leverages `.aialtg-toggle-slider` and a hidden checkbox input to create a spring-like toggle action when clicked (`transform: translateX(...)`).
 
-### C. Statistics Grid & Progress
-- **Stats Block (`.aialtg-stats-grid`)**: A structured grid showing high-level image metadata processing.
-- **Progress Bar (`.aialtg-progress-bar`)**: Contains `.aialtg-progress-fill` displaying batch tasks completion percentages, styled with a linear-gradient.
-
-### D. Licensing Controls
-- **Licensing Card (`.aialtg-license-card`)**: Holds fields for entering the license key.
-- **Password Mask Visibility**: Inside the key input, `.aialtg-toggle-license-visibility` toggles the input field type between `password` and `text`.
-- **Status Badges (`.aialtg-badge`)**: Small inline indicators:
-  - Active: `.aialtg-badge-success`
-  - Inactive / Invalid: `.aialtg-badge-error`
-  - Pending: `.aialtg-badge-neutral`
+### C. Statistics Grid & Controls
+* **Stats Block (`.aialtg-stats-grid`)**: A structured grid showing high-level image metadata processing (Total, Processed, Pending, Failed).
+* **Control Buttons**: Single-click utility triggers for resetting progress, retrying failed generations, and repairing malformed JSON metadata.
 
 ---
 
@@ -159,7 +144,7 @@ Here is a typical HTML markup example combining these components:
                         <label>
                             <input type="checkbox" name="option_key" value="1" />
                             <span class="aialtg-toggle-slider"></span>
-                            <span class="aialtg-toggle-label">Enable Auto-Generation</span>
+                            <span class="aialtg-toggle-label">Generate Alt Text</span>
                         </label>
                     </div>
                 </div>
@@ -182,30 +167,6 @@ Here is a typical HTML markup example combining these components:
                         <span class="aialtg-stat-label">Processed</span>
                         <span class="aialtg-stat-value success">98</span>
                     </div>
-                </div>
-
-                <div class="aialtg-progress-bar-wrap">
-                    <div class="aialtg-progress-bar">
-                        <div class="aialtg-progress-fill" style="width: 79%;"></div>
-                    </div>
-                    <span class="aialtg-progress-text">79% Complete</span>
-                </div>
-            </div>
-
-            <!-- Licensing Panel -->
-            <div class="aialtg-card aialtg-license-card">
-                <div class="aialtg-card-header">
-                    <h3>License Key</h3>
-                </div>
-                <div class="aialtg-license-input-group">
-                    <div class="aialtg-input-wrap aialtg-password-wrap aialtg-license-input-inner">
-                        <input type="password" id="aialtg-license-key" placeholder="Enter key..." />
-                        <button type="button" class="aialtg-toggle-password">👁</button>
-                    </div>
-                    <button type="button" id="aialtg-activate-license-btn" class="button button-primary">Activate</button>
-                </div>
-                <div class="aialtg-license-status-wrap">
-                    <span class="aialtg-badge aialtg-badge-success">Active</span>
                 </div>
             </div>
         </aside>

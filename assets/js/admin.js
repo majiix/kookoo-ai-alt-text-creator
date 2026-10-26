@@ -113,7 +113,7 @@ jQuery(document).ready(function($) {
 
 		function initModelField() {
 			var gateway = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
-			
+
 			if (gateway === 'openrouter') {
 				if (openrouterModelsCached) {
 					renderOpenRouterModels(openrouterModelsCached);
@@ -121,18 +121,14 @@ jQuery(document).ready(function($) {
 					fetchOpenRouterModels();
 				}
 			} else {
-				var handled = { done: false };
-				$(document).trigger('aialtg_populate_gateway_models', [gateway, currentValue, handled]);
-				if (!handled.done) {
-					showFallbackInput();
-				}
+				showFallbackInput();
 			}
 		}
 
 		function fetchOpenRouterModels() {
 			skeleton.show();
 			selectWrap.hide();
-			
+
 			$.ajax({
 				url: ajaxurl,
 				type: 'POST',
@@ -157,14 +153,14 @@ jQuery(document).ready(function($) {
 		function renderOpenRouterModels(models) {
 			modelSelect.empty();
 			modelSelect.show();
-			
+
 			var grouped = {};
 			var foundCurrent = false;
 
 			models.forEach(function(model) {
 				var id = model.id;
 				var name = model.name;
-				
+
 				var provider = 'Other';
 				if (id.indexOf('/') !== -1) {
 					provider = id.split('/')[0];
@@ -231,12 +227,8 @@ jQuery(document).ready(function($) {
 		}
 
 		function updateApiKeyVisibility() {
-			var val = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
-			$('#aialtg-api-key').closest('tr').toggle(val === 'openrouter');
+			$('#aialtg-api-key').closest('tr').show();
 			customInput.attr('placeholder', 'e.g. google/gemini-2.5-flash-lite');
-
-			// Trigger event for addons to manage their custom gateway fields
-			$(document).trigger('aialtg_gateway_changed', [val]);
 		}
 
 		gatewaySelect.on('change', function() {
@@ -274,7 +266,7 @@ jQuery(document).ready(function($) {
 		var btn = $(this);
 		var input = btn.siblings('input');
 		var icon = btn.find('.dashicons');
-		
+
 		if (input.attr('type') === 'password') {
 			input.attr('type', 'text');
 			icon.removeClass('dashicons-visibility').addClass('dashicons-hidden');
@@ -293,8 +285,6 @@ jQuery(document).ready(function($) {
 		this.style.height = (this.scrollHeight + 4) + 'px';
 	});
 
-
-
 	// Tab switcher
 	$('.aialtg-tab-btn').on('click', function(e) {
 		e.preventDefault();
@@ -307,12 +297,12 @@ jQuery(document).ready(function($) {
 		$('.aialtg-tab-panel').removeClass('active');
 		$('#aialtg-tab-' + tabId).addClass('active');
 
-		if (tabId === 'help' || tabId === 'pro') {
+		if (tabId === 'help') {
 			$('.aialtg-submit-wrap').hide();
 		} else {
 			$('.aialtg-submit-wrap').show();
 		}
-		
+
 		localStorage.setItem('aialtg_active_tab', tabId);
 	});
 
@@ -322,19 +312,6 @@ jQuery(document).ready(function($) {
 		$('.aialtg-tab-btn[data-tab="' + activeTab + '"]').trigger('click');
 	}
 
-	// Quick switch tab links (e.g. from sidebar Upgrade card)
-	$(document).on('click', '.aialtg-switch-tab', function(e) {
-		e.preventDefault();
-		var targetTab = $(this).data('tab');
-		if (targetTab) {
-			var tabBtn = $('.aialtg-tab-btn[data-tab="' + targetTab + '"]');
-			if (tabBtn.length > 0) {
-				tabBtn.trigger('click');
-				window.scrollTo({ top: 0, behavior: 'smooth' });
-			}
-		}
-	});
-
 	// Test API Connection
 	$('#aialtg-test-conn-btn').on('click', function(e) {
 		e.preventDefault();
@@ -343,10 +320,9 @@ jQuery(document).ready(function($) {
 		var spinner = btn.siblings('.aialtg-test-spinner');
 		var resultDiv = $('#aialtg-test-conn-result');
 
-		var gateway = $('#aialtg-api-gateway').val();
-		var keyData = { key: $('#aialtg-api-key').val(), gateway: gateway };
-		$(document).trigger('aialtg_get_test_key', [keyData]);
-		var key = keyData.key;
+		var gateway = $('#aialtg-api-gateway').val() || 'openrouter';
+		var key = $('#aialtg-api-key').val();
+
 		var model = $('#aialtg-model-real-input').val();
 
 		resultDiv.hide().removeClass('notice notice-success notice-error').html('');

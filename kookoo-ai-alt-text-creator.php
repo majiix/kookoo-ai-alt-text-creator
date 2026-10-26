@@ -2,8 +2,8 @@
 /**
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
- * Description: Automatically generates alt text and titles for images using OpenRouter AI. Adds a generation button to the Media Library list view.
- * Version:     2.4.1
+ * Description: Automatically generates alt text and titles for images using AI via OpenRouter.
+ * Version:     2.5.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author:      micromax
@@ -18,29 +18,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIALTG_VERSION', '2.4.1' );
+if ( ! defined( 'AIALTG_VERSION' ) ) {
+	define( 'AIALTG_VERSION', '2.5.0' );
+}
 
 // Include required classes.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-settings.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-generator.php';
-
-// Include Cron class.
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-aialtg-cron.php';
 
-/**
- * Process image metadata generation for an attachment.
- *
- * @param int    $post_id Attachment post ID.
- * @param string $source  Source of generation ('manual', 'cron', 'upload', 'bulk').
- * @return array|WP_Error Generated metadata result or error.
- */
-function aialtg_process_image( $post_id, $source = 'manual' ) {
-	$generator = new Aialtg_Generator();
-	return $generator->process_image( $post_id, $source );
+if ( ! function_exists( 'aialtg_process_image' ) ) {
+	/**
+	 * Process image metadata generation for an attachment.
+	 *
+	 * @param int    $post_id Attachment post ID.
+	 * @param string $source  Source of generation ('manual', 'cron', 'upload', 'bulk').
+	 * @return array|WP_Error Generated metadata result or error.
+	 */
+	function aialtg_process_image( $post_id, $source = 'manual' ) {
+		$generator = new Aialtg_Generator();
+		return $generator->process_image( $post_id, $source );
+	}
 }
 
 // Action hook for background batch processing.
 add_action( 'aialtg_process_batch', array( 'Aialtg_Cron', 'process_cron_batch' ) );
+
+/**
+ * Activation callback for free plugin.
+ */
+function aialtg_free_activate() {
+	$pro_plugin = 'kookoo-ai-alt-text-creator-pro/kookoo-ai-alt-text-creator-pro.php';
+	if ( ! function_exists( 'is_plugin_active' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+	if ( is_plugin_active( $pro_plugin ) ) {
+		deactivate_plugins( $pro_plugin, true );
+		set_transient( 'aialtg_free_activated_notice', 1, 60 );
+	}
+
+	$options = get_option( 'aialtg_settings' );
+	if ( is_array( $options ) && isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
+		if ( ! wp_next_scheduled( Aialtg_Cron::CRON_HOOK ) ) {
+			wp_schedule_event( time(), Aialtg_Cron::INTERVAL_NAME, Aialtg_Cron::CRON_HOOK );
+		}
+	}
+}
+register_activation_hook( __FILE__, 'aialtg_free_activate' );
+
+/**
+ * Deactivation callback for free plugin.
+ */
+function aialtg_free_deactivate() {
+	wp_clear_scheduled_hook( Aialtg_Cron::CRON_HOOK );
+	delete_transient( 'aialtg_stats' );
+}
+register_deactivation_hook( __FILE__, 'aialtg_free_deactivate' );
 
 if ( ! class_exists( 'Aialtg_Image_Descriptor' ) ) {
 /**
@@ -68,17 +101,10 @@ class Aialtg_Image_Descriptor {
 		// AJAX Handlers.
 		add_action( 'wp_ajax_aialtg_generate_meta', array( $this, 'handle_ajax_request' ) );
 		add_action( 'wp_ajax_aialtg_reset_progress', array( $this, 'handle_reset_request' ) );
-		// New AJAX for fixing JSON errors
 		add_action( 'wp_ajax_aialtg_fix_json_errors', array( $this, 'handle_fix_json_errors' ) );
-		// New AJAX for retrying failed images
 		add_action( 'wp_ajax_aialtg_retry_failed', array( $this, 'handle_retry_failed_request' ) );
-		// New AJAX for fetching models
 		add_action( 'wp_ajax_aialtg_get_models', array( $this, 'handle_get_models_request' ) );
-		// New AJAX for testing connection
 		add_action( 'wp_ajax_aialtg_test_connection', array( $this, 'handle_test_connection_request' ) );
-
-		// Internationalization.
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 
 		// Privacy Policy Content.
 		add_action( 'admin_init', array( $this, 'register_privacy_policy_content' ) );
@@ -89,19 +115,12 @@ class Aialtg_Image_Descriptor {
 		// Plugin action links.
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_plugin_action_links' ) );
 
-		// Activation & Deactivation.
-		register_activation_hook( __FILE__, array( $this, 'activation_logic' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivation_cleanup' ) );
+		// Conflict resolution & deactivation.
+		add_action( 'admin_init', array( $this, 'check_plugin_conflicts' ) );
+		add_action( 'admin_notices', array( $this, 'deactivation_advisory_notices' ) );
 
 		// Fire action hook to allow addons/extensions to boot cleanly.
 		do_action( 'aialtg_loaded' );
-	}
-
-	/**
-	 * Loads plugin textdomain.
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'kookoo-ai-alt-text-creator', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -113,8 +132,8 @@ class Aialtg_Image_Descriptor {
 		}
 
 		$content = sprintf(
-			/* translators: %s: OpenRouter privacy policy URL */
-			__( 'When generating image metadata using KooKoo AI Alt Text Creator, image attachment URLs (or Base64-encoded image data for local installations), post titles, and post contents are transmitted to the external OpenRouter API. This data is processed in accordance with the OpenRouter Privacy Policy (%s). No personal user information is transmitted or stored externally.', 'kookoo-ai-alt-text-creator' ),
+			/* translators: %s: OpenRouter privacy URL */
+			__( 'When generating image metadata using KooKoo AI Alt Text Creator, image attachment URLs (or Base64-encoded image data for local installations), post titles, and post contents are transmitted to OpenRouter (%s). This data is processed in accordance with the OpenRouter privacy policy. No personal user data is transmitted or stored externally.', 'kookoo-ai-alt-text-creator' ),
 			'https://openrouter.ai/privacy'
 		);
 
@@ -125,28 +144,54 @@ class Aialtg_Image_Descriptor {
 	}
 
 	/**
-	 * Logic runs on plugin activation.
+	 * Checks for conflicting plugins and deactivates them.
 	 */
-	public function activation_logic() {
-		// Run schedule logic.
-		$options = get_option( 'aialtg_settings' );
-		if ( ! is_array( $options ) ) {
-			$options = array();
+	public function check_plugin_conflicts() {
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
-		if ( isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
-			if ( ! wp_next_scheduled( Aialtg_Cron::CRON_HOOK ) ) {
-				wp_schedule_event( time(), Aialtg_Cron::INTERVAL_NAME, Aialtg_Cron::CRON_HOOK );
+
+		// Deactivate legacy addon if still present.
+		$addon_file = 'kookoo-ai-alt-text-creator-pro-addon/kookoo-ai-alt-text-creator-pro-addon.php';
+		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( $addon_file ) ) {
+			deactivate_plugins( $addon_file, true );
+		}
+
+		$pro_plugin = 'kookoo-ai-alt-text-creator-pro/kookoo-ai-alt-text-creator-pro.php';
+		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( $pro_plugin ) ) {
+			// If user is currently activating Pro, do not deactivate Pro.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( isset( $_GET['action'], $_GET['plugin'] ) && 'activate' === $_GET['action'] && false !== strpos( sanitize_text_field( wp_unslash( $_GET['plugin'] ) ), 'kookoo-ai-alt-text-creator-pro' ) ) {
+				return;
+			}
+			// If Pro was just activated, do not deactivate Pro.
+			if ( get_transient( 'aialtg_pro_activated_notice' ) ) {
+				return;
+			}
+
+			// If Free was just activated, ensure Pro is deactivated.
+			if ( get_transient( 'aialtg_free_activated_notice' ) ) {
+				deactivate_plugins( $pro_plugin, true );
 			}
 		}
 	}
 
 	/**
-	 * Deactivation cleanup.
+	 * Displays advisory notice if the Pro version was deactivated upon Free activation.
 	 */
-	public function deactivation_cleanup() {
-		$hook = Aialtg_Cron::CRON_HOOK;
-		wp_clear_scheduled_hook( $hook );
-		delete_transient( 'aialtg_stats' );
+	public function deactivation_advisory_notices() {
+		if ( get_transient( 'aialtg_free_activated_notice' ) ) {
+			delete_transient( 'aialtg_free_activated_notice' );
+			?>
+			<div class="notice notice-warning is-dismissible">
+				<p>
+					<?php
+					echo wp_kses_post( __( '<strong>KooKoo AI Alt Text Creator:</strong> The Pro version (KooKoo AI Alt Text Creator Pro) has been automatically deactivated.', 'kookoo-ai-alt-text-creator' ) );
+					?>
+				</p>
+			</div>
+			<?php
+		}
 	}
 
 	/**
@@ -160,8 +205,6 @@ class Aialtg_Image_Descriptor {
 		array_unshift( $links, $settings_link );
 		return $links;
 	}
-
-	// --- Existing UI Logic ---
 
 	/**
 	 * Add column to Media Library.
@@ -189,12 +232,9 @@ class Aialtg_Image_Descriptor {
 			return;
 		}
 
-		// Check supported formats logic here.
-		// Verify against allowed MIME types.
 		$allowed_mimes = Aialtg_Settings::get_allowed_mimes();
 		$current_mime  = get_post_mime_type( $post_id );
 
-		// If allowed_mimes is strict array and current isn't in it.
 		if ( is_array( $allowed_mimes ) && ! in_array( $current_mime, $allowed_mimes, true ) ) {
 			echo esc_html__( 'N/A', 'kookoo-ai-alt-text-creator' );
 			return;
@@ -238,8 +278,10 @@ class Aialtg_Image_Descriptor {
 	 * @param WP_Post $post Post object.
 	 */
 	public function render_meta_box( $post ) {
-		$error     = get_post_meta( $post->ID, '_aialtg_error_log', true );
-		$processed = get_post_meta( $post->ID, '_aialtg_processed', true );
+		$error      = get_post_meta( $post->ID, '_aialtg_error_log', true );
+		$processed  = get_post_meta( $post->ID, '_aialtg_processed', true );
+		$gen_date   = get_post_meta( $post->ID, '_aialtg_gen_date', true );
+		$gen_source = get_post_meta( $post->ID, '_aialtg_gen_source', true );
 
 		if ( ! empty( $error ) ) {
 			echo '<div style="color: #d63638; margin-bottom: 10px;">';
@@ -250,14 +292,31 @@ class Aialtg_Image_Descriptor {
 			echo '<p style="color: #059669; font-weight: 600; margin-bottom: 8px;">' . esc_html__( 'Status: Generated with AI', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 
+		if ( ! empty( $gen_date ) ) {
+			?>
+			<p>
+				<strong><?php esc_html_e( 'Generated On:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+				<span><?php echo esc_html( $gen_date ); ?></span>
+			</p>
+			<?php
+		}
+
+		if ( ! empty( $gen_source ) ) {
+			?>
+			<p>
+				<strong><?php esc_html_e( 'Generation Source:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+				<span><?php echo esc_html( ucfirst( $gen_source ) ); ?></span>
+			</p>
+			<?php
+		}
+
 		ob_start();
-		// Action hook allowing extensions (e.g. Pro Addon) to output generation metadata details.
 		do_action( 'aialtg_attachment_meta_box_details', $post );
 		$extra_details = ob_get_clean();
 
 		if ( ! empty( $extra_details ) ) {
 			echo $extra_details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} elseif ( empty( $error ) && '1' !== $processed ) {
+		} elseif ( empty( $error ) && '1' !== $processed && empty( $gen_date ) ) {
 			echo '<p>' . esc_html__( 'No generation info available.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 	}
@@ -276,7 +335,6 @@ class Aialtg_Image_Descriptor {
 				wp_send_json_error( array( 'message' => __( 'Nonce missing', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
-			// Fix: Unslash before sanitizing.
 			if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'aialtg_gen_nonce_' . $post_id ) ) {
 				wp_send_json_error( array( 'message' => __( 'Security check failed', 'kookoo-ai-alt-text-creator' ) ) );
 			}
@@ -285,9 +343,7 @@ class Aialtg_Image_Descriptor {
 				wp_send_json_error( array( 'message' => __( 'Permission denied', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
-			// Use the Generator Class.
-			$generator = new Aialtg_Generator();
-			$result = $generator->process_image( $post_id, 'manual' );
+			$result = aialtg_process_image( $post_id, 'manual' );
 
 			if ( is_wp_error( $result ) ) {
 				update_post_meta( $post_id, '_aialtg_processed', 'failed' );
@@ -295,17 +351,15 @@ class Aialtg_Image_Descriptor {
 				delete_transient( 'aialtg_stats' );
 				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 			} else {
-				// Clear stats cache.
 				delete_transient( 'aialtg_stats' );
 
 				wp_send_json_success( array(
 					'message'  => __( 'Info Saved!', 'kookoo-ai-alt-text-creator' ),
-					'alt_text' => $result['alt_text'],
-					'title'    => $result['title'],
+					'alt_text' => $result['alt_text'] ?? '',
+					'title'    => $result['title'] ?? '',
 				) );
 			}
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
@@ -328,21 +382,16 @@ class Aialtg_Image_Descriptor {
 			}
 
 			global $wpdb;
-			// Delete the meta key from all posts to reset "processed" status.
-			// Use direct query for performance on large datasets to avoid loading IDs into memory.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			$wpdb->delete( $wpdb->postmeta, array( 'meta_key' => '_aialtg_processed' ) );
 
-			// Clean up error logs as well when resetting.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			$wpdb->delete( $wpdb->postmeta, array( 'meta_key' => '_aialtg_error_log' ) );
 
-			// Clear cached stats.
 			delete_transient( 'aialtg_stats' );
 
 			wp_send_json_success( array( 'message' => __( 'Progress reset successfully.', 'kookoo-ai-alt-text-creator' ) ) );
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
@@ -365,9 +414,6 @@ class Aialtg_Image_Descriptor {
 			}
 
 			global $wpdb;
-			// Delete _aialtg_processed meta ONLY where value is 'failed'.
-			// This puts them back into the "Not Processed" (Pending) queue for the Cron job.
-
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$count = $wpdb->query( $wpdb->prepare(
 				"DELETE FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
@@ -375,7 +421,6 @@ class Aialtg_Image_Descriptor {
 				'failed'
 			) );
 
-			// Clear cached stats.
 			delete_transient( 'aialtg_stats' );
 
 			if ( $count ) {
@@ -387,16 +432,12 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => $message ) );
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
 	/**
 	 * AJAX Handler for Scanning and Fixing JSON Errors.
-	 *
-	 * Detects images where raw JSON (e.g. {"alt_text": ...}) was accidentally saved as the Alt Text or Title.
-	 * Resets their processed status so they are regenerated.
 	 */
 	public function handle_fix_json_errors() {
 		try {
@@ -413,12 +454,6 @@ class Aialtg_Image_Descriptor {
 			}
 
 			global $wpdb;
-
-			// Perform a targeted query to find processed images that look like they contain raw JSON.
-			// We look for common JSON keys/markers in Alt Text meta or Post Title.
-			// Patterns: {"alt_text", {"title", ```json
-			// We join with our processed flag to only target handled images.
-			// Updated to find "alt_text" or "title" key strings even if there are spaces/newlines.
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$results = $wpdb->get_results( "
@@ -438,8 +473,7 @@ class Aialtg_Image_Descriptor {
 				$ids = array_map( 'intval', $ids );
 				$count = count( $ids );
 
-				// Delete postmeta for all these IDs at once using SQL query.
-				$ids_placeholder = implode( ',', array_fill( 0, $count, '%d' ) );
+				$ids_placeholder = implode( ',', array_fill( 0, count, '%d' ) );
 
 				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$wpdb->query( $wpdb->prepare(
@@ -448,12 +482,10 @@ class Aialtg_Image_Descriptor {
 				) );
 				// phpcs:enable
 
-				// Clean object cache for these posts.
 				foreach ( $ids as $id ) {
 					clean_post_cache( $id );
 				}
 
-				// Clear stats cache so the UI updates pending count.
 				delete_transient( 'aialtg_stats' );
 			}
 
@@ -466,7 +498,6 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => $message ) );
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
@@ -488,7 +519,6 @@ class Aialtg_Image_Descriptor {
 				wp_send_json_error( array( 'message' => __( 'Permission denied', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
-			// Check transient cache first.
 			$models = get_transient( 'aialtg_openrouter_models' );
 
 			if ( false === $models ) {
@@ -512,20 +542,17 @@ class Aialtg_Image_Descriptor {
 				}
 
 				$models = $data['data'];
-
-				// Cache models list for 24 hours.
 				set_transient( 'aialtg_openrouter_models', $models, DAY_IN_SECONDS );
 			}
 
 			wp_send_json_success( array( 'models' => $models ) );
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
 
 	/**
-	 * AJAX Handler for testing API connection.
+	 * AJAX Handler for testing API connection across providers.
 	 */
 	public function handle_test_connection_request() {
 		try {
@@ -564,15 +591,17 @@ class Aialtg_Image_Descriptor {
 			);
 			$options = apply_filters( 'aialtg_test_connection_options', $options, $gateway, $api_key );
 
-			$api_url = apply_filters( 'aialtg_api_url', 'https://openrouter.ai/api/v1/chat/completions', $options );
-			$headers = apply_filters( 'aialtg_api_headers', array(
+			$default_url = 'https://openrouter.ai/api/v1/chat/completions';
+			$api_url     = apply_filters( 'aialtg_api_url', $default_url, $options );
+
+			$default_headers = array(
 				'Authorization' => 'Bearer ' . $api_key,
 				'Content-Type'  => 'application/json',
 				'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
 				'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-			), $options );
-
-			$model = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
+			);
+			$headers = apply_filters( 'aialtg_api_headers', $default_headers, $options );
+			$model   = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
 
 			$body = array(
 				'model'      => $model,
@@ -630,7 +659,6 @@ class Aialtg_Image_Descriptor {
 
 			wp_send_json_success( array( 'message' => __( 'Connection successful! The API Key and Model details are valid.', 'kookoo-ai-alt-text-creator' ) ) );
 		} catch ( Throwable $e ) {
-			error_log( 'KooKoo AI Alt Text Creator Error: ' . $e->getMessage() );
 			wp_send_json_error( array( 'message' => __( 'An unexpected system error occurred. Please check server logs.', 'kookoo-ai-alt-text-creator' ) ) );
 		}
 	}
@@ -641,7 +669,6 @@ class Aialtg_Image_Descriptor {
 	 * @param string $hook Admin hook.
 	 */
 	public function enqueue_admin_assets( $hook ) {
-		// Enqueue on Upload (Media Library) AND our Settings page.
 		if ( 'upload.php' !== $hook && 'settings_page_kookoo-ai-alt-text-creator' !== $hook ) {
 			return;
 		}

@@ -31,18 +31,19 @@ delete_transient( 'aialtg_stats' );
 delete_transient( 'aialtg_openrouter_models' );
 
 // 4. Delete Post Meta Data.
-// We use direct SQL for performance to avoid loading every post ID into memory via get_posts().
 global $wpdb;
 
 // The meta keys used by this plugin.
 $aialtg_meta_keys = array(
 	'_aialtg_processed',   // Flag indicating image was processed.
 	'_aialtg_error_log',   // Error logs for failed generations.
+	'_aialtg_gen_date',    // Timestamp when AI metadata was created.
+	'_aialtg_gen_source',  // Trigger source ('manual', 'cron', 'upload', 'bulk').
 );
 
 // Delete metadata in a single query.
-// Note: We deliberately do NOT delete '_wp_attachment_image_alt' as that is native WP data
-// and the user likely wants to keep the generated alt text even if they delete the plugin.
+// Note: We deliberately do NOT delete '_wp_attachment_image_alt', post_title, post_excerpt, or post_content
+// as those are native WP data and the user likely wants to keep them even if they delete the plugin.
 $aialtg_placeholders = implode( ',', array_fill( 0, count( $aialtg_meta_keys ), '%s' ) );
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 $wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN ($aialtg_placeholders)", $aialtg_meta_keys ) );
