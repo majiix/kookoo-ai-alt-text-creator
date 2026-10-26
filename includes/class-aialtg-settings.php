@@ -480,7 +480,7 @@ class Aialtg_Settings {
 					</span>
 					<div class="aialtg-pro-feature-text">
 						<strong><?php esc_html_e( 'Developer WP-CLI Tools:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Server terminal batch commands (wp kookoo-alt-text-pro) & crontab', 'kookoo-ai-alt-text-creator' ); ?></span>
+						<span><?php esc_html_e( 'Server terminal batch commands via WP-CLI & crontab', 'kookoo-ai-alt-text-creator' ); ?></span>
 					</div>
 				</li>
 			</ul>

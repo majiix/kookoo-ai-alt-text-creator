@@ -50,7 +50,7 @@ class Aialtg_Generator {
 		}
 		$image_url = $image_url_or_error;
 
-		$prompts_to_add = $this->build_prompts_payload( $post_id, $source, $options );
+		$prompts_to_add = $this->build_prompts_payload( $post_id, $options );
 
 		if ( empty( $prompts_to_add ) ) {
 			update_post_meta( $post_id, '_aialtg_processed', '1' );
@@ -58,7 +58,6 @@ class Aialtg_Generator {
 			return array(
 				'alt_text' => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
 				'title'    => get_the_title( $post_id ),
-				'skipped'  => true,
 			);
 		}
 
@@ -141,7 +140,7 @@ class Aialtg_Generator {
 			return new WP_Error( 'json_parse_failed', __( 'API response was JSON but could not be parsed', 'kookoo-ai-alt-text-creator' ) );
 		}
 
-		return $this->save_generated_metadata( $post_id, $result_json, $prompts_to_add, $options, $source );
+		return $this->save_generated_metadata( $post_id, $result_json, $prompts_to_add, $source );
 	}
 
 	/**
@@ -196,14 +195,13 @@ class Aialtg_Generator {
 	}
 
 	/**
-	 * Build prompts array based on options, skipping populated fields if requested.
+	 * Build prompts array based on options for alt text and title.
 	 *
-	 * @param int    $post_id Attachment ID.
-	 * @param string $source  Generation source.
-	 * @param array  $options Settings array.
+	 * @param int   $post_id Attachment ID.
+	 * @param array $options Settings array.
 	 * @return array Keyed prompt instructions.
 	 */
-	private function build_prompts_payload( $post_id, $source, $options ) {
+	private function build_prompts_payload( $post_id, $options ) {
 		$enable_alt   = isset( $options['enable_alt'] ) ? (bool) $options['enable_alt'] : false;
 		$enable_title = isset( $options['enable_title'] ) ? (bool) $options['enable_title'] : false;
 
@@ -304,11 +302,10 @@ class Aialtg_Generator {
 	 * @param int    $post_id Attachment ID.
 	 * @param array  $result_json Decoded AI response JSON.
 	 * @param array  $prompts_to_add Active prompts payload.
-	 * @param array  $options Settings array.
 	 * @param string $source Generation source.
 	 * @return array Saved data result.
 	 */
-	private function save_generated_metadata( $post_id, $result_json, $prompts_to_add, $options, $source ) {
+	private function save_generated_metadata( $post_id, $result_json, $prompts_to_add, $source ) {
 		$update_args  = array( 'ID' => $post_id );
 		$needs_update = false;
 

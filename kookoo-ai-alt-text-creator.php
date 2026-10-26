@@ -102,16 +102,6 @@ class Aialtg_Image_Descriptor {
 
 		// Plugin action links.
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_plugin_action_links' ) );
-
-		// Load translations.
-		add_action( 'init', array( $this, 'load_textdomain' ) );
-	}
-
-	/**
-	 * Loads plugin textdomain for translations.
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'kookoo-ai-alt-text-creator', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**

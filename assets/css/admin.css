@@ -557,9 +557,9 @@ body.rtl .aialtg-pro-card:hover {
 	line-height: 1.2;
 }
 
-.aialtg-stat-value.success { color: var(--aialtg-success); }
-.aialtg-stat-value.error { color: var(--aialtg-error); }
-.aialtg-stat-value.neutral { color: var(--aialtg-primary); }
+.aialtg-stat-item.aialtg-stat-success .aialtg-stat-value { color: var(--aialtg-success); }
+.aialtg-stat-item.aialtg-stat-warning .aialtg-stat-value { color: #f59e0b; }
+.aialtg-stat-item.aialtg-stat-error .aialtg-stat-value { color: var(--aialtg-error); }
 
 /* Controls & Buttons Wrapper */
 .aialtg-controls-wrapper {
@@ -710,10 +710,6 @@ body.rtl .aialtg-pro-card:hover {
 }
 
 /* --- Help Card & Content --- */
-.aialtg-help-card {
-	background: #ffffff !important;
-}
-
 .aialtg-help-content p {
 	font-size: 13px;
 	line-height: 1.5;

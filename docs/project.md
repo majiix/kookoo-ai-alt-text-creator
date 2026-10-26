@@ -13,7 +13,7 @@ KooKoo AI Alt Text Creator is a completely free WordPress plugin that automatica
 * None (uses native WordPress APIs)
 
 ## Architecture
-* [kookoo-ai-alt-text-creator.php](../kookoo-ai-alt-text-creator.php): Plugin bootstrap, hooks registration, textdomain loader (`load_textdomain` on `init`), public API helper (`aialtg_process_image`), Media Library custom column and row action ("AI Info"), privacy policy suggester (`register_privacy_policy_content`), and error-masked AJAX handlers controller.
+* [kookoo-ai-alt-text-creator.php](../kookoo-ai-alt-text-creator.php): Plugin bootstrap, hooks registration, public API helper (`aialtg_process_image`), Media Library custom column and row action ("AI Info"), privacy policy suggester (`register_privacy_policy_content`), and error-masked AJAX handlers controller. Automatic textdomain loading is handled via core WordPress 4.6+ directory standards.
 * [includes/class-aialtg-settings.php](class-aialtg-settings.php): Handles settings page registration, sanitization, dashboard interface rendering, OpenRouter API key configuration, prompt configuration for alt text and titles, Pro upgrade sidebar showcase card, and integrated Help and setup documentation.
 * [includes/class-aialtg-generator.php](class-aialtg-generator.php): Core logic for generating Alt Texts and Titles, performing remote requests to OpenRouter, uploads-directory validated Base64 conversions, always-on generation metadata logging, and robust JSON parsing.
 * [includes/class-aialtg-cron.php](class-aialtg-cron.php): Handles automated background queue processing via WP Cron with configurable batch limits and host timeout advisories.
@@ -23,14 +23,17 @@ KooKoo AI Alt Text Creator is a completely free WordPress plugin that automatica
 
 ## Assumptions & Decisions
 * **Free Version Scope**: The free edition is streamlined to Alt Text and Title generation via OpenRouter. Advanced features (Captions, Descriptions, Auto-Generate on Upload, Media Library Bulk Actions dropdown, Overwrite Protection, Direct OpenAI/Gemini APIs, and WP-CLI) are reserved for the Pro edition.
-* **Separation of Concerns**: Free version is completely clean of Pro code, Pro conflict detection, legacy addon migration, and dead filter gates. Mutual exclusion is delegated exclusively to the Pro plugin.
+* **Separation of Concerns**: Free version is completely clean of Pro code, Pro conflict detection, legacy addon migration, and dead filter gates. Mutual exclusion is delegated exclusively to the Pro plugin. Scope of fixes is strictly limited to the Free plugin.
 * **Dedicated OpenRouter Setup**: Free plugin operates directly with OpenRouter; redundant multi-gateway dropdowns, dead filter hooks, and the unused `api_gateway` option key are removed.
 * **Generation Info Always On**: Generation metadata (`_aialtg_gen_date`, `_aialtg_gen_source`) is recorded automatically and displayed in the attachment edit screen meta box for manual and cron runs.
 * **Media Library Actions**: The single-item "Generate Info" / "Regenerate" button and "AI Info" column in the Media Library list table are preserved for convenient manual generation.
 * **WordPress Core Target**: Tested up to `7.1` maintained per user direction.
 * **Author & Contributor Handles**: Maintained as `micromax` (Author header) and `micromax2` (Contributors list) per user direction.
 * **External Services Disclosure**: Explicitly discloses OpenRouter (`https://openrouter.ai/`) in `readme.txt` and privacy policy suggestions.
-* **Safe Uninstall Preservation**: Settings and postmeta are preserved in `uninstall.php` to prevent wiping active user configuration or image metadata upon reinstall or update.
+* **Safe Uninstall Preservation**: Settings and postmeta are preserved in `uninstall.php` per user direction to prevent wiping active user configuration or image metadata upon reinstall or update.
+* **Neutral Upsell Signatures**: Pro upsell card in settings uses neutral phrasing for WP-CLI tools without exposing `-pro` command signatures.
+* **Strict WPCS Compliance**: Background cron execution time limit extension avoids error suppression operators.
+* **Clean Free Reachability**: All leftover signatures from Pro overwrite rules (docblock references, unused helper parameters, dead return status keys) and dead CSS selectors (`.aialtg-help-card`) have been completely removed. Statistics grid selectors are aligned with `.aialtg-stat-item` markup.
 
 ## Current Features
 * **OpenRouter AI Generation**: Descriptive Alt Text and Title generation using OpenRouter vision models (Gemini 2.5 Flash, GPT-4o, Claude 3.5, and free community models).

@@ -511,8 +511,8 @@ msgstr ""
 msgid "Developer WP-CLI Tools:"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:546
-msgid "Server terminal batch commands (wp kookoo-alt-text-pro) & crontab"
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:483
+msgid "Server terminal batch commands via WP-CLI & crontab"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:565

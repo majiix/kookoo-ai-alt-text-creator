@@ -106,9 +106,10 @@ class Aialtg_Cron {
 			$generator = new Aialtg_Generator();
 			foreach ( $images as $image_id ) {
 				// Extend execution time limit for this request if function is available.
-				if ( function_exists( 'set_time_limit' ) ) {
-					// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
-					@set_time_limit( 60 );
+				if ( function_exists( 'set_time_limit' ) && false === strpos( (string) ini_get( 'disable_functions' ), 'set_time_limit' ) && ! ini_get( 'safe_mode' ) ) {
+					
+					// phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Execution time extension for background batch processing.
+					set_time_limit( 60 );
 				}
 				$result = $generator->process_image( $image_id, 'cron' );
 
