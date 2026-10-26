@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Tested up to: 7.1
 Stable tag: 2.5.0
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Automatically generates descriptive Alt Text and Titles for your Media Library images using AI via OpenRouter. Completely free.
 
@@ -85,13 +85,13 @@ No. It only updates metadata fields (Alt Text and Title) in the WordPress databa
 
 = What happens if I uninstall the plugin? =
 
-Settings, transients, and internal tracking meta are cleanly deleted from your database. All generated Alt Texts and Titles remain safely stored in WordPress as permanent content.
+Plugin transients and scheduled background tasks are cleanly cleared upon uninstall. Your settings and image generation metadata remain safely stored in the database if you ever reinstall the plugin. All generated Alt Texts and Titles remain permanently stored in WordPress as core media metadata.
 
 == Changelog ==
 
 = 2.5.0 =
 * Completely standalone free release focused on Alt Text and Title generation via OpenRouter.
-* Removed external upsell notices, preview tabs, and purchase links.
+* Removed multi-gateway switcher, direct provider APIs, and unused scripts for a clean free release.
 * Cleaned up admin assets, stylesheet footprint, and settings panel.
 
 = 2.4.1 =

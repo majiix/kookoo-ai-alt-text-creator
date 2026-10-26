@@ -11,39 +11,22 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 /**
- * Clean up plugin data.
+ * Clean up plugin ephemeral data.
  *
  * Process:
  * 1. Clear scheduled cron jobs.
- * 2. Delete plugin settings (options).
- * 3. Delete plugin transients (cache).
- * 4. Delete custom post meta data attached to images.
+ * 2. Delete plugin transients (cache).
+ *
+ * Note: Plugin settings ('aialtg_settings') and image generation postmeta
+ * ('_aialtg_processed', '_aialtg_error_log', '_aialtg_gen_date', '_aialtg_gen_source')
+ * are intentionally preserved to ensure seamless data continuity if the user
+ * reinstalls the plugin. Native image metadata ('_wp_attachment_image_alt', post_title)
+ * also remains permanently stored.
  */
 
 // 1. Clear the Scheduled Hook.
 wp_clear_scheduled_hook( 'aialtg_cron_process_images' );
 
-// 2. Delete Plugin Settings.
-delete_option( 'aialtg_settings' );
-
-// 3. Delete Transients.
+// 2. Delete Transients.
 delete_transient( 'aialtg_stats' );
 delete_transient( 'aialtg_openrouter_models' );
-
-// 4. Delete Post Meta Data.
-global $wpdb;
-
-// The meta keys used by this plugin.
-$aialtg_meta_keys = array(
-	'_aialtg_processed',   // Flag indicating image was processed.
-	'_aialtg_error_log',   // Error logs for failed generations.
-	'_aialtg_gen_date',    // Timestamp when AI metadata was created.
-	'_aialtg_gen_source',  // Trigger source ('manual', 'cron', 'upload', 'bulk').
-);
-
-// Delete metadata in a single query.
-// Note: We deliberately do NOT delete '_wp_attachment_image_alt', post_title, post_excerpt, or post_content
-// as those are native WP data and the user likely wants to keep them even if they delete the plugin.
-$aialtg_placeholders = implode( ',', array_fill( 0, count( $aialtg_meta_keys ), '%s' ) );
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
-$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN ($aialtg_placeholders)", $aialtg_meta_keys ) );

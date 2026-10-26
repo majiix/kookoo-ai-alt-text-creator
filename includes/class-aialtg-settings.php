@@ -79,14 +79,6 @@ class Aialtg_Settings {
 		);
 
 		add_settings_field(
-			'api_gateway',
-			__( 'API Gateway', 'kookoo-ai-alt-text-creator' ),
-			array( $this, 'render_api_gateway_field' ),
-			'kookoo-ai-alt-text-creator',
-			'aialtg_api_section'
-		);
-
-		add_settings_field(
 			'api_key',
 			__( 'OpenRouter API Key', 'kookoo-ai-alt-text-creator' ),
 			array( $this, 'render_api_key_field' ),
@@ -215,13 +207,6 @@ class Aialtg_Settings {
 		$old_options = is_array( $old_options ) ? $old_options : array();
 
 		// API Settings.
-		$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
-		$gateway          = isset( $input['api_gateway'] ) ? sanitize_text_field( $input['api_gateway'] ) : 'openrouter';
-		if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
-			$gateway = 'openrouter';
-		}
-		$new_input['api_gateway'] = $gateway;
-
 		if ( isset( $input['api_key'] ) ) {
 			$new_input['api_key'] = sanitize_text_field( $input['api_key'] );
 		}
@@ -233,7 +218,6 @@ class Aialtg_Settings {
 		// Feature Toggles.
 		$new_input['enable_alt']   = isset( $input['enable_alt'] ) ? '1' : '0';
 		$new_input['enable_title'] = isset( $input['enable_title'] ) ? '1' : '0';
-		$new_input['save_gen_meta'] = '1';
 
 		// Prompts & Formats.
 		if ( isset( $input['global_context'] ) ) {
@@ -287,8 +271,6 @@ class Aialtg_Settings {
 				wp_schedule_event( time() + 10, Aialtg_Cron::INTERVAL_NAME, $cron_hook );
 			}
 		}
-
-		$new_input = apply_filters( 'aialtg_sanitize_settings', $new_input, $new_input, $old_options );
 
 		delete_transient( 'aialtg_stats' );
 
@@ -497,62 +479,14 @@ class Aialtg_Settings {
 						</svg>
 					</span>
 					<div class="aialtg-pro-feature-text">
-						<strong><?php esc_html_e( 'Context-Aware AI:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Analyzes parent post/page title & content for tailored descriptions', 'kookoo-ai-alt-text-creator' ); ?></span>
-					</div>
-				</li>
-				<li class="aialtg-pro-feature-item">
-					<span class="aialtg-pro-check-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
-							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</span>
-					<div class="aialtg-pro-feature-text">
-						<strong><?php esc_html_e( 'Global Prompt Context:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Set universal brand guidelines & rules applied across all requests', 'kookoo-ai-alt-text-creator' ); ?></span>
-					</div>
-				</li>
-				<li class="aialtg-pro-feature-item">
-					<span class="aialtg-pro-check-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
-							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</span>
-					<div class="aialtg-pro-feature-text">
-						<strong><?php esc_html_e( 'Custom Vision Models:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Custom model slugs & dropdown presets for all gateways', 'kookoo-ai-alt-text-creator' ); ?></span>
-					</div>
-				</li>
-				<li class="aialtg-pro-feature-item">
-					<span class="aialtg-pro-check-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
-							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</span>
-					<div class="aialtg-pro-feature-text">
 						<strong><?php esc_html_e( 'Developer WP-CLI Tools:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Server terminal commands (wp kookoo-alt-text-pro) & crontab', 'kookoo-ai-alt-text-creator' ); ?></span>
-					</div>
-				</li>
-				<li class="aialtg-pro-feature-item">
-					<span class="aialtg-pro-check-icon" aria-hidden="true">
-						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
-							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-						</svg>
-					</span>
-					<div class="aialtg-pro-feature-text">
-						<strong><?php esc_html_e( 'Metadata Audit Trail:', 'kookoo-ai-alt-text-creator' ); ?></strong>
-						<span><?php esc_html_e( 'Track execution sources (Upload, Bulk, Cron, Manual) on attachments', 'kookoo-ai-alt-text-creator' ); ?></span>
+						<span><?php esc_html_e( 'Server terminal batch commands (wp kookoo-alt-text-pro) & crontab', 'kookoo-ai-alt-text-creator' ); ?></span>
 					</div>
 				</li>
 			</ul>
 			<div class="aialtg-pro-actions">
 				<a href="<?php echo esc_url( $pro_url ); ?>" target="_blank" rel="noopener noreferrer" class="button aialtg-btn-pro-cta">
-					<span><?php esc_html_e( 'Get Pro Addon Now', 'kookoo-ai-alt-text-creator' ); ?></span>
+					<span><?php esc_html_e( 'Upgrade to Pro', 'kookoo-ai-alt-text-creator' ); ?></span>
 					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
 						<polyline points="15 3 21 3 21 9"></polyline>
@@ -650,30 +584,11 @@ class Aialtg_Settings {
 	}
 
 	public function render_section_info() {
-		echo '<p class="aialtg-section-desc">' . esc_html__( 'Choose your AI provider and enter your API credentials.', 'kookoo-ai-alt-text-creator' ) . '</p>';
+		echo '<p class="aialtg-section-desc">' . esc_html__( 'Enter your OpenRouter API credentials.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 	}
 
 	public function render_options_section_info() {
 		echo '<p class="aialtg-section-desc">' . esc_html__( 'Configure which metadata fields to generate and customize your AI prompt instructions.', 'kookoo-ai-alt-text-creator' ) . '</p>';
-	}
-
-	public function render_api_gateway_field() {
-		$options  = $this->get_options();
-		$gateways = apply_filters( 'aialtg_api_gateways', array(
-			'openrouter' => __( 'OpenRouter (Default)', 'kookoo-ai-alt-text-creator' ),
-		) );
-		$gateway  = isset( $options['api_gateway'] ) && isset( $gateways[ $options['api_gateway'] ] ) ? $options['api_gateway'] : 'openrouter';
-		?>
-		<div class="aialtg-input-wrap">
-			<select name="<?php echo esc_attr( self::$option_name . '[api_gateway]' ); ?>" id="aialtg-api-gateway" class="regular-text">
-				<?php
-				foreach ( $gateways as $value => $label ) {
-					echo '<option value="' . esc_attr( $value ) . '" ' . selected( $gateway, $value, false ) . '>' . esc_html( $label ) . '</option>';
-				}
-				?>
-			</select>
-		</div>
-		<?php
 	}
 
 	public function render_api_key_field() {
@@ -686,6 +601,9 @@ class Aialtg_Settings {
 				<span class="dashicons dashicons-visibility"></span>
 			</button>
 		</div>
+		<p class="description">
+			<?php esc_html_e( 'Enter your personal OpenRouter API key to connect to AI vision models.', 'kookoo-ai-alt-text-creator' ); ?>
+		</p>
 		<?php
 	}
 
@@ -705,7 +623,7 @@ class Aialtg_Settings {
 
 			<div class="aialtg-custom-model-input-wrap" style="display: none; margin-top: 8px;">
 				<input type="text" id="aialtg-custom-model-input" class="regular-text" placeholder="e.g. google/gemini-2.5-flash-lite" />
-				<p class="description"><?php esc_html_e( 'Enter any custom model ID supported by your chosen gateway.', 'kookoo-ai-alt-text-creator' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Enter any custom model ID supported by OpenRouter.', 'kookoo-ai-alt-text-creator' ); ?></p>
 			</div>
 
 			<input type="hidden" name="<?php echo esc_attr( self::$option_name . '[model]' ); ?>" id="aialtg-model-real-input" value="<?php echo esc_attr( $value ); ?>" />
@@ -942,13 +860,13 @@ class Aialtg_Settings {
 	private function render_help_tab_content() {
 		?>
 		<h2><?php esc_html_e( 'Quick Help & Resources', 'kookoo-ai-alt-text-creator' ); ?></h2>
-		<p class="aialtg-section-desc"><?php esc_html_e( 'Learn how the plugin works, how to get API keys for each provider, and find troubleshooting guidance.', 'kookoo-ai-alt-text-creator' ); ?></p>
+		<p class="aialtg-section-desc"><?php esc_html_e( 'Learn how the plugin works, how to get your OpenRouter API key, and find troubleshooting guidance.', 'kookoo-ai-alt-text-creator' ); ?></p>
 		<div class="form-table aialtg-help-table">
 			<div class="aialtg-help-content">
 				<div class="aialtg-help-section">
 					<h3><?php esc_html_e( 'How It Works', 'kookoo-ai-alt-text-creator' ); ?></h3>
 					<ol class="aialtg-help-steps">
-						<li><?php esc_html_e( 'Choose your preferred AI Gateway, obtain an API key, and select an AI vision model.', 'kookoo-ai-alt-text-creator' ); ?></li>
+						<li><?php esc_html_e( 'Obtain an OpenRouter API key and select an AI vision model.', 'kookoo-ai-alt-text-creator' ); ?></li>
 						<li><?php esc_html_e( 'Configure your prompt instructions for Alt Text and Titles.', 'kookoo-ai-alt-text-creator' ); ?></li>
 						<li><?php esc_html_e( 'Generate details individually in the Media Library or configure automated background processing.', 'kookoo-ai-alt-text-creator' ); ?></li>
 					</ol>
@@ -957,7 +875,7 @@ class Aialtg_Settings {
 				<div class="aialtg-help-section">
 					<h3><?php esc_html_e( 'API Key Setup Guides', 'kookoo-ai-alt-text-creator' ); ?></h3>
 					<p class="aialtg-section-desc" style="margin-bottom: 16px;">
-						<?php esc_html_e( 'Follow the instructions below to obtain your personal API keys for each supported provider:', 'kookoo-ai-alt-text-creator' ); ?>
+						<?php esc_html_e( 'Follow the instructions below to obtain your personal API key for OpenRouter:', 'kookoo-ai-alt-text-creator' ); ?>
 					</p>
 
 					<div class="aialtg-gateway-guides-grid">

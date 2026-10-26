@@ -27,7 +27,7 @@ class Aialtg_Generator {
 	 * Process a single image.
 	 *
 	 * @param int    $post_id Attachment ID.
-	 * @param string $source  Source of generation ('manual', 'cron', 'upload', 'bulk').
+	 * @param string $source  Source of generation ('manual', 'cron').
 	 * @return array|WP_Error Result data.
 	 */
 	public function process_image( $post_id, $source = 'manual' ) {
@@ -36,35 +36,13 @@ class Aialtg_Generator {
 			$options = array();
 		}
 
-		// Allow filtering to skip image generation.
-		$skip = apply_filters( 'aialtg_skip_image_generation', false, $post_id, $source, $options );
-		if ( $skip ) {
-			update_post_meta( $post_id, '_aialtg_processed', '1' );
-			delete_post_meta( $post_id, '_aialtg_error_log' );
-
-			return array(
-				'alt_text' => get_post_meta( $post_id, '_wp_attachment_image_alt', true ),
-				'title'    => get_the_title( $post_id ),
-				'skipped'  => true,
-			);
-		}
-
-		$gateway = isset( $options['api_gateway'] ) ? $options['api_gateway'] : 'openrouter';
-		$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
-		if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
-			$gateway = 'openrouter';
-		}
-
-		$api_key = $this->resolve_api_key( $gateway, $options );
-		$api_key = apply_filters( 'aialtg_gateway_api_key', $api_key, $gateway, $options );
+		$api_key = isset( $options['api_key'] ) ? trim( $options['api_key'] ) : '';
 
 		if ( empty( $api_key ) ) {
 			return new WP_Error( 'missing_key', __( 'API Key missing', 'kookoo-ai-alt-text-creator' ) );
 		}
 
 		$model = isset( $options['model'] ) && ! empty( $options['model'] ) ? $options['model'] : 'google/gemini-2.5-flash-lite';
-		$model = $this->clean_model_name( $model, $gateway );
-		$model = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
 
 		$image_url_or_error = $this->prepare_image_url( $post_id );
 		if ( is_wp_error( $image_url_or_error ) ) {
@@ -73,7 +51,6 @@ class Aialtg_Generator {
 		$image_url = $image_url_or_error;
 
 		$prompts_to_add = $this->build_prompts_payload( $post_id, $source, $options );
-		$prompts_to_add = apply_filters( 'aialtg_generation_prompts', $prompts_to_add, $post_id, $options );
 
 		if ( empty( $prompts_to_add ) ) {
 			update_post_meta( $post_id, '_aialtg_processed', '1' );
@@ -87,11 +64,13 @@ class Aialtg_Generator {
 
 		$system_instructions = $this->build_system_instructions( $prompts_to_add, $options, $post_id );
 
-		$api_url = $this->resolve_api_url( $gateway, $options );
-		$api_url = apply_filters( 'aialtg_api_url', $api_url, $options );
-
-		$headers = $this->resolve_api_headers( $gateway, $api_key, $options );
-		$headers = apply_filters( 'aialtg_api_headers', $headers, $options );
+		$api_url = 'https://openrouter.ai/api/v1/chat/completions';
+		$headers = array(
+			'Authorization' => 'Bearer ' . $api_key,
+			'Content-Type'  => 'application/json',
+			'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
+			'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
+		);
 
 		$response = wp_remote_post(
 			$api_url,
@@ -162,35 +141,7 @@ class Aialtg_Generator {
 			return new WP_Error( 'json_parse_failed', __( 'API response was JSON but could not be parsed', 'kookoo-ai-alt-text-creator' ) );
 		}
 
-		$result_data = $this->save_generated_metadata( $post_id, $result_json, $prompts_to_add, $options, $source );
-
-		// Allow extensions to process additional fields or update result.
-		$result_data = apply_filters( 'aialtg_processed_result', $result_data, $result_json, $post_id, $source, $options );
-		do_action( 'aialtg_image_processed', $post_id, $source, $result_json, $options );
-
-		return $result_data;
-	}
-
-	/**
-	 * Resolve API key based on gateway.
-	 *
-	 * @param string $gateway Gateway slug.
-	 * @param array  $options Settings array.
-	 * @return string API key.
-	 */
-	private function resolve_api_key( $gateway, $options ) {
-		return isset( $options['api_key'] ) ? trim( $options['api_key'] ) : '';
-	}
-
-	/**
-	 * Clean model name for API requests.
-	 *
-	 * @param string $model   Model identifier.
-	 * @param string $gateway Gateway slug.
-	 * @return string Cleaned model identifier.
-	 */
-	private function clean_model_name( $model, $gateway ) {
-		return $model;
+		return $this->save_generated_metadata( $post_id, $result_json, $prompts_to_add, $options, $source );
 	}
 
 	/**
@@ -345,34 +296,6 @@ class Aialtg_Generator {
 		$system_instructions .= 'Return ONLY valid JSON with keys ' . implode( ' and ', $expected_keys ) . '.';
 
 		return $system_instructions;
-	}
-
-	/**
-	 * Resolve API URL based on active gateway.
-	 *
-	 * @param string $gateway Gateway slug.
-	 * @param array  $options Settings array.
-	 * @return string API endpoint URL.
-	 */
-	private function resolve_api_url( $gateway, $options ) {
-		return 'https://openrouter.ai/api/v1/chat/completions';
-	}
-
-	/**
-	 * Resolve HTTP headers for API request.
-	 *
-	 * @param string $gateway Gateway slug.
-	 * @param string $api_key Resolved API key.
-	 * @param array  $options Settings array.
-	 * @return array HTTP headers.
-	 */
-	private function resolve_api_headers( $gateway, $api_key, $options ) {
-		return array(
-			'Authorization' => 'Bearer ' . $api_key,
-			'Content-Type'  => 'application/json',
-			'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
-			'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
-		);
 	}
 
 	/**

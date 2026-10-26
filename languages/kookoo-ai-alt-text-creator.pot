@@ -64,11 +64,11 @@ msgid "General"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:83
-msgid "API Gateway"
+msgid "OpenRouter API Key"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:91
-msgid "OpenRouter API Key"
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:605
+msgid "Enter your personal OpenRouter API key to connect to AI vision models."
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:99
@@ -163,24 +163,20 @@ msgstr ""
 msgid "Configure the background scheduler to process images automatically."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:492
-msgid "Choose your AI provider and enter your API credentials."
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:589
+msgid "Enter your OpenRouter API credentials."
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:496
 msgid "Configure which metadata fields to generate and customize your AI prompt instructions."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:502
-msgid "OpenRouter (Default)"
-msgstr ""
-
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:524
 msgid "Toggle API Key Visibility"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:547
-msgid "Enter any custom model ID supported by your chosen gateway."
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:628
+msgid "Enter any custom model ID supported by OpenRouter."
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:560
@@ -235,32 +231,32 @@ msgstr ""
 msgid "Quick Help & Resources"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:783
-msgid "Learn how the plugin works, how to get API keys for each provider, and find troubleshooting guidance."
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:865
+msgid "Learn how the plugin works, how to get your OpenRouter API key, and find troubleshooting guidance."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:787
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:869
 msgid "How It Works"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:789
-msgid "Choose your preferred AI Gateway, obtain an API key, and select an AI vision model."
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:871
+msgid "Obtain an OpenRouter API key and select an AI vision model."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:790
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:872
 msgid "Configure your prompt instructions for Alt Text and Titles."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:791
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:873
 msgid "Generate details individually in the Media Library or configure automated background processing."
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:796
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:878
 msgid "API Key Setup Guides"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:798
-msgid "Follow the instructions below to obtain your personal API keys for each supported provider:"
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:880
+msgid "Follow the instructions below to obtain your personal API key for OpenRouter:"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:807
@@ -337,10 +333,6 @@ msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/kookoo-ai-alt-text-creator.php:112
 msgid "KooKoo AI Alt Text Creator"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/kookoo-ai-alt-text-creator.php:148
-msgid "<strong>KooKoo AI Alt Text Creator:</strong> The Pro version (KooKoo AI Alt Text Creator Pro) has been automatically deactivated."
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/kookoo-ai-alt-text-creator.php:197
@@ -439,10 +431,6 @@ msgstr ""
 msgid "Invalid data format from API"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/kookoo-ai-alt-text-creator.php:570
-msgid "Selected API Gateway is not supported."
-msgstr ""
-
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/kookoo-ai-alt-text-creator.php:574
 msgid "API Key is empty. Please enter your key first."
 msgstr ""
@@ -519,48 +507,16 @@ msgstr ""
 msgid "Skip existing fields to save API credits & protect human edits"
 msgstr ""
 
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:506
-msgid "Context-Aware AI:"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:507
-msgid "Analyzes parent post/page title & content for tailored descriptions"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:519
-msgid "Global Prompt Context:"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:520
-msgid "Set universal brand guidelines & rules applied across all requests"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:532
-msgid "Custom Vision Models:"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:533
-msgid "Custom model slugs & dropdown presets for all gateways"
-msgstr ""
-
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:545
 msgid "Developer WP-CLI Tools:"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:546
-msgid "Server terminal commands (wp kookoo-alt-text-pro) & crontab"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:558
-msgid "Metadata Audit Trail:"
-msgstr ""
-
-#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:559
-msgid "Track execution sources (Upload, Bulk, Cron, Manual) on attachments"
+msgid "Server terminal batch commands (wp kookoo-alt-text-pro) & crontab"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:565
-msgid "Get Pro Addon Now"
+msgid "Upgrade to Pro"
 msgstr ""
 
 #: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:579

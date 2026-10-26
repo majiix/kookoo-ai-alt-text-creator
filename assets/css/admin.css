@@ -561,33 +561,6 @@ body.rtl .aialtg-pro-card:hover {
 .aialtg-stat-value.error { color: var(--aialtg-error); }
 .aialtg-stat-value.neutral { color: var(--aialtg-primary); }
 
-/* Progress Bar */
-.aialtg-progress-bar-wrap {
-	margin-bottom: 20px;
-}
-
-.aialtg-progress-bar {
-	height: 10px;
-	background: #e2e8f0;
-	border-radius: 6px;
-	overflow: hidden;
-	margin-bottom: 6px;
-}
-
-.aialtg-progress-fill {
-	height: 100%;
-	background: linear-gradient(90deg, var(--aialtg-primary), var(--aialtg-secondary));
-	border-radius: 6px;
-	transition: width 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.aialtg-progress-text {
-	font-size: 12px;
-	color: var(--aialtg-text-muted);
-	font-weight: 600;
-	float: right;
-}
-
 /* Controls & Buttons Wrapper */
 .aialtg-controls-wrapper {
 	padding-top: 20px;

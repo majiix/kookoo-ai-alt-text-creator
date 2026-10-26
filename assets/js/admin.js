@@ -108,20 +108,13 @@ jQuery(document).ready(function($) {
 		var customInput = $('#aialtg-custom-model-input');
 		var realInput = $('#aialtg-model-real-input');
 
-		var gatewaySelect = $('#aialtg-api-gateway');
 		var openrouterModelsCached = null;
 
 		function initModelField() {
-			var gateway = gatewaySelect.length > 0 ? gatewaySelect.val() : 'openrouter';
-
-			if (gateway === 'openrouter') {
-				if (openrouterModelsCached) {
-					renderOpenRouterModels(openrouterModelsCached);
-				} else {
-					fetchOpenRouterModels();
-				}
+			if (openrouterModelsCached) {
+				renderOpenRouterModels(openrouterModelsCached);
 			} else {
-				showFallbackInput();
+				fetchOpenRouterModels();
 			}
 		}
 
@@ -226,19 +219,7 @@ jQuery(document).ready(function($) {
 			realInput.val(currentValue);
 		}
 
-		function updateApiKeyVisibility() {
-			$('#aialtg-api-key').closest('tr').show();
-			customInput.attr('placeholder', 'e.g. google/gemini-2.5-flash-lite');
-		}
-
-		gatewaySelect.on('change', function() {
-			currentValue = realInput.val();
-			initModelField();
-			updateApiKeyVisibility();
-		});
-
 		initModelField();
-		updateApiKeyVisibility();
 
 		// Handle select changes
 		modelSelect.on('change', function() {
@@ -320,9 +301,7 @@ jQuery(document).ready(function($) {
 		var spinner = btn.siblings('.aialtg-test-spinner');
 		var resultDiv = $('#aialtg-test-conn-result');
 
-		var gateway = $('#aialtg-api-gateway').val() || 'openrouter';
 		var key = $('#aialtg-api-key').val();
-
 		var model = $('#aialtg-model-real-input').val();
 
 		resultDiv.hide().removeClass('notice notice-success notice-error').html('');
@@ -335,7 +314,6 @@ jQuery(document).ready(function($) {
 			data: {
 				action: 'aialtg_test_connection',
 				nonce: nonce,
-				api_gateway: gateway,
 				api_key: key,
 				model: model
 			},

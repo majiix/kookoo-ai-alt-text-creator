@@ -10,7 +10,7 @@
  * Text Domain: kookoo-ai-alt-text-creator
  * Domain Path: /languages
  * License:     GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // Prevent direct access.
@@ -32,7 +32,7 @@ if ( ! function_exists( 'aialtg_process_image' ) ) {
 	 * Process image metadata generation for an attachment.
 	 *
 	 * @param int    $post_id Attachment post ID.
-	 * @param string $source  Source of generation ('manual', 'cron', 'upload', 'bulk').
+	 * @param string $source  Source of generation ('manual', 'cron').
 	 * @return array|WP_Error Generated metadata result or error.
 	 */
 	function aialtg_process_image( $post_id, $source = 'manual' ) {
@@ -41,22 +41,10 @@ if ( ! function_exists( 'aialtg_process_image' ) ) {
 	}
 }
 
-// Action hook for background batch processing.
-add_action( 'aialtg_process_batch', array( 'Aialtg_Cron', 'process_cron_batch' ) );
-
 /**
  * Activation callback for free plugin.
  */
 function aialtg_free_activate() {
-	$pro_plugin = 'kookoo-ai-alt-text-creator-pro/kookoo-ai-alt-text-creator-pro.php';
-	if ( ! function_exists( 'is_plugin_active' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-	}
-	if ( is_plugin_active( $pro_plugin ) ) {
-		deactivate_plugins( $pro_plugin, true );
-		set_transient( 'aialtg_free_activated_notice', 1, 60 );
-	}
-
 	$options = get_option( 'aialtg_settings' );
 	if ( is_array( $options ) && isset( $options['cron_enabled'] ) && '1' === $options['cron_enabled'] ) {
 		if ( ! wp_next_scheduled( Aialtg_Cron::CRON_HOOK ) ) {
@@ -115,12 +103,15 @@ class Aialtg_Image_Descriptor {
 		// Plugin action links.
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'add_plugin_action_links' ) );
 
-		// Conflict resolution & deactivation.
-		add_action( 'admin_init', array( $this, 'check_plugin_conflicts' ) );
-		add_action( 'admin_notices', array( $this, 'deactivation_advisory_notices' ) );
+		// Load translations.
+		add_action( 'init', array( $this, 'load_textdomain' ) );
+	}
 
-		// Fire action hook to allow addons/extensions to boot cleanly.
-		do_action( 'aialtg_loaded' );
+	/**
+	 * Loads plugin textdomain for translations.
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'kookoo-ai-alt-text-creator', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 
 	/**
@@ -141,57 +132,6 @@ class Aialtg_Image_Descriptor {
 			__( 'KooKoo AI Alt Text Creator', 'kookoo-ai-alt-text-creator' ),
 			wp_kses_post( wpautop( $content, false ) )
 		);
-	}
-
-	/**
-	 * Checks for conflicting plugins and deactivates them.
-	 */
-	public function check_plugin_conflicts() {
-		if ( ! function_exists( 'is_plugin_active' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-
-		// Deactivate legacy addon if still present.
-		$addon_file = 'kookoo-ai-alt-text-creator-pro-addon/kookoo-ai-alt-text-creator-pro-addon.php';
-		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( $addon_file ) ) {
-			deactivate_plugins( $addon_file, true );
-		}
-
-		$pro_plugin = 'kookoo-ai-alt-text-creator-pro/kookoo-ai-alt-text-creator-pro.php';
-		if ( function_exists( 'is_plugin_active' ) && is_plugin_active( $pro_plugin ) ) {
-			// If user is currently activating Pro, do not deactivate Pro.
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( isset( $_GET['action'], $_GET['plugin'] ) && 'activate' === $_GET['action'] && false !== strpos( sanitize_text_field( wp_unslash( $_GET['plugin'] ) ), 'kookoo-ai-alt-text-creator-pro' ) ) {
-				return;
-			}
-			// If Pro was just activated, do not deactivate Pro.
-			if ( get_transient( 'aialtg_pro_activated_notice' ) ) {
-				return;
-			}
-
-			// If Free was just activated, ensure Pro is deactivated.
-			if ( get_transient( 'aialtg_free_activated_notice' ) ) {
-				deactivate_plugins( $pro_plugin, true );
-			}
-		}
-	}
-
-	/**
-	 * Displays advisory notice if the Pro version was deactivated upon Free activation.
-	 */
-	public function deactivation_advisory_notices() {
-		if ( get_transient( 'aialtg_free_activated_notice' ) ) {
-			delete_transient( 'aialtg_free_activated_notice' );
-			?>
-			<div class="notice notice-warning is-dismissible">
-				<p>
-					<?php
-					echo wp_kses_post( __( '<strong>KooKoo AI Alt Text Creator:</strong> The Pro version (KooKoo AI Alt Text Creator Pro) has been automatically deactivated.', 'kookoo-ai-alt-text-creator' ) );
-					?>
-				</p>
-			</div>
-			<?php
-		}
 	}
 
 	/**
@@ -310,13 +250,7 @@ class Aialtg_Image_Descriptor {
 			<?php
 		}
 
-		ob_start();
-		do_action( 'aialtg_attachment_meta_box_details', $post );
-		$extra_details = ob_get_clean();
-
-		if ( ! empty( $extra_details ) ) {
-			echo $extra_details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} elseif ( empty( $error ) && '1' !== $processed && empty( $gen_date ) ) {
+		if ( empty( $error ) && '1' !== $processed && empty( $gen_date ) ) {
 			echo '<p>' . esc_html__( 'No generation info available.', 'kookoo-ai-alt-text-creator' ) . '</p>';
 		}
 	}
@@ -473,7 +407,7 @@ class Aialtg_Image_Descriptor {
 				$ids = array_map( 'intval', $ids );
 				$count = count( $ids );
 
-				$ids_placeholder = implode( ',', array_fill( 0, count, '%d' ) );
+				$ids_placeholder = implode( ',', array_fill( 0, $count, '%d' ) );
 
 				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 				$wpdb->query( $wpdb->prepare(
@@ -552,7 +486,7 @@ class Aialtg_Image_Descriptor {
 	}
 
 	/**
-	 * AJAX Handler for testing API connection across providers.
+	 * AJAX Handler for testing OpenRouter API connection.
 	 */
 	public function handle_test_connection_request() {
 		try {
@@ -568,14 +502,8 @@ class Aialtg_Image_Descriptor {
 				wp_send_json_error( array( 'message' => __( 'Permission denied', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
-			$gateway = isset( $_POST['api_gateway'] ) ? sanitize_text_field( wp_unslash( $_POST['api_gateway'] ) ) : 'openrouter';
 			$api_key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 			$model   = isset( $_POST['model'] ) ? sanitize_text_field( wp_unslash( $_POST['model'] ) ) : '';
-
-			$allowed_gateways = apply_filters( 'aialtg_allowed_gateways', array( 'openrouter' ) );
-			if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
-				wp_send_json_error( array( 'message' => __( 'Selected API Gateway is not supported.', 'kookoo-ai-alt-text-creator' ) ) );
-			}
 
 			if ( empty( $api_key ) ) {
 				wp_send_json_error( array( 'message' => __( 'API Key is empty. Please enter your key first.', 'kookoo-ai-alt-text-creator' ) ) );
@@ -585,23 +513,13 @@ class Aialtg_Image_Descriptor {
 				wp_send_json_error( array( 'message' => __( 'Please select or enter an AI Model first.', 'kookoo-ai-alt-text-creator' ) ) );
 			}
 
-			$options = array(
-				'api_gateway' => $gateway,
-				'api_key'     => $api_key,
-			);
-			$options = apply_filters( 'aialtg_test_connection_options', $options, $gateway, $api_key );
-
-			$default_url = 'https://openrouter.ai/api/v1/chat/completions';
-			$api_url     = apply_filters( 'aialtg_api_url', $default_url, $options );
-
-			$default_headers = array(
+			$api_url = 'https://openrouter.ai/api/v1/chat/completions';
+			$headers = array(
 				'Authorization' => 'Bearer ' . $api_key,
 				'Content-Type'  => 'application/json',
 				'HTTP-Referer'  => add_query_arg( 'page', 'kookoo-ai-alt-text-creator', get_site_url() ),
 				'X-Title'       => wp_strip_all_tags( get_bloginfo( 'name' ) ),
 			);
-			$headers = apply_filters( 'aialtg_api_headers', $default_headers, $options );
-			$model   = apply_filters( 'aialtg_api_model', $model, $gateway, $options );
 
 			$body = array(
 				'model'      => $model,
