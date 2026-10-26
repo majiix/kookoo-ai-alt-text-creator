@@ -415,6 +415,167 @@ class Aialtg_Settings {
 	}
 
 	/**
+	 * Renders the Upgrade to Pro card in the sidebar.
+	 */
+	private function render_upgrade_pro_card() {
+		$pro_url = 'https://violo.ir/?p=14';
+		?>
+		<div class="aialtg-card aialtg-pro-card">
+			<div class="aialtg-pro-badge">
+				<span class="aialtg-pro-star" aria-hidden="true">&#9733;</span>
+				<span class="aialtg-pro-title"><?php esc_html_e( 'UPGRADE TO PRO', 'kookoo-ai-alt-text-creator' ); ?></span>
+			</div>
+			<p class="aialtg-pro-desc">
+				<?php esc_html_e( 'Supercharge your media workflow with advanced automation, full metadata, and direct AI access:', 'kookoo-ai-alt-text-creator' ); ?>
+			</p>
+			<ul class="aialtg-pro-features">
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Direct API Gateways:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'OpenAI & Google Gemini direct keys with zero platform fees', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Complete 4-Field Metadata:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Captions & Descriptions alongside Alt & Titles with custom prompts', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Instant Upload Automation:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Auto-generate metadata on new image uploads in real time', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Media Library Bulk Actions:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Bulk process selected images with 1-click from the dropdown', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Smart Overwrite Rules:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Skip existing fields to save API credits & protect human edits', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Context-Aware AI:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Analyzes parent post/page title & content for tailored descriptions', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Global Prompt Context:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Set universal brand guidelines & rules applied across all requests', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Custom Vision Models:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Custom model slugs & dropdown presets for all gateways', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Developer WP-CLI Tools:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Server terminal commands (wp kookoo-alt-text-pro) & crontab', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+				<li class="aialtg-pro-feature-item">
+					<span class="aialtg-pro-check-icon" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="10" cy="10" r="10" fill="#a855f7"/>
+							<path d="M6 10.2L8.7 13L14 7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+						</svg>
+					</span>
+					<div class="aialtg-pro-feature-text">
+						<strong><?php esc_html_e( 'Metadata Audit Trail:', 'kookoo-ai-alt-text-creator' ); ?></strong>
+						<span><?php esc_html_e( 'Track execution sources (Upload, Bulk, Cron, Manual) on attachments', 'kookoo-ai-alt-text-creator' ); ?></span>
+					</div>
+				</li>
+			</ul>
+			<div class="aialtg-pro-actions">
+				<a href="<?php echo esc_url( $pro_url ); ?>" target="_blank" rel="noopener noreferrer" class="button aialtg-btn-pro-cta">
+					<span><?php esc_html_e( 'Get Pro Addon Now', 'kookoo-ai-alt-text-creator' ); ?></span>
+					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+						<polyline points="15 3 21 3 21 9"></polyline>
+						<line x1="10" y1="14" x2="21" y2="3"></line>
+					</svg>
+				</a>
+				<a href="<?php echo esc_url( $pro_url ); ?>" target="_blank" rel="noopener noreferrer" class="aialtg-pro-preview-link">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+						<circle cx="12" cy="12" r="3"></circle>
+					</svg>
+					<span><?php esc_html_e( 'Preview Pro Features', 'kookoo-ai-alt-text-creator' ); ?></span>
+				</a>
+			</div>
+			<div class="aialtg-pro-footer-note">
+				<span class="dashicons dashicons-yes-alt"></span>
+				<span><?php esc_html_e( 'Direct API Keys (No middleman markup) & Lifetime Updates', 'kookoo-ai-alt-text-creator' ); ?></span>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Renders image statistics card in sidebar.
 	 */
 	private function render_stats_card() {
@@ -767,6 +928,7 @@ class Aialtg_Settings {
 					</form>
 				</div>
 				<div class="aialtg-sidebar">
+					<?php $this->render_upgrade_pro_card(); ?>
 					<?php $this->render_stats_card(); ?>
 				</div>
 			</div>

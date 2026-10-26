@@ -14,7 +14,7 @@ KooKoo AI Alt Text Creator is a completely free WordPress plugin that automatica
 
 ## Architecture
 * [kookoo-ai-alt-text-creator.php](../kookoo-ai-alt-text-creator.php): Plugin bootstrap, hooks registration, lifecycle event dispatch (`aialtg_loaded`), public API helper (`aialtg_process_image`), batch action hook (`aialtg_process_batch`), Media Library custom column and row action ("AI Details"), textdomain loader (`load_plugin_textdomain`), privacy policy suggester (`register_privacy_policy_content`), mutual conflict resolution with Pro (`check_plugin_conflicts`, `activation_logic`, `deactivation_advisory_notices`), and error-masked AJAX handlers controller.
-* [includes/class-aialtg-settings.php](class-aialtg-settings.php): Handles settings page registration, sanitization, dashboard interface rendering, OpenRouter gateway configuration, prompt configuration for alt text and titles, and integrated Help and setup documentation.
+* [includes/class-aialtg-settings.php](class-aialtg-settings.php): Handles settings page registration, sanitization, dashboard interface rendering, OpenRouter gateway configuration, prompt configuration for alt text and titles, Pro upgrade sidebar showcase card, and integrated Help and setup documentation.
 * [includes/class-aialtg-generator.php](class-aialtg-generator.php): Core logic for generating Alt Texts and Titles, performing remote requests to OpenRouter, uploads-directory validated Base64 conversions, always-on generation metadata logging, and robust JSON parsing.
 * [includes/class-aialtg-cron.php](class-aialtg-cron.php): Handles automated background queue processing via WP Cron with configurable batch limits and host timeout advisories.
 * [uninstall.php](../uninstall.php): Handles uninstallation cleanup, removing plugin options (`aialtg_settings`), transients, and internal generation postmeta.
@@ -39,7 +39,8 @@ KooKoo AI Alt Text Creator is a completely free WordPress plugin that automatica
 * **Generation Metadata Logging**: Always records timestamps and execution sources (`manual`, `cron`) displayed on the attachment edit screen.
 * **Dynamic OpenRouter Models**: Automatically fetches vision models from OpenRouter with custom model input support.
 * **Smart JSON Parser**: Extracts structured JSON response and repairs common formatting issues automatically.
-* **Settings & Dashboard**: Clean modern layout with CSS animations, interactive toggles, and statistics dashboard.
+* **Settings & Dashboard**: Clean modern layout with CSS animations, interactive toggles, statistics dashboard, and Upgrade to Pro showcase card.
+* **Pro Upgrade Sidebar**: Sidebar card comprehensively advertising all Pro edition capabilities (Direct OpenAI & Gemini direct keys with zero platform fees, Complete 4-Field Metadata including Captions & Descriptions, Instant Upload Automation, Media Library 1-click Bulk Actions, Smart Overwrite Rules, Context-Aware AI generation, Global Prompt Context, Custom Vision Models, Developer WP-CLI Tools, and Metadata Execution Audit Trail) linking to the Pro purchase page (https://violo.ir/?p=14).
 * **Privacy Policy Suggestion**: Registers privacy policy content via `wp_add_privacy_policy_content()` disclosing external data transfer to OpenRouter.
 * **Path Traversal Protection**: Validates attached file paths against `wp_upload_dir()['basedir']` prior to reading local images for Base64 encoding.
 * **Safe Error Handling**: Masked error reporting prevents sensitive stack traces or internal details from leaking to clients.

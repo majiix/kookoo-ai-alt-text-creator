@@ -471,3 +471,105 @@ msgstr ""
 msgid "Are you sure you want to reset the progress? The cron job will re-analyze all images. This does not delete existing Alt Texts."
 msgstr ""
 
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:426
+msgid "UPGRADE TO PRO"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:429
+msgid "Supercharge your media workflow with advanced automation, full metadata, and direct AI access:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:441
+msgid "Direct API Gateways:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:442
+msgid "OpenAI & Google Gemini direct keys with zero platform fees"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:454
+msgid "Complete 4-Field Metadata:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:455
+msgid "Captions & Descriptions alongside Alt & Titles with custom prompts"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:467
+msgid "Instant Upload Automation:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:468
+msgid "Auto-generate metadata on new image uploads in real time"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:480
+msgid "Media Library Bulk Actions:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:481
+msgid "Bulk process selected images with 1-click from the dropdown"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:493
+msgid "Smart Overwrite Rules:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:494
+msgid "Skip existing fields to save API credits & protect human edits"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:506
+msgid "Context-Aware AI:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:507
+msgid "Analyzes parent post/page title & content for tailored descriptions"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:519
+msgid "Global Prompt Context:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:520
+msgid "Set universal brand guidelines & rules applied across all requests"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:532
+msgid "Custom Vision Models:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:533
+msgid "Custom model slugs & dropdown presets for all gateways"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:545
+msgid "Developer WP-CLI Tools:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:546
+msgid "Server terminal commands (wp kookoo-alt-text-pro) & crontab"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:558
+msgid "Metadata Audit Trail:"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:559
+msgid "Track execution sources (Upload, Bulk, Cron, Manual) on attachments"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:565
+msgid "Get Pro Addon Now"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:579
+msgid "Preview Pro Features"
+msgstr ""
+
+#: E:/wps/dorsanet/app/public/wp-content/plugins/kookoo-ai-alt-text-creator/includes/class-aialtg-settings.php:584
+msgid "Direct API Keys (No middleman markup) & Lifetime Updates"
+msgstr ""
+
+
+

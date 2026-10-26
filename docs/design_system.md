@@ -96,6 +96,7 @@ The main dashboard is constructed as a two-column responsive grid:
   * Outlined with `--aialtg-border` and given `--aialtg-radius` corners.
   * Hover states transition the box-shadow to `--aialtg-shadow-hover` and border color to a soft primary glow.
 * **Sidebar cards** use the `.aialtg-card` class, mirroring the visual layout of main cards.
+* **Pro Upsell Card (`.aialtg-pro-card`)**: High-contrast upgrade container in the sidebar featuring a vibrant accent border (`4px solid var(--aialtg-accent)`), gold star badge, feature list with custom checkmark icons, and a full-width gradient call-to-action button linking to the Pro addon.
 * **Stats Card (`.aialtg-stats-card`)**: Enhances standard cards by drawing a `5px` vertical linear gradient highlight along the left border.
 
 ### B. Form Inputs
