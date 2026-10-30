@@ -56,7 +56,7 @@ class Aialtg_Cron {
 		$schedules[ self::INTERVAL_NAME ] = array(
 			'interval' => $minutes * 60,
 			/* translators: %d: number of minutes */
-			'display'  => sprintf( __( 'Every %d Minutes (AI Alt Text)', 'kookoo-ai-alt-text-creator' ), $minutes ),
+			'display'  => did_action( 'init' ) ? sprintf( __( 'Every %d Minutes (AI Alt Text)', 'kookoo-ai-alt-text-creator' ), $minutes ) : sprintf( 'Every %d Minutes (AI Alt Text)', $minutes ),
 		);
 		return $schedules;
 	}

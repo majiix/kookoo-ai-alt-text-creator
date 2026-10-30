@@ -3,7 +3,7 @@
  * Plugin Name: KooKoo AI Alt Text Creator
  * Plugin URI:  https://wordpress.org/plugins/kookoo-ai-alt-text-creator/
  * Description: Automatically generates alt text and titles for images using AI via OpenRouter.
- * Version:     2.5.0
+ * Version:     2.5.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author:      micromax
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'AIALTG_VERSION' ) ) {
-	define( 'AIALTG_VERSION', '2.5.0' );
+	define( 'AIALTG_VERSION', '2.5.1' );
 }
 
 // Include required classes.

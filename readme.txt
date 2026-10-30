@@ -5,7 +5,7 @@ Tags: images, alt text, seo, accessibility, media library
 Requires at least: 6.0
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.5.0
+Stable tag: 2.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,9 @@ No. It only updates metadata fields (Alt Text and Title) in the WordPress databa
 Plugin transients and scheduled background tasks are cleanly cleared upon uninstall. Your settings and image generation metadata remain safely stored in the database if you ever reinstall the plugin. All generated Alt Texts and Titles remain permanently stored in WordPress as core media metadata.
 
 == Changelog ==
+
+= 2.5.1 =
+* Fix: Background cron schedule translation check.
 
 = 2.5.0 =
 * Completely standalone free release focused on Alt Text and Title generation via OpenRouter.
